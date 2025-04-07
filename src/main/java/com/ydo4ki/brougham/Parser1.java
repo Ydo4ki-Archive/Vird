@@ -66,7 +66,7 @@ public class Parser1 {
 	private static final String operators = "+-/*=!%^&*:,.|[]{}()";
 	
 	public Group read(Group parent, File file) throws IOException {
-		Group fileGroup = new Group(parent, BracketsType.BRACES, new ArrayList<>());
+		Group fileGroup = new Group(parent, BracketsType.ROUND, new ArrayList<>());
 		Token name = new Token(fileGroup, file.getName());
 		fileGroup.getElements().add(name);
 		File[] files = file.listFiles();
@@ -79,6 +79,7 @@ public class Parser1 {
 			List<Element> elements = new ArrayList<>();
 			Group group = new Group(fileGroup, BracketsType.BRACES, elements);
 			for (File file1 : files) {
+				if (!file1.getName().endsWith(".bham")) continue;
 				elements.add(read(group, file1));
 			}
 			fileGroup.getElements().add(group);
