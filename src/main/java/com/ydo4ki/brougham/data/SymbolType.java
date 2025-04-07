@@ -11,6 +11,6 @@ public final class SymbolType extends Type {
 	
 	@Override
 	public String toString() {
-		return "SymbolType";
+		return "Symbol";
 	}
 }

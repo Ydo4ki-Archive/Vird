@@ -14,5 +14,7 @@ public class Main {
 		System.out.println(group);
 		Val program = new Parser2().resolve(group);
 		System.out.println(program);
+		System.out.println(program.getType());
+		System.out.println(program.getType().getType());
 	}
 }

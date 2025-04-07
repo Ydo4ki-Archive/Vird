@@ -13,15 +13,14 @@ public final class Vector implements Val {
 	
 	public Vector(Val[] values) {
 		int len = values.length;
-		if (len == 0) this.type = new VectorType(SymbolType.instance);
-		else {
-			Type type = values[0].getType();
-			for (int i = 1; i < len; i++) {
-				if (!values[i].getType().equals(type))
-					throw new IllegalArgumentException("Vector element types mismatch (" + values[i].getType() + " found, " + type + " extepcted)");
-			}
-			this.type = new VectorType(type);
+		
+		Type type = len == 0 ? SymbolType.instance : values[0].getType();
+		for (int i = 1; i < len; i++) {
+			if (!values[i].getType().equals(type))
+				throw new IllegalArgumentException("Vector element types mismatch (" + values[i].getType() + " found, " + type + " expected)");
 		}
+		this.type = new VectorType(len, type);
+		
 		this.values = values;
 	}
 	

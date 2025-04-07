@@ -11,7 +11,13 @@ final class MetaType extends Type {
 	
 	@Override
 	public Type getType() {
-		return new MetaType(depth+1);
+		return new MetaType(depth + 1);
+	}
+	
+	@Override
+	public String toString() {
+		if (depth == 0) return "Type";
+		return "Type" + depth;
 	}
 	
 	@Override

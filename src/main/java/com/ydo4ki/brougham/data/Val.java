@@ -10,4 +10,8 @@ public interface Val {
 	default boolean isType() {
 		return false;
 	}
+	
+	default Val resolve() {
+		return this;
+	}
 }
