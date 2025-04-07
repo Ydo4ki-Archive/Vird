@@ -5,4 +5,9 @@ package com.ydo4ki.brougham;
  * @author Sulphuris
  */
 public abstract class Element {
+	private final Group parent;
+	
+	protected Element(Group parent) {
+		this.parent = parent;
+	}
 }

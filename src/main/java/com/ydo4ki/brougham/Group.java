@@ -1,6 +1,5 @@
 package com.ydo4ki.brougham;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +10,8 @@ public class Group extends Element {
 	private final BracketsType type;
 	private final List<Element> elements;
 	
-	public Group(BracketsType type, List<Element> elements) {
+	public Group(Group parent, BracketsType type, List<Element> elements) {
+		super(parent);
 		this.type = type;
 		this.elements = elements;
 	}
@@ -22,11 +22,15 @@ public class Group extends Element {
 	
 	@Override
 	public String toString() {
-		StringBuilder b = new StringBuilder("group ").append(type.open);
+		StringBuilder b = new StringBuilder().append(type.open).append('\n');
 		for (Element element : elements) {
-			b.append(element).append(" ");
+			b.append(element).append("\n");
 		}
 		b.append(type.close);
 		return b.toString();
+	}
+	
+	public void execute() {
+	
 	}
 }

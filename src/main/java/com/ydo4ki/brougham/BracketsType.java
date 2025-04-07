@@ -8,6 +8,7 @@ public enum BracketsType {
 	ROUND('(',')'),
 	SQUARE('[',']'),
 	BRACES('{','}'),
+	NONE(' ', ' ')
 	;
 	final char open;
 	final char close;

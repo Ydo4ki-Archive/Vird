@@ -16,7 +16,7 @@ public class Parser1 {
 		return (char) in.read();
 	}
 	
-	private Token parseToken(BufferedReader in) throws IOException {
+	private Token parseToken(Group parent, BufferedReader in) throws IOException {
 		boolean operator = operators.contains(String.valueOf(ch));
 		StringBuilder token = new StringBuilder();
 		while (!Character.isWhitespace(ch) && (operator == operators.contains(String.valueOf(ch)))) {
@@ -24,22 +24,23 @@ public class Parser1 {
 			ch = next(in);
 			if (ch == 0xFFFF) return null;
 		}
-		return new Token(token.toString());
+		return new Token(parent, token.toString());
 	}
 	
-	private Group parseGroup(BracketsType bracketsType, BufferedReader in) throws IOException {
+	private Group parseGroup(Group parent, BracketsType bracketsType, BufferedReader in) throws IOException {
 		List<Element> elements = new ArrayList<>();
+		Group group =  new Group(parent, bracketsType, elements);
 		Element next;
 		while (true) {
-			next = parseElement(bracketsType, in);
+			next = parseElement(group, bracketsType, in);
 			if (next == null) break;
 			elements.add(next);
 		}
 		ch = next(in);
-		return new Group(bracketsType, elements);
+		return group;
 	}
 	
-	private Element parseElement(BracketsType brackets, BufferedReader in) throws IOException {
+	private Element parseElement(Group parent, BracketsType brackets, BufferedReader in) throws IOException {
 		if (ch == 0xFFFF) return null;
 		while (Character.isWhitespace(ch)) {
 			ch = next(in);
@@ -51,18 +52,18 @@ public class Parser1 {
 		if (ch == '['|| ch == '(' || ch == '{') {
 			char ch = this.ch;
 			this.ch = next(in);
-			return parseGroup(BracketsType.byOpen(ch), in);
+			return parseGroup(parent, BracketsType.byOpen(ch), in);
 		}
 		if (ch == ']' || ch == ')' || ch == '}') {
 			throw new IllegalArgumentException("Unexpected bracket: " + ch);
 		}
-		return parseToken(in);
+		return parseToken(parent, in);
 	}
 	
 	private static final String operators = "+-/*=!%^&*:,.|[]{}()";
 	
-	public void read(BufferedReader in) throws IOException {
+	public Group read(BufferedReader in) throws IOException {
 		ch = next(in);
-		System.out.println(parseGroup(null, in).getElements());
+		return parseGroup(null, BracketsType.NONE, in);
 	}
 }

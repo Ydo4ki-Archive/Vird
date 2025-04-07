@@ -7,7 +7,8 @@ package com.ydo4ki.brougham;
 public class Token extends Element {
 	private final String value;
 	
-	public Token(String value) {
+	public Token(Group parent, String value) {
+		super(parent);
 		this.value = value;
 	}
 	
