@@ -10,4 +10,10 @@ public abstract class Element {
 	protected Element(Group parent) {
 		this.parent = parent;
 	}
+	
+	public final String toStringContent() {
+		return toStringContent("");
+	}
+	
+	protected abstract String toStringContent(String linePrefix);
 }

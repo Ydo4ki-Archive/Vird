@@ -16,4 +16,9 @@ public class Token extends Element {
 	public String toString() {
 		return value;
 	}
+	
+	@Override
+	protected String toStringContent(String linePrefix) {
+		return linePrefix + this;
+	}
 }

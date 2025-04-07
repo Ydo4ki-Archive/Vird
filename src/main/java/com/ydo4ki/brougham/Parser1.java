@@ -1,7 +1,10 @@
 package com.ydo4ki.brougham;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,8 +65,29 @@ public class Parser1 {
 	
 	private static final String operators = "+-/*=!%^&*:,.|[]{}()";
 	
-	public Group read(BufferedReader in) throws IOException {
+	public Group read(Group parent, File file) throws IOException {
+		Group fileGroup = new Group(parent, BracketsType.BRACES, new ArrayList<>());
+		Token name = new Token(fileGroup, file.getName());
+		fileGroup.getElements().add(name);
+		File[] files = file.listFiles();
+		if (files == null) {
+			BufferedReader in = new BufferedReader(new InputStreamReader(Files.newInputStream(file.toPath())));
+			Group group = read(fileGroup, in);
+			in.close();
+			fileGroup.getElements().add(group);
+		} else {
+			List<Element> elements = new ArrayList<>();
+			Group group = new Group(fileGroup, BracketsType.BRACES, elements);
+			for (File file1 : files) {
+				elements.add(read(group, file1));
+			}
+			fileGroup.getElements().add(group);
+		}
+		return fileGroup;
+	}
+	
+	public Group read(Group parent, BufferedReader in) throws IOException {
 		ch = next(in);
-		return parseGroup(null, BracketsType.NONE, in);
+		return parseGroup(parent, BracketsType.BRACES, in);
 	}
 }

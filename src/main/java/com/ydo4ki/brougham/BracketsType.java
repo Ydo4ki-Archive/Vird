@@ -7,8 +7,7 @@ package com.ydo4ki.brougham;
 public enum BracketsType {
 	ROUND('(',')'),
 	SQUARE('[',']'),
-	BRACES('{','}'),
-	NONE(' ', ' ')
+	BRACES('{','}')
 	;
 	final char open;
 	final char close;

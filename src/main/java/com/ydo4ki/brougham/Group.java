@@ -22,15 +22,20 @@ public class Group extends Element {
 	
 	@Override
 	public String toString() {
-		StringBuilder b = new StringBuilder().append(type.open).append('\n');
-		for (Element element : elements) {
-			b.append(element).append("\n");
-		}
-		b.append(type.close);
-		return b.toString();
+		return "group " + type.open + " " + elements.size() + " elements " + type.close;
 	}
 	
 	public void execute() {
+		System.out.println(this.toStringContent());
+	}
 	
+	@Override
+	protected String toStringContent(String linePrefix) {
+		StringBuilder b = new StringBuilder(linePrefix).append(type.open).append('\n');
+		for (Element element : elements) {
+			b.append(element.toStringContent("\t" + linePrefix)).append("\n");
+		}
+		b.append(linePrefix).append(type.close);
+		return b.toString();
 	}
 }
