@@ -1,4 +1,4 @@
-package com.ydo4ki.brougham;
+package com.ydo4ki.brougham.parser;
 
 /**
  * @since 4/6/2025 8:43 PM

@@ -1,4 +1,4 @@
-package com.ydo4ki.brougham;
+package com.ydo4ki.brougham.parser;
 
 import java.util.List;
 
@@ -16,6 +16,10 @@ public class Group extends Element {
 		this.elements = elements;
 	}
 	
+	public BracketsType getType() {
+		return type;
+	}
+	
 	public List<Element> getElements() {
 		return elements;
 	}
@@ -23,10 +27,6 @@ public class Group extends Element {
 	@Override
 	public String toString() {
 		return "group " + type.open + " " + elements.size() + " elements " + type.close;
-	}
-	
-	public void execute() {
-		System.out.println(this.toStringContent());
 	}
 	
 	@Override

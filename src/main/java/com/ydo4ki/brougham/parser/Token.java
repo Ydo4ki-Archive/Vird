@@ -1,4 +1,4 @@
-package com.ydo4ki.brougham;
+package com.ydo4ki.brougham.parser;
 
 /**
  * @since 4/6/2025 8:42 PM
@@ -10,6 +10,10 @@ public class Token extends Element {
 	public Token(Group parent, String value) {
 		super(parent);
 		this.value = value;
+	}
+	
+	public String getValue() {
+		return value;
 	}
 	
 	@Override

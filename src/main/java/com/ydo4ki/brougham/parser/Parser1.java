@@ -1,4 +1,4 @@
-package com.ydo4ki.brougham;
+package com.ydo4ki.brougham.parser;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -77,7 +77,7 @@ public class Parser1 {
 			fileGroup.getElements().add(group);
 		} else {
 			List<Element> elements = new ArrayList<>();
-			Group group = new Group(fileGroup, BracketsType.BRACES, elements);
+			Group group = new Group(fileGroup, BracketsType.ROUND, elements);
 			for (File file1 : files) {
 				if (!file1.getName().endsWith(".bham")) continue;
 				elements.add(read(group, file1));
@@ -89,6 +89,6 @@ public class Parser1 {
 	
 	public Group read(Group parent, BufferedReader in) throws IOException {
 		ch = next(in);
-		return parseGroup(parent, BracketsType.BRACES, in);
+		return parseGroup(parent, BracketsType.ROUND, in);
 	}
 }
