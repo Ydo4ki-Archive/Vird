@@ -23,6 +23,11 @@ public final class DList implements Val {
 		this.elements = elements;
 	}
 	
+	public Val resolve(Symbol symbol) {
+		Val dereferenced = definedSymbols.get(symbol.getValue());
+		if (dereferenced != null) return dereferenced;
+		return parent == null ? null : parent.resolve(symbol);
+	}
 	public FunctionSet resolveFunction(Symbol symbol) {
 		Val dereferenced = definedSymbols.get(symbol.getValue());
 		if (dereferenced instanceof FunctionSet) return (FunctionSet)dereferenced;

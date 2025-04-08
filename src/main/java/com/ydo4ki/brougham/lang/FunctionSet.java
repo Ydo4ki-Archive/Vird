@@ -19,30 +19,31 @@ public final class FunctionSet implements Val {
 	}
 	
 	public void addImpl(FunctionImpl function) {
-		if (findImplByParams(function.getType().getParams()) != null)
+		if (findImplByType(function.getType()) != null)
 			throw new IllegalArgumentException("This types of arguments are already occupied " + Arrays.toString(function.getType().getParams()));
 		specificFunctions.add(function);
 	}
 	
-	public FunctionImpl findImplByParams(Type[] params) {
+	public FunctionImpl findImplByType(FunctionType type) {
 		for (FunctionImpl function : specificFunctions) {
-			if (Arrays.deepEquals(function.getType().getParams(), params)) return function;
+			if (function.getType().equals(type)) return function;
 		}
 		return null;
 	}
 	
-	public FunctionImpl findImplForArgs(List<Val> args) {
+	public FunctionImpl findImplForArgs(Type expectedType, Val[] args) {
 		List<FunctionImpl> candidates = new ArrayList<>(); // todo: implicit cast (search for implicit cast functions same way)
 		for (FunctionImpl function : specificFunctions) {
-			if (typeMatches(args, function.getType().getParams())) return function;
+			if ((expectedType == null || expectedType.equals(function.getType().getReturnType()))
+					&& typeMatches(args, function.getType().getParams()))
+				return function;
 		}
 		return null;
 	}
 	
-	private static boolean typeMatches(List<Val> args, Type[] types) {
-		int i = 0;
-		for (Val arg : args) {
-			if (!arg.getType().equals(types[i++])) return false;
+	private static boolean typeMatches(Val[] args, Type[] types) {
+		for (int i = 0; i < args.length; i++) {
+			if (!args[i].getType().equals(types[i])) return false;
 		}
 		return true;
 	}

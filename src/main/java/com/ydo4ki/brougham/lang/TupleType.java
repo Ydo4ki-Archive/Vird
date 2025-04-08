@@ -7,7 +7,7 @@ package com.ydo4ki.brougham.lang;
 public final class TupleType extends Type {
 	private final Type[] types;
 	
-	public TupleType(Type[] types) {
+	public TupleType(Type... types) {
 		this.types = types;
 	}
 	

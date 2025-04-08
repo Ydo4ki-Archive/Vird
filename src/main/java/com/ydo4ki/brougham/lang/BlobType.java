@@ -7,17 +7,17 @@ public final class BlobType extends Type {
 	
 	private static final ArrayList<BlobType> types = new ArrayList<>();
 	
-	static BlobType of(int depth) {
-		while (depth >= types.size()) {
+	public static BlobType of(int length) {
+		while (length >= types.size()) {
 			types.add(new BlobType(types.size()));
 		}
-		return types.get(depth);
+		return types.get(length);
 	}
 	
 	
 	private final int length;
 	
-	BlobType(int length) {
+	private BlobType(int length) {
 		this.length = length;
 	}
 	

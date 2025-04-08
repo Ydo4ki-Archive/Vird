@@ -51,4 +51,8 @@ public final class Blob implements Val {
 		}
 		return new String(hexChars);
 	}
+	
+	public int toInt() {
+		return data[0] << 24 | (data[1] & 0xFF) << 16 | (data[2] & 0xFF) << 8 | (data[3] & 0xFF);
+	}
 }
