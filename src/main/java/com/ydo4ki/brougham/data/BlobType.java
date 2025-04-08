@@ -22,6 +22,11 @@ public final class BlobType extends Type {
 	}
 	
 	@Override
+	public String toString() {
+		return "Blob"+length;
+	}
+	
+	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass()) return false;
 		BlobType blobType = (BlobType) o;
