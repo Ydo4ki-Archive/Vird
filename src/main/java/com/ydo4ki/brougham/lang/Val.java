@@ -7,10 +7,6 @@ package com.ydo4ki.brougham.lang;
 public interface Val {
 	Type getType();
 	
-	default boolean isType() {
-		return false;
-	}
-	
 	default Val resolve() {
 		return this;
 	}

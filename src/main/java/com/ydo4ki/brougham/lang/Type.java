@@ -7,11 +7,6 @@ package com.ydo4ki.brougham.lang;
 */
 public abstract class Type implements Val {
 	@Override
-	public boolean isType() {
-		return true;
-	}
-	
-	@Override
 	public Type getType() {
 		return MetaType.of(0);
 	}

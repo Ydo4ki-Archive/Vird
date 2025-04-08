@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
  * @since 4/7/2025 9:28 PM
  * @author Sulphuris
  */
-public final class Tuple extends Type implements ReifiedVal {
-	private Tuple type;
+public final class Tuple implements ReifiedVal {
+	private TupleType type;
 	private final Val[] values;
 	
 	public Tuple(Val[] values) {
@@ -28,17 +28,9 @@ public final class Tuple extends Type implements ReifiedVal {
 			for (int i = 0; i < len; i++) {
 				types[i] = values[i].getType();
 			}
-			this.type = new Tuple(types);
+			this.type = new TupleType(types);
 		}
 		return type;
-	}
-	
-	@Override
-	public boolean isType() {
-		for (Val value : values) {
-			if (!value.isType()) return false;
-		}
-		return true;
 	}
 	
 	@Override
