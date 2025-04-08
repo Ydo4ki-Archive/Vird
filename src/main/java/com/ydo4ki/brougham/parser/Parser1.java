@@ -16,7 +16,9 @@ public class Parser1 {
 	private char ch;
 	
 	private char next(BufferedReader in) throws IOException {
-		return (char) in.read();
+		char ch = (char) in.read();
+		if (ch == '/' && this.ch == '/') while (ch != '\n' && ch != 0xFFFF) ch = next(in);
+		return ch;
 	}
 	
 	private Token parseToken(Group parent, BufferedReader in) throws IOException {
