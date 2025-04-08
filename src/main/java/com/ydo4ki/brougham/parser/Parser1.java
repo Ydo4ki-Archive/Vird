@@ -20,12 +20,30 @@ public class Parser1 {
 	}
 	
 	private Token parseToken(Group parent, BufferedReader in) throws IOException {
-		boolean operator = operators.contains(String.valueOf(ch));
 		StringBuilder token = new StringBuilder();
-		while (!Character.isWhitespace(ch) && (operator == operators.contains(String.valueOf(ch)))) {
+		if (ch == '"') {
+			boolean skipNext = false;
 			token.append(ch);
 			ch = next(in);
-			if (ch == 0xFFFF) return null;
+			while (ch != '"' || skipNext) {
+				if (ch == '\\') {
+					skipNext = true;
+				} else {
+					if (ch != '"' && skipNext) token.append("\\");
+					token.append(ch);
+					skipNext = false;
+				}
+				ch = next(in);
+				if (ch == 0xFFFF) return null;
+			}
+			token.append('"');
+		} else {
+			boolean operator = operators.contains(String.valueOf(ch));
+			while (!Character.isWhitespace(ch) && (operator == operators.contains(String.valueOf(ch)))) {
+				token.append(ch);
+				ch = next(in);
+				if (ch == 0xFFFF) return null;
+			}
 		}
 		return new Token(parent, token.toString());
 	}
