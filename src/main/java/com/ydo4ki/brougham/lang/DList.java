@@ -11,12 +11,14 @@ import java.util.stream.Collectors;
  * @since 4/8/2025 8:24 PM
  */
 public final class DList implements Val {
+	private final DList parent;
 	private final BracketsType bracketsType;
 	private final List<Val> elements;
 	
 	private final Map<String, Val> definedSymbols = new HashMap<>();
 	
 	public DList(DList parent, BracketsType bracketsType, List<Val> elements) {
+		this.parent = parent;
 		this.bracketsType = bracketsType;
 		this.elements = elements;
 	}
@@ -24,7 +26,7 @@ public final class DList implements Val {
 	public FunctionSet resolveFunction(Symbol symbol) {
 		Val dereferenced = definedSymbols.get(symbol.getValue());
 		if (dereferenced instanceof FunctionSet) return (FunctionSet)dereferenced;
-		return null;
+		return parent == null ? null : parent.resolveFunction(symbol);
 	}
 	
 	public void define(Symbol id, Val values) {
