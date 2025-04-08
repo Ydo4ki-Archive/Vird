@@ -45,11 +45,13 @@ public class Parser {
 			}
 			token.append('"');
 		} else {
-			boolean operator = operators.contains(String.valueOf(ch));
-			while (!Character.isWhitespace(ch) && (operator == operators.contains(String.valueOf(ch)))) {
+			if (delimiter_operators.contains(String.valueOf(ch))) {
 				token.append(ch);
 				ch = next(in);
+			} else while (!Character.isWhitespace(ch) && !delimiter_operators.contains(String.valueOf(ch))) {
 				if (ch == 0xFFFF) return null;
+				token.append(ch);
+				ch = next(in);
 			}
 		}
 		return new Symbol(parent, token.toString());
@@ -88,7 +90,7 @@ public class Parser {
 		return parseSymbol(parent, in);
 	}
 	
-	private static final String operators = "+-/*=!%^&*:,.|[]{}()";
+	private static final String delimiter_operators = ";,[]{}()";
 	
 	public DList read(DList parent, File file) throws IOException {
 		DList fileDList = new DList(parent, BracketsType.ROUND, new ArrayList<>());
