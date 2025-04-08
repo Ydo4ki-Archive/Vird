@@ -16,12 +16,11 @@ public final class Vector implements Val {
 		int len = values.length;
 		
 		Type type = len == 0 ? SymbolType.instance : values[0].getType();
-		for (int i = 1; i < len; i++) {
+		for (int i = 1; i < len; ++i) {
 			if (!values[i].getType().equals(type))
-				throw new IllegalArgumentException("Vector element types mismatch (" + values[i].getType() + " found, " + type + " expected)");
+				throw new IllegalArgumentException("Vector element type mismatch (" + values[i].getType() + " found, " + type + " expected)");
 		}
 		this.type = new VectorType(len, type);
-		
 		this.values = values;
 	}
 	
