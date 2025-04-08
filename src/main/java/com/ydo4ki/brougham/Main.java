@@ -9,8 +9,8 @@ import java.io.*;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
-		File source = new File("brougham");
-		Group group = new Parser1().read(null, source);
+		File source = new File("brougham/source.bham");
+		Group group = (Group) ((Group) new Parser1().read(null, source).getElements().get(1)).getElements().get(0);
 		System.out.println(group);
 		Val program = new Parser2().resolve(group);
 		System.out.println(program);

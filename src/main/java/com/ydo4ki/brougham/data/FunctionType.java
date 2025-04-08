@@ -17,6 +17,14 @@ public final class FunctionType extends Type {
 		this.params = params;
 	}
 	
+	public Type getReturnType() {
+		return returnType;
+	}
+	
+	public Type[] getParams() {
+		return params;
+	}
+	
 	@Override
 	public String toString() {
 		return "function$"+returnType+"("+Arrays.stream(params).map(Type::toString).collect(Collectors.joining(" "))+")";

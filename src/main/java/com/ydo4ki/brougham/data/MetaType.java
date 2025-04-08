@@ -7,7 +7,7 @@ final class MetaType extends Type {
 	private static final ArrayList<MetaType> types = new ArrayList<>();
 	
 	static MetaType of(int depth) {
-		while (depth > types.size()) {
+		while (depth >= types.size()) {
 			types.add(new MetaType(types.size()));
 		}
 		return types.get(depth);
