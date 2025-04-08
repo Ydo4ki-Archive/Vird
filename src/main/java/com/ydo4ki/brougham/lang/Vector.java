@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
  * @author Sulphuris
  * @since 4/7/2025 11:31 PM
  */
-public final class Vector implements ReifiedVal {
+public final class Vector implements Val {
 	private final VectorType type;
 	private final Val[] values;
 	
@@ -48,10 +48,5 @@ public final class Vector implements ReifiedVal {
 	@Override
 	public int hashCode() {
 		return Objects.hash(type, Arrays.hashCode(values));
-	}
-	
-	@Override
-	public int size() {
-		return -1; // todo
 	}
 }

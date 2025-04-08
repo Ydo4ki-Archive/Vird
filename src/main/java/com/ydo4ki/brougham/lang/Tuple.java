@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
  * @since 4/7/2025 9:28 PM
  * @author Sulphuris
  */
-public final class Tuple implements ReifiedVal {
+public final class Tuple implements Val {
 	private TupleType type;
 	private final Val[] values;
 	
@@ -48,17 +48,5 @@ public final class Tuple implements ReifiedVal {
 	@Override
 	public int hashCode() {
 		return Objects.hash(type, Arrays.hashCode(values));
-	}
-	
-	@Override
-	public int size() {
-		int v = 0;
-		for (Val value : values) {
-			if (!(value instanceof ReifiedVal)) return -1;
-			int size = ((ReifiedVal)value).size();
-			if (size < 0) return -1;
-			v += size;
-		}
-		return v;
 	}
 }

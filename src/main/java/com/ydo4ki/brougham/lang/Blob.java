@@ -11,6 +11,14 @@ public final class Blob implements Val {
 		this.data = data;
 	}
 	
+	public static Blob ofInt(int value) {
+		return new Blob(new byte[]{
+				(byte) (value >>> 24),
+				(byte) (value >>> 16),
+				(byte) (value >>> 8),
+				(byte) value});
+	}
+	
 	@Override
 	public String toString() {
 		return "b" + bytesToHex(data);
