@@ -1,17 +1,29 @@
 package com.ydo4ki.brougham.data;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 final class MetaType extends Type {
+	private static final ArrayList<MetaType> types = new ArrayList<>();
+	
+	static MetaType of(int depth) {
+		while (depth > types.size()) {
+			types.add(new MetaType(types.size()));
+		}
+		return types.get(depth);
+	}
+	
+	
+	
 	private final int depth;
 	
-	MetaType(int depth) {
+	private MetaType(int depth) {
 		this.depth = depth;
 	}
 	
 	@Override
 	public Type getType() {
-		return new MetaType(depth + 1);
+		return MetaType.of(depth + 1);
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package com.ydo4ki.brougham.data;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -39,5 +40,17 @@ public final class Tuple extends Type implements Val {
 	@Override
 	public String toString() {
 		return "(" + Arrays.stream(values).map(Val::toString).collect(Collectors.joining(" ")) + ")";
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass()) return false;
+		Tuple tuple = (Tuple) o;
+		return Objects.deepEquals(values, tuple.values);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(type, Arrays.hashCode(values));
 	}
 }

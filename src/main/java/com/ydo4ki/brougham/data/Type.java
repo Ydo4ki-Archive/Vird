@@ -13,7 +13,7 @@ public abstract class Type implements Val {
 	
 	@Override
 	public Type getType() {
-		return new MetaType(0);
+		return MetaType.of(0);
 	}
 }
 
