@@ -1,4 +1,4 @@
-package com.ydo4ki.brougham.data;
+package com.ydo4ki.brougham.lang;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
  * @author Sulphuris
  * @since 4/7/2025 11:31 PM
  */
-public final class Vector implements Val {
+public final class Vector implements ReifiedVal {
 	private final VectorType type;
 	private final Val[] values;
 	
@@ -35,7 +35,7 @@ public final class Vector implements Val {
 	
 	@Override
 	public String toString() {
-		return "{" + Arrays.stream(values).map(Val::toString).collect(Collectors.joining(" ")) + "}";
+		return "{" + Arrays.stream(values).map(Val::toString).collect(Collectors.joining(", ")) + "}";
 	}
 	
 	@Override
@@ -48,5 +48,10 @@ public final class Vector implements Val {
 	@Override
 	public int hashCode() {
 		return Objects.hash(type, Arrays.hashCode(values));
+	}
+	
+	@Override
+	public int size() {
+		return -1; // todo
 	}
 }

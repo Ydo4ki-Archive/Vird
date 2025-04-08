@@ -1,4 +1,4 @@
-package com.ydo4ki.brougham.data;
+package com.ydo4ki.brougham.lang;
 
 /**
  * @author Sulphuris

@@ -1,4 +1,4 @@
-package com.ydo4ki.brougham.parser;
+package com.ydo4ki.brougham.lang;
 
 /**
  * @since 4/6/2025 8:43 PM
@@ -9,8 +9,8 @@ public enum BracketsType {
 	SQUARE('[',']'),
 	BRACES('{','}')
 	;
-	final char open;
-	final char close;
+	public final char open;
+	public final char close;
 	
 	BracketsType(char open, char close) {
 		this.open = open;

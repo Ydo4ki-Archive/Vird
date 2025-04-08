@@ -1,4 +1,4 @@
-package com.ydo4ki.brougham.data;
+package com.ydo4ki.brougham.lang;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
  * @since 4/7/2025 9:28 PM
  * @author Sulphuris
  */
-public final class Tuple extends Type implements Val {
+public final class Tuple extends Type implements ReifiedVal {
 	private Tuple type;
 	private final Val[] values;
 	
@@ -43,7 +43,7 @@ public final class Tuple extends Type implements Val {
 	
 	@Override
 	public String toString() {
-		return "(" + Arrays.stream(values).map(Val::toString).collect(Collectors.joining(" ")) + ")";
+		return "(" + Arrays.stream(values).map(Val::toString).collect(Collectors.joining(", ")) + ")";
 	}
 	
 	@Override
@@ -56,5 +56,17 @@ public final class Tuple extends Type implements Val {
 	@Override
 	public int hashCode() {
 		return Objects.hash(type, Arrays.hashCode(values));
+	}
+	
+	@Override
+	public int size() {
+		int v = 0;
+		for (Val value : values) {
+			if (!(value instanceof ReifiedVal)) return -1;
+			int size = ((ReifiedVal)value).size();
+			if (size < 0) return -1;
+			v += size;
+		}
+		return v;
 	}
 }

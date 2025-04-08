@@ -1,4 +1,9 @@
-package com.ydo4ki.brougham.parser;
+package com.ydo4ki.brougham;
+
+import com.ydo4ki.brougham.lang.BracketsType;
+import com.ydo4ki.brougham.lang.DList;
+import com.ydo4ki.brougham.lang.Symbol;
+import com.ydo4ki.brougham.lang.Val;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,7 +17,7 @@ import java.util.List;
  * @since 4/6/2025 8:40 PM
  * @author Sulphuris
  */
-public class Parser1 {
+public class Parser {
 	private char ch;
 	
 	private char next(BufferedReader in) throws IOException {
@@ -21,7 +26,7 @@ public class Parser1 {
 		return ch;
 	}
 	
-	private Token parseToken(Group parent, BufferedReader in) throws IOException {
+	private Symbol parseSymbol(DList parent, BufferedReader in) throws IOException {
 		StringBuilder token = new StringBuilder();
 		if (ch == '"') {
 			boolean skipNext = false;
@@ -47,23 +52,23 @@ public class Parser1 {
 				if (ch == 0xFFFF) return null;
 			}
 		}
-		return new Token(parent, token.toString());
+		return new Symbol(parent, token.toString());
 	}
 	
-	private Group parseGroup(Group parent, BracketsType bracketsType, BufferedReader in) throws IOException {
-		List<Element> elements = new ArrayList<>();
-		Group group =  new Group(parent, bracketsType, elements);
-		Element next;
+	private DList parseDList(DList parent, BracketsType bracketsType, BufferedReader in) throws IOException {
+		List<Val> elements = new ArrayList<>();
+		DList DList =  new DList(parent, bracketsType, elements);
+		Val next;
 		while (true) {
-			next = parseElement(group, bracketsType, in);
+			next = parseVal(DList, bracketsType, in);
 			if (next == null) break;
 			elements.add(next);
 		}
 		ch = next(in);
-		return group;
+		return DList;
 	}
 	
-	private Element parseElement(Group parent, BracketsType brackets, BufferedReader in) throws IOException {
+	private Val parseVal(DList parent, BracketsType brackets, BufferedReader in) throws IOException {
 		if (ch == 0xFFFF) return null;
 		while (Character.isWhitespace(ch)) {
 			ch = next(in);
@@ -75,40 +80,40 @@ public class Parser1 {
 		if (ch == '['|| ch == '(' || ch == '{') {
 			char ch = this.ch;
 			this.ch = next(in);
-			return parseGroup(parent, BracketsType.byOpen(ch), in);
+			return parseDList(parent, BracketsType.byOpen(ch), in);
 		}
 		if (ch == ']' || ch == ')' || ch == '}') {
 			throw new IllegalArgumentException("Unexpected bracket: " + ch);
 		}
-		return parseToken(parent, in);
+		return parseSymbol(parent, in);
 	}
 	
 	private static final String operators = "+-/*=!%^&*:,.|[]{}()";
 	
-	public Group read(Group parent, File file) throws IOException {
-		Group fileGroup = new Group(parent, BracketsType.ROUND, new ArrayList<>());
-		Token name = new Token(fileGroup, file.getName());
-		fileGroup.getElements().add(name);
+	public DList read(DList parent, File file) throws IOException {
+		DList fileDList = new DList(parent, BracketsType.ROUND, new ArrayList<>());
+		Symbol name = new Symbol(fileDList, file.getName());
+		fileDList.getElements().add(name);
 		File[] files = file.listFiles();
 		if (files == null) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(Files.newInputStream(file.toPath())));
-			Group group = read(fileGroup, in);
+			DList DList = read(fileDList, in);
 			in.close();
-			fileGroup.getElements().add(group);
+			fileDList.getElements().add(DList);
 		} else {
-			List<Element> elements = new ArrayList<>();
-			Group group = new Group(fileGroup, BracketsType.ROUND, elements);
+			List<Val> elements = new ArrayList<>();
+			DList group = new DList(fileDList, BracketsType.ROUND, elements);
 			for (File file1 : files) {
 				if (!file1.getName().endsWith(".bham")) continue;
 				elements.add(read(group, file1));
 			}
-			fileGroup.getElements().add(group);
+			fileDList.getElements().add(group);
 		}
-		return fileGroup;
+		return fileDList;
 	}
 	
-	public Group read(Group parent, BufferedReader in) throws IOException {
+	public DList read(DList parent, BufferedReader in) throws IOException {
 		ch = next(in);
-		return parseGroup(parent, BracketsType.ROUND, in);
+		return parseDList(parent, BracketsType.ROUND, in);
 	}
 }

@@ -1,4 +1,4 @@
-package com.ydo4ki.brougham.data;
+package com.ydo4ki.brougham.lang;
 
 import java.util.Objects;
 
@@ -10,6 +10,9 @@ public final class Symbol implements Val {
 	private final String value;
 	
 	public Symbol(String value) {
+		this.value = value;
+	}
+	public Symbol(DList parent, String value) {
 		this.value = value;
 	}
 	
