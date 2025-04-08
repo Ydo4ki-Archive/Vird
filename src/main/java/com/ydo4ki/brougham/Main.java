@@ -3,6 +3,8 @@ package com.ydo4ki.brougham;
 import com.ydo4ki.brougham.lang.*;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
@@ -12,14 +14,18 @@ public class Main {
 		System.out.println(program);
 		
 		
-		System.out.println(test_evaluate(program));
+		System.out.println(test_function_evaluate(program));
 	}
 	
-	static Val test_evaluate(Val program) {
-		if (program instanceof Tuple) {
-			Tuple t = (Tuple) program;
-			Val functionName = t.getValues()[0];
-		}
-		return program;
+	static Val test_function_evaluate(DList program) {
+		Val functionName = program.getElements().get(0);
+		if (!(functionName instanceof Symbol)) throw new IllegalArgumentException("This is not the book club! " + functionName);
+		FunctionSet functionSet = program.resolveFunction((Symbol)functionName);
+		if (functionSet == null) throw new IllegalArgumentException("Function not found: " + functionName);
+		List<Val> args = new ArrayList<>(program.getElements());
+		args.remove(0);
+		FunctionImpl func = functionSet.findImplForArgs(args);
+		if (func == null) throw new IllegalArgumentException("Function for specific arg types not found: " + args);
+		return func.invoke(args.toArray(new Val[0]));
 	}
 }

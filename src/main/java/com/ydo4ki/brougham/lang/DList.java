@@ -1,6 +1,8 @@
 package com.ydo4ki.brougham.lang;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -12,9 +14,24 @@ public final class DList implements Val {
 	private final BracketsType bracketsType;
 	private final List<Val> elements;
 	
+	private final Map<String, Val> definedSymbols = new HashMap<>();
+	
 	public DList(DList parent, BracketsType bracketsType, List<Val> elements) {
 		this.bracketsType = bracketsType;
 		this.elements = elements;
+	}
+	
+	public FunctionSet resolveFunction(Symbol symbol) {
+		Val dereferenced = definedSymbols.get(symbol.getValue());
+		if (dereferenced instanceof FunctionSet) return (FunctionSet)dereferenced;
+		return null;
+	}
+	
+	public void define(Symbol id, Val values) {
+		String name = id.getValue();
+		if (definedSymbols.containsKey(name))
+			throw new IllegalArgumentException(id + " is already defined");
+		definedSymbols.put(name, values);
 	}
 	
 	public List<Val> getElements() {
