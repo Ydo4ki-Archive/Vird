@@ -12,7 +12,7 @@ public final class FunctionType extends Type {
 	private final Type returnType;
 	private final Type[] params;
 	
-	FunctionType(Type returnType, Type[] params) {
+	public FunctionType(Type returnType, Type[] params) {
 		this.returnType = returnType;
 		this.params = params;
 	}

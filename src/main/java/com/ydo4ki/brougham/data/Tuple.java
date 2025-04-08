@@ -16,6 +16,10 @@ public final class Tuple extends Type implements Val {
 		this.values = values;
 	}
 	
+	public Val[] getValues() {
+		return values;
+	}
+	
 	@Override
 	public Type getType() {
 		if (type == null) {
