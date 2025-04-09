@@ -9,47 +9,55 @@ import java.util.List;
 
 public class Main {
 	public static void main(String[] __args) throws IOException {
-		File source = new File("brougham/source.bham");
-		DList program = (DList) ((DList) new Parser().read(null, source).getElements().get(1)).getElements().get(0);
+		DList program = (DList) new Parser().read(null, "(+ (5 4))");
 		System.out.println(program);
 		
-		program.defineFunction(new Symbol(""), new FunctionImpl(
-				new FunctionType(
-						new TypeRef(new TupleType(
-								SymbolType.instance,
-								SymbolType.instance
-						)),
-						new TypeRef[]{
-								new TypeRef(DListType.of(BracketsType.ROUND))
-						}
-				),
-				(caller, args) -> {
-					DList list = (DList) args[0];
-					Val[] values = new Val[list.getElements().size()];
-					int i = 0;
-					for (Val element : list.getElements()) {
-						values[i++] = element;
-					}
-					return new Tuple(values);
-				}
-		), new FunctionImpl(
-				new FunctionType(
-						new TypeRef(new TupleType(
-								BlobType.of(4),
-								BlobType.of(4)
-						)),
-						new TypeRef[]{
+		program.defineFunction(new Symbol(""),
+				new FunctionImpl(
+						new FunctionType(
 								new TypeRef(new TupleType(
 										SymbolType.instance,
 										SymbolType.instance
-								))
+								)),
+								new TypeRef[]{
+										new TypeRef(DListType.of(BracketsType.ROUND))
+								}
+						),
+						(caller, args) -> {
+							DList list = (DList) args[0];
+							Val[] values = new Val[list.getElements().size()];
+							int i = 0;
+							for (Val element : list.getElements()) {
+								values[i++] = element;
+							}
+							return new Tuple(values);
 						}
 				),
-				(caller, args) -> new Tuple(
-						Arrays.stream(((Tuple)args[0]).getValues())
-								.map(e -> Blob.ofInt(Integer.parseInt(e.toString())))
-								.toArray(Val[]::new)
-				)
+				new FunctionImpl(
+						new FunctionType(
+								new TypeRef(new TupleType(
+										BlobType.of(4),
+										BlobType.of(4)
+								)),
+								new TypeRef[]{
+										new TypeRef(new TupleType(
+												SymbolType.instance,
+												SymbolType.instance
+										))
+								}
+						),
+						(caller, args) -> new Tuple(
+								Arrays.stream(((Tuple) args[0]).getValues())
+										.map(e -> Blob.ofInt(Integer.parseInt(e.toString())))
+										.toArray(Val[]::new)
+						)
+				),
+				new FunctionImpl(
+						new FunctionType(
+								new TypeRef(BlobType.of(4)),
+								new TypeRef[]{new TypeRef(SymbolType.instance)}
+						),
+						(caller, args) -> Blob.ofInt(Integer.parseInt(args[0].toString()))
 				)
 		);
 		

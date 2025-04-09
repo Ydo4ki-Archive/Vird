@@ -5,10 +5,7 @@ import com.ydo4ki.brougham.lang.DList;
 import com.ydo4ki.brougham.lang.Symbol;
 import com.ydo4ki.brougham.lang.Val;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,14 +89,14 @@ public class Parser {
 	
 	private static final String delimiter_operators = ";,[]{}()";
 	
-	public DList read(DList parent, File file) throws IOException {
+	public Val read(DList parent, File file) throws IOException {
 		DList fileDList = new DList(parent, BracketsType.ROUND, new ArrayList<>());
 		Symbol name = new Symbol(fileDList, file.getName());
 		fileDList.getElements().add(name);
 		File[] files = file.listFiles();
 		if (files == null) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(Files.newInputStream(file.toPath())));
-			DList DList = read(fileDList, in);
+			Val DList = read(fileDList, in);
 			in.close();
 			fileDList.getElements().add(DList);
 		} else {
@@ -114,8 +111,17 @@ public class Parser {
 		return fileDList;
 	}
 	
-	public DList read(DList parent, BufferedReader in) throws IOException {
+	public Val read(String program) throws IOException {
+		return read(null, program);
+	}
+	public Val read(DList parent, String program) throws IOException {
+		BufferedReader in = new BufferedReader(new StringReader(program));
+		Val ret = read(parent, in);
+		in.close();
+		return ret;
+	}
+	public Val read(DList parent, BufferedReader in) throws IOException {
 		ch = next(in);
-		return parseDList(parent, BracketsType.ROUND, in);
+		return parseVal(parent, BracketsType.ROUND, in);
 	}
 }
