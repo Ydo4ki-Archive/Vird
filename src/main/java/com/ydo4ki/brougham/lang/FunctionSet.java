@@ -10,8 +10,10 @@ import java.util.stream.Collectors;
 public final class FunctionSet implements Val {
 	private final Set<FunctionImpl> specificFunctions = new HashSet<>();
 	
-	public FunctionSet(FunctionImpl impl) {
-		addImpl(impl);
+	public FunctionSet(FunctionImpl... impl) {
+		for (FunctionImpl function : impl) {
+			addImpl(function);
+		}
 	}
 	
 	boolean cast = false;

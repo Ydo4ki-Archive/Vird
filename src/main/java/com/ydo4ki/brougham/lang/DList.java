@@ -62,13 +62,15 @@ public final class DList implements Val {
 //		return parent == null ? null : parent.resolveFunctionExact(symbol, type);
 //	}
 	
-	public void defineFunction(Symbol id, FunctionImpl function) {
+	public void defineFunction(Symbol id, FunctionImpl... function) {
 		FunctionSet set = resolveFunction(id);
 		if (set == null) {
 			set = new FunctionSet(function);
 			define(id, set);
 		} else {
-			set.addImpl(function);
+			for (FunctionImpl f : function) {
+				set.addImpl(f);
+			}
 		}
 	}
 	public void define(Symbol id, Val value) {

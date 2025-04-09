@@ -4,7 +4,7 @@ package com.ydo4ki.brougham.lang;
  * @author Sulphuris
  * @since 4/9/2025 9:38 AM
  */
-public class FunctionCall {
+public final class FunctionCall {
 	private final FunctionImpl function;
 	private final FunctionCall cast_result;
 	private final FunctionCall[] implicit_cast_calls;

@@ -16,8 +16,8 @@ public class Main {
 		program.defineFunction(new Symbol(""), new FunctionImpl(
 				new FunctionType(
 						new TypeRef(new TupleType(
-								BlobType.of(4),
-								BlobType.of(4)
+								SymbolType.instance,
+								SymbolType.instance
 						)),
 						new TypeRef[]{
 								new TypeRef(DListType.of(BracketsType.ROUND))
@@ -28,11 +28,30 @@ public class Main {
 					Val[] values = new Val[list.getElements().size()];
 					int i = 0;
 					for (Val element : list.getElements()) {
-						values[i++] = Blob.ofInt(Integer.parseInt(element.toString()));
+						values[i++] = element;
 					}
 					return new Tuple(values);
 				}
-		));
+		), new FunctionImpl(
+				new FunctionType(
+						new TypeRef(new TupleType(
+								BlobType.of(4),
+								BlobType.of(4)
+						)),
+						new TypeRef[]{
+								new TypeRef(new TupleType(
+										SymbolType.instance,
+										SymbolType.instance
+								))
+						}
+				),
+				(caller, args) -> new Tuple(
+						Arrays.stream(((Tuple)args[0]).getValues())
+								.map(e -> Blob.ofInt(Integer.parseInt(e.toString())))
+								.toArray(Val[]::new)
+				)
+				)
+		);
 		
 		program.define(new Symbol("+"),
 				new FunctionSet(
