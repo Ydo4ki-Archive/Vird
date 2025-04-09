@@ -35,7 +35,7 @@ public final class Tuple implements Val {
 	
 	@Override
 	public String toString() {
-		return "(" + Arrays.stream(values).map(Val::toString).collect(Collectors.joining(", ")) + ")";
+		return "(" + Arrays.stream(values).map(Val::toString).collect(Collectors.joining(" ")) + ")";
 	}
 	
 	@Override
