@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Main {
 	
@@ -50,6 +51,7 @@ public class Main {
 		
 		program.defineFunction(new Symbol(""),
 				DList2ToTuple,
+				DList2ToFunctionCall(null),
 				new FunctionImpl(
 						new FunctionType(
 								new TupleType(
@@ -80,9 +82,16 @@ public class Main {
 
 //		FunctionImpl getMapFunction = new FunctionImpl(
 //				new FunctionType(
-//
-//				)
-//		)
+//						null,
+//						new TypeRef[]{MetaType.of(0).ref(), MetaType.of(0).ref(), BlobType.of(4).ref()}
+//				),
+//				(caller, args) -> {
+//					Type from = ((Type)args[0]);
+//					Type to = ((Type)args[1]);
+//					Blob amount = ((Blob)args[2]);
+//					return mapFunction()
+//				}
+//		);
 		
 		program.define(new Symbol("+"),
 				new FunctionSet(
@@ -106,15 +115,19 @@ public class Main {
 	}
 	
 	
-	static FunctionImpl mapFunction(Type[] from, Type[] to, FunctionImpl mapper) {
-		return new FunctionImpl(
-				new FunctionType(
-						new TupleType(to).ref(),
-						new TypeRef[]{new TupleType(from).ref()}
-				),
-				(caller, args) -> new Tuple(Arrays.stream(((Tuple)args[0]).getValues()).map(v -> mapper.invoke(caller, new Val[]{v})).toArray(Val[]::new))
-		);
-	}
+//	static FunctionImpl mapFunction(Type from, Type to, int size, FunctionImpl mapper) {
+//		Type[] fromTuple = new Type[size];
+//		Arrays.fill(fromTuple, from);
+//		Type[] toTuple = new Type[size];
+//		Arrays.fill(toTuple, to);
+//		return new FunctionImpl(
+//				new FunctionType(
+//						new TupleType(toTuple).ref(),
+//						new TypeRef[]{new TupleType(fromTuple).ref()}
+//				),
+//				(caller, args) -> new Tuple(Arrays.stream(((Tuple)args[0]).getValues()).map(v -> mapper.invoke(caller, new Val[]{v})).toArray(Val[]::new))
+//		);
+//	}
 	
 	static Val test_function_evaluate(TypeRef expectedType, DList program) {
 		Val functionName = program.getElements().get(0);
@@ -129,7 +142,7 @@ public class Main {
 		}
 		FunctionCall func = program.resolveFunctionImpl((Symbol) functionName, expectedType, args);
 		if (func == null)
-			throw new IllegalArgumentException("Function not found: " + functionName + " " + Arrays.toString(args));
+			throw new IllegalArgumentException("Function not found: " + functionName + " " + Arrays.stream(args).map(Val::getTypeRef).collect(Collectors.toList()));
 		return func.invoke(program, args);
 	}
 }

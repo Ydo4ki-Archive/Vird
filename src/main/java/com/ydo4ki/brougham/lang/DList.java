@@ -40,15 +40,16 @@ public final class DList implements Val {
 		return resolveFunctionImpl(name, returnType, Arrays.stream(args).map(Val::getTypeRef).toArray(TypeRef[]::new));
 	}
 	public FunctionCall resolveFunctionImpl(Symbol name, TypeRef returnType, TypeRef[] argTypes) {
+//		System.out.println("## Resolving: " + name + Arrays.toString(argTypes) + " -> " + returnType);
 		DList caller = this;
 		while (true) {
-			FunctionSet functionSet = resolveFunctionNoParents(name);
+			FunctionSet functionSet = caller.resolveFunctionNoParents(name);
 			if (functionSet != null) {
 				FunctionCall call = functionSet.findImplForArgs(caller, returnType, argTypes);
 				if (call != null) return call;
-				caller = this.parent;
-				if (caller == null) return null;
 			}
+			caller = caller.parent;
+			if (caller == null) return null;
 		}
 	}
 

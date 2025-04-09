@@ -37,6 +37,11 @@ public final class FunctionImpl implements Val {
 	}
 	
 	@Override
+	public String toString() {
+		return "f!"+type;
+	}
+	
+	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass()) return false;
 		FunctionImpl function = (FunctionImpl) o;

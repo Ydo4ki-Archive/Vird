@@ -53,7 +53,7 @@ public final class FunctionSet implements Val {
 			FunctionCall return_type_cast = null;
 			TypeRef returnType = function.getType().getReturnType();
 			if (expectedType != null) {
-				if (!returnType.matchesType(expectedType)) {
+				if (returnType != null && !returnType.matchesType(expectedType)) {
 					if (amIaCastFunction()) continue search;
 					exactMatch = false;
 					FunctionCall cast = caller.resolveFunctionImpl(new Symbol(""), expectedType, new TypeRef[]{returnType});
@@ -70,7 +70,14 @@ public final class FunctionSet implements Val {
 				if (params[i].matchesType(argsTypes[i])) continue; // cast = null (not needed)
 				else {
 					exactMatch = false;
-					FunctionCall cast = caller.resolveFunctionImpl(new Symbol(""), params[i], new TypeRef[]{argsTypes[i]});
+					FunctionCall cast;
+					TypeRef neededReturnType = params[i];
+					TypeRef inputWeHave = argsTypes[i];
+					if (amIaCastFunction() && Objects.equals(neededReturnType, expectedType)) {
+						cast = null;
+					}else{
+						cast = caller.resolveFunctionImpl(new Symbol(""), neededReturnType, new TypeRef[]{inputWeHave});
+					}
 					if (cast == null) continue search;
 					casts[i] = cast;
 				}
@@ -79,6 +86,7 @@ public final class FunctionSet implements Val {
 			if (exactMatch) return call;
 			else candidates.add(call);
 		}
+//		System.out.println("# candidates (" + Arrays.toString(argsTypes) + " -> " + expectedType + "): " + candidates);
 		int minCasts = Integer.MAX_VALUE;
 		for (FunctionCall candidate : candidates) {
 			if (candidate.castsCount() < minCasts)

@@ -1,5 +1,7 @@
 package com.ydo4ki.brougham.lang;
 
+import java.util.Arrays;
+
 /**
  * @author Sulphuris
  * @since 4/9/2025 9:38 AM
@@ -43,5 +45,14 @@ public final class FunctionCall {
 		Val result = function.invoke(caller, args);
 		if (cast_result != null) result = cast_result.invoke(caller, new Val[]{result});
 		return result;
+	}
+	
+	@Override
+	public String toString() {
+		return "FunctionCall{" +
+				"function=" + function +
+				", cast_result=" + cast_result +
+				", implicit_cast_calls=" + Arrays.toString(implicit_cast_calls) +
+				'}';
 	}
 }
