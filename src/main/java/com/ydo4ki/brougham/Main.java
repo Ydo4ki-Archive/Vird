@@ -8,42 +8,59 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
+	
+	static final FunctionImpl DList2ToTuple = new FunctionImpl(
+			new FunctionType(
+					new TupleType(
+							SymbolType.instance,
+							SymbolType.instance
+					).ref(),
+					new TypeRef[]{
+							DListType.of(BracketsType.ROUND).ref()
+					}
+			),
+			(caller, args) -> {
+				DList list = (DList) args[0];
+				Val[] values = new Val[list.getElements().size()];
+				int i = 0;
+				for (Val element : list.getElements()) {
+					values[i++] = element;
+				}
+				return new Tuple(values);
+			}
+	);
+	static FunctionImpl DList2ToFunctionCall(TypeRef returnType) {
+		return new FunctionImpl(
+				new FunctionType(
+						returnType,
+						new TypeRef[]{
+								DListType.of(BracketsType.ROUND).ref()
+						}
+				),
+				(caller, args) -> {
+					DList list = (DList) args[0];
+					return test_function_evaluate(returnType, list);
+				}
+		);
+	}
+	
 	public static void main(String[] __args) throws IOException {
-		DList program = (DList) new Parser().read(null, "(+ 5 4)");
+		DList program = (DList) new Parser().read(null, "(+ 5 (+ 2 2))");
 		System.out.println(program);
 		
 		program.defineFunction(new Symbol(""),
+				DList2ToTuple,
 				new FunctionImpl(
 						new FunctionType(
-								new TypeRef(new TupleType(
-										SymbolType.instance,
-										SymbolType.instance
-								)),
-								new TypeRef[]{
-										new TypeRef(DListType.of(BracketsType.ROUND))
-								}
-						),
-						(caller, args) -> {
-							DList list = (DList) args[0];
-							Val[] values = new Val[list.getElements().size()];
-							int i = 0;
-							for (Val element : list.getElements()) {
-								values[i++] = element;
-							}
-							return new Tuple(values);
-						}
-				),
-				new FunctionImpl(
-						new FunctionType(
-								new TypeRef(new TupleType(
+								new TupleType(
 										BlobType.of(4),
 										BlobType.of(4)
-								)),
+								).ref(),
 								new TypeRef[]{
-										new TypeRef(new TupleType(
+										new TupleType(
 												SymbolType.instance,
 												SymbolType.instance
-										))
+										).ref()
 								}
 						),
 						(caller, args) -> new Tuple(
@@ -60,15 +77,21 @@ public class Main {
 						(caller, args) -> Blob.ofInt(Integer.parseInt(args[0].toString()))
 				)
 		);
+
+//		FunctionImpl getMapFunction = new FunctionImpl(
+//				new FunctionType(
+//
+//				)
+//		)
 		
 		program.define(new Symbol("+"),
 				new FunctionSet(
 						new FunctionImpl(
 								new FunctionType(
-										new TypeRef(BlobType.of(4)),
+										BlobType.of(4).ref(),
 										new TypeRef[]{
-												new TypeRef(BlobType.of(4)),
-												new TypeRef(BlobType.of(4))
+												BlobType.of(4).ref(),
+												BlobType.of(4).ref()
 										}
 								),
 								(caller, allArgs) -> {
@@ -80,6 +103,17 @@ public class Main {
 				)
 		);
 		System.out.println(test_function_evaluate(null, program));
+	}
+	
+	
+	static FunctionImpl mapFunction(Type[] from, Type[] to, FunctionImpl mapper) {
+		return new FunctionImpl(
+				new FunctionType(
+						new TupleType(to).ref(),
+						new TypeRef[]{new TupleType(from).ref()}
+				),
+				(caller, args) -> new Tuple(Arrays.stream(((Tuple)args[0]).getValues()).map(v -> mapper.invoke(caller, new Val[]{v})).toArray(Val[]::new))
+		);
 	}
 	
 	static Val test_function_evaluate(TypeRef expectedType, DList program) {

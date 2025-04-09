@@ -27,6 +27,9 @@ public final class TypeRef {
 	public boolean matches(Val val) {
 		return val.getType().equals(type) && constraints.test(val);
 	}
+	public boolean matchesType(TypeRef type) {
+		return this.equals(type);
+	}
 	
 	@Override
 	public String toString() {

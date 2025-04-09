@@ -10,5 +10,9 @@ public abstract class Type implements Val {
 	public Type getType() {
 		return MetaType.of(0);
 	}
+	
+	public final TypeRef ref() {
+		return new TypeRef(this);
+	}
 }
 

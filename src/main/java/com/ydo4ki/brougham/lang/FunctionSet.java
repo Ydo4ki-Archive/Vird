@@ -53,7 +53,7 @@ public final class FunctionSet implements Val {
 			FunctionCall return_type_cast = null;
 			TypeRef returnType = function.getType().getReturnType();
 			if (expectedType != null) {
-				if (!returnType.equals(expectedType)) {
+				if (!returnType.matchesType(expectedType)) {
 					if (amIaCastFunction()) continue search;
 					exactMatch = false;
 					FunctionCall cast = caller.resolveFunctionImpl(new Symbol(""), expectedType, new TypeRef[]{returnType});
@@ -67,7 +67,7 @@ public final class FunctionSet implements Val {
 			TypeRef[] params = function.getType().getParams();
 			FunctionCall[] casts = new FunctionCall[params.length];
 			for (int i = 0; i < params.length; i++) {
-				if (params[i].equals(argsTypes[i])) continue; // cast = null (not needed)
+				if (params[i].matchesType(argsTypes[i])) continue; // cast = null (not needed)
 				else {
 					exactMatch = false;
 					FunctionCall cast = caller.resolveFunctionImpl(new Symbol(""), params[i], new TypeRef[]{argsTypes[i]});
