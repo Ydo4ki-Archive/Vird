@@ -14,6 +14,12 @@ public final class FunctionSet implements Val {
 		addImpl(impl);
 	}
 	
+	boolean cast = false;
+	
+	public boolean amIaCastFunction() {
+		return cast;
+	}
+	
 	@Override
 	public Type getType() {
 		return FunctionSetType.instance;
@@ -32,21 +38,23 @@ public final class FunctionSet implements Val {
 		return null;
 	}
 	
-	public FunctionCall findImplForArgs(DList caller, Type expectedType, Val[] args) {
-		return findImplForArgs(caller, expectedType, Arrays.stream(args).map(Val::getType).toArray(Type[]::new));
+	public FunctionCall findImplForArgs(DList caller, TypeRef expectedType, Val[] args) {
+		return findImplForArgs(caller, expectedType, Arrays.stream(args).map(Val::getTypeRef).toArray(TypeRef[]::new));
 	}
-	public FunctionCall findImplForArgs(DList caller, Type expectedType, Type[] argsTypes) {
+	public FunctionCall findImplForArgs(DList caller, TypeRef expectedType, TypeRef[] argsTypes) {
+		System.out.println("# Finding function: " + Arrays.toString(argsTypes) + " -> " + expectedType);
 		List<FunctionCall> candidates = new ArrayList<>();
 		
 		search:
 		for (FunctionImpl function : specificFunctions) {
 			boolean exactMatch = true;
 			FunctionCall return_type_cast = null;
-			Type returnType = function.getType().getReturnType();
+			TypeRef returnType = function.getType().getReturnType();
 			if (expectedType != null) {
 				if (!returnType.equals(expectedType)) {
+					if (amIaCastFunction()) continue search;
 					exactMatch = false;
-					FunctionCall cast = caller.resolveFunctionImpl(new Symbol(""), expectedType, new Type[]{returnType});
+					FunctionCall cast = caller.resolveFunctionImpl(new Symbol(""), expectedType, new TypeRef[]{returnType});
 					if (cast == null) continue search;
 					return_type_cast = cast;
 				}
@@ -54,13 +62,13 @@ public final class FunctionSet implements Val {
 				exactMatch = false;
 			}
 			
-			Type[] params = function.getType().getParams();
+			TypeRef[] params = function.getType().getParams();
 			FunctionCall[] casts = new FunctionCall[params.length];
 			for (int i = 0; i < params.length; i++) {
 				if (params[i].equals(argsTypes[i])) continue; // cast = null (not needed)
 				else {
 					exactMatch = false;
-					FunctionCall cast = caller.resolveFunctionImpl(new Symbol(""), params[i], new Type[]{argsTypes[i]});
+					FunctionCall cast = caller.resolveFunctionImpl(new Symbol(""), params[i], new TypeRef[]{argsTypes[i]});
 					if (cast == null) continue search;
 					casts[i] = cast;
 				}
@@ -83,7 +91,12 @@ public final class FunctionSet implements Val {
 			return exact.get(0);
 		}
 		if (exact.isEmpty()) {
-			if (candidates.size() == 1) return candidates.get(0);
+			if (candidates.size() == 1) {
+				return candidates.get(0);
+			}
+			if (candidates.isEmpty()) {
+				return null;
+			}
 			throw new IllegalArgumentException("Ambiguous call: " + candidates);
 		}
 		throw new IllegalArgumentException("Ambiguous call: " + exact);

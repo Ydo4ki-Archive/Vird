@@ -8,4 +8,9 @@ import java.util.function.Function;
  */
 public interface Val {
 	Type getType();
+	
+	// todo
+	default TypeRef getTypeRef() {
+		return new TypeRef(getType());
+	}
 }

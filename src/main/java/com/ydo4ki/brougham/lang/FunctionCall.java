@@ -29,7 +29,7 @@ public class FunctionCall {
 		return casts;
 	}
 	
-	public Type getReturnType() {
+	public TypeRef getReturnType() {
 		if (needsResultCast()) return cast_result.getReturnType();
 		return function.getType().getReturnType();
 	}

@@ -36,10 +36,10 @@ public final class DList implements Val {
 		if (dereferenced instanceof FunctionSet) return (FunctionSet)dereferenced;
 		return null;
 	}
-	public FunctionCall resolveFunctionImpl(Symbol name, Type returnType, Val[] args) {
-		return resolveFunctionImpl(name, returnType, Arrays.stream(args).map(Val::getType).toArray(Type[]::new));
+	public FunctionCall resolveFunctionImpl(Symbol name, TypeRef returnType, Val[] args) {
+		return resolveFunctionImpl(name, returnType, Arrays.stream(args).map(Val::getTypeRef).toArray(TypeRef[]::new));
 	}
-	public FunctionCall resolveFunctionImpl(Symbol name, Type returnType, Type[] argTypes) {
+	public FunctionCall resolveFunctionImpl(Symbol name, TypeRef returnType, TypeRef[] argTypes) {
 		DList caller = this;
 		while (true) {
 			FunctionSet functionSet = resolveFunctionNoParents(name);
@@ -71,11 +71,12 @@ public final class DList implements Val {
 			set.addImpl(function);
 		}
 	}
-	public void define(Symbol id, Val values) {
+	public void define(Symbol id, Val value) {
 		String name = id.getValue();
 		if (definedSymbols.containsKey(name))
 			throw new IllegalArgumentException(id + " is already defined");
-		definedSymbols.put(name, values);
+		if (name.isEmpty() && value instanceof FunctionSet) ((FunctionSet)value).cast = true;
+		definedSymbols.put(name, value);
 	}
 	
 	public List<Val> getElements() {

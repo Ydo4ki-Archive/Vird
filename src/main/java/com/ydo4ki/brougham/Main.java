@@ -5,7 +5,6 @@ import com.ydo4ki.brougham.lang.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class Main {
@@ -16,9 +15,12 @@ public class Main {
 		
 		program.defineFunction(new Symbol(""), new FunctionImpl(
 				new FunctionType(
-						new TupleType(SymbolType.instance),
-						new Type[]{
-								DListType.of(BracketsType.ROUND)
+						new TypeRef(new TupleType(
+								BlobType.of(4),
+								BlobType.of(4)
+						)),
+						new TypeRef[]{
+								new TypeRef(DListType.of(BracketsType.ROUND))
 						}
 				),
 				(caller, args) -> {
@@ -26,7 +28,7 @@ public class Main {
 					Val[] values = new Val[list.getElements().size()];
 					int i = 0;
 					for (Val element : list.getElements()) {
-						values[i++] = element;
+						values[i++] = Blob.ofInt(Integer.parseInt(element.toString()));
 					}
 					return new Tuple(values);
 				}
@@ -36,12 +38,12 @@ public class Main {
 				new FunctionSet(
 						new FunctionImpl(
 								new FunctionType(
-										BlobType.of(4),
-										new Type[]{
-												new TupleType(
+										new TypeRef(BlobType.of(4)),
+										new TypeRef[]{
+												new TypeRef(new TupleType(
 														BlobType.of(4),
 														BlobType.of(4)
-												)
+												))
 										}
 								),
 								(caller, allArgs) -> {
@@ -56,7 +58,7 @@ public class Main {
 		System.out.println(test_function_evaluate(null, program));
 	}
 	
-	static Val test_function_evaluate(Type expectedType, DList program) {
+	static Val test_function_evaluate(TypeRef expectedType, DList program) {
 		Val functionName = program.getElements().get(0);
 		if (!(functionName instanceof Symbol))
 			throw new IllegalArgumentException("This is not the book club! " + functionName);
@@ -67,7 +69,7 @@ public class Main {
 			args0.remove(0);
 			args = args0.toArray(new Val[0]);
 		}
-		FunctionCall func = program.resolveFunctionImpl((Symbol)functionName, expectedType, args);
+		FunctionCall func = program.resolveFunctionImpl((Symbol) functionName, expectedType, args);
 		if (func == null)
 			throw new IllegalArgumentException("Function not found: " + functionName + " " + Arrays.toString(args));
 		return func.invoke(program, args);
