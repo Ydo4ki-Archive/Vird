@@ -2,6 +2,7 @@ package com.ydo4ki.brougham.lang;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -11,9 +12,9 @@ import java.util.function.Function;
 public final class FunctionImpl implements Val {
 	private final FunctionType type;
 //	private final Symbol[] paramNames;
-	private final Function<Val[], Val> transformer;
+	private final BiFunction<DList, Val[], Val> transformer;
 	
-	public FunctionImpl(FunctionType type, Function<Val[], Val> transformer) {
+	public FunctionImpl(FunctionType type, BiFunction<DList, Val[], Val> transformer) {
 		this.type = type;
 		this.transformer = transformer;
 //		if (paramNames.length != type.getParams().length)
@@ -31,8 +32,8 @@ public final class FunctionImpl implements Val {
 		return type;
 	}
 	
-	public Val invoke(Val[] args) {
-		return transformer.apply(args);
+	public Val invoke(DList caller, Val[] args) {
+		return transformer.apply(caller, args);
 	}
 	
 	@Override

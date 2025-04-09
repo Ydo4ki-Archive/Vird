@@ -1,9 +1,6 @@
 package com.ydo4ki.brougham.lang;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +31,46 @@ public final class DList implements Val {
 		return parent == null ? null : parent.resolveFunction(symbol);
 	}
 	
+	private FunctionSet resolveFunctionNoParents(Symbol symbol) {
+		Val dereferenced = definedSymbols.get(symbol.getValue());
+		if (dereferenced instanceof FunctionSet) return (FunctionSet)dereferenced;
+		return null;
+	}
+	public FunctionCall resolveFunctionImpl(Symbol name, Type returnType, Val[] args) {
+		return resolveFunctionImpl(name, returnType, Arrays.stream(args).map(Val::getType).toArray(Type[]::new));
+	}
+	public FunctionCall resolveFunctionImpl(Symbol name, Type returnType, Type[] argTypes) {
+		DList caller = this;
+		while (true) {
+			FunctionSet functionSet = resolveFunctionNoParents(name);
+			if (functionSet != null) {
+				FunctionCall call = functionSet.findImplForArgs(caller, returnType, argTypes);
+				if (call != null) return call;
+				caller = this.parent;
+				if (caller == null) return null;
+			}
+		}
+	}
+
+//	public FunctionImpl resolveFunctionExact(Symbol symbol, FunctionType type) {
+//		Val dereferenced = definedSymbols.get(symbol.getValue());
+//		if (dereferenced instanceof FunctionSet) {
+//			FunctionSet set = (FunctionSet) dereferenced;
+//			FunctionImpl exact = set.findImplByType(type);
+//			if (exact != null) return exact;
+//		}
+//		return parent == null ? null : parent.resolveFunctionExact(symbol, type);
+//	}
+	
+	public void defineFunction(Symbol id, FunctionImpl function) {
+		FunctionSet set = resolveFunction(id);
+		if (set == null) {
+			set = new FunctionSet(function);
+			define(id, set);
+		} else {
+			set.addImpl(function);
+		}
+	}
 	public void define(Symbol id, Val values) {
 		String name = id.getValue();
 		if (definedSymbols.containsKey(name))
@@ -51,7 +88,7 @@ public final class DList implements Val {
 	
 	@Override
 	public Type getType() {
-		return DListType.instance;
+		return DListType.of(bracketsType);
 	}
 	
 	@Override
