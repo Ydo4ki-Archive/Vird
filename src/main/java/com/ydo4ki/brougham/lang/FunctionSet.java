@@ -7,7 +7,7 @@ import java.util.*;
  * @since 4/8/2025 1:13 PM
  */
 public final class FunctionSet implements Val {
-	private static final Set<FunctionImpl> specificFunctions = new HashSet<>();
+	private final Set<FunctionImpl> specificFunctions = new HashSet<>();
 	
 	public FunctionSet(FunctionImpl impl) {
 		addImpl(impl);
