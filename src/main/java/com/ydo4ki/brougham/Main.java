@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Main {
 	public static void main(String[] __args) throws IOException {
-		DList program = (DList) new Parser().read(null, "(+ (5 4))");
+		DList program = (DList) new Parser().read(null, "(+ 5 4)");
 		System.out.println(program);
 		
 		program.defineFunction(new Symbol(""),
@@ -67,16 +67,13 @@ public class Main {
 								new FunctionType(
 										new TypeRef(BlobType.of(4)),
 										new TypeRef[]{
-												new TypeRef(new TupleType(
-														BlobType.of(4),
-														BlobType.of(4)
-												))
+												new TypeRef(BlobType.of(4)),
+												new TypeRef(BlobType.of(4))
 										}
 								),
 								(caller, allArgs) -> {
-									Tuple args = (Tuple) allArgs[0];
-									Blob a = (Blob) args.getValues()[0];
-									Blob b = (Blob) args.getValues()[1];
+									Blob a = (Blob) allArgs[0];
+									Blob b = (Blob) allArgs[1];
 									return Blob.ofInt(a.toInt() + b.toInt());
 								}
 						)
