@@ -99,14 +99,15 @@ public class Main {
 								new FunctionType(
 										BlobType.of(4).ref(),
 										new TypeRef[]{
-												BlobType.of(4).ref(),
-												BlobType.of(4).ref()
+												BlobType.of(4).vararg(),
 										}
 								),
 								(caller, allArgs) -> {
-									Blob a = (Blob) allArgs[0];
-									Blob b = (Blob) allArgs[1];
-									return Blob.ofInt(a.toInt() + b.toInt());
+									int sum = 0;
+									for (Val arg : allArgs) {
+										sum += ((Blob) arg).toInt();
+									}
+									return Blob.ofInt(sum);
 								}
 						)
 				)
