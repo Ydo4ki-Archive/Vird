@@ -46,6 +46,7 @@ public final class FunctionSet implements Val {
 	public FunctionCall findImplForArgs(DList caller, TypeRef expectedType, TypeRef[] argsTypes) {
 //		System.out.println("# Finding function: " + Arrays.toString(argsTypes) + " -> " + expectedType);
 		List<FunctionCall> candidates = new ArrayList<>();
+		List<FunctionImpl> potentialTemplates = new ArrayList<>();
 		
 		search:
 		for (FunctionImpl function : specificFunctions) {
@@ -56,7 +57,12 @@ public final class FunctionSet implements Val {
 			}
 			
 			FunctionCall call = FunctionCall.makeCall(caller, function, expectedType, argsTypes, amIaCastFunction());
-			if (call == null) continue search;
+			if (call == null) {
+				if (!amIaCastFunction() && (function.getRawType().getReturnType() == null
+						|| function.getRawType().getReturnType().getType() instanceof FunctionType))
+					potentialTemplates.add(function);
+				continue search;
+			}
 			if (call.isExactMatch()) return call;
 			else candidates.add(call);
 		}
@@ -79,6 +85,17 @@ public final class FunctionSet implements Val {
 				return candidates.get(0);
 			}
 			if (candidates.isEmpty()) {
+				TypeRef[] typesOfArgsTypes = Arrays.stream(argsTypes).map(t -> t.getType().getType()).toArray(TypeRef[]::new);
+				Val[] rawTypes = Arrays.stream(argsTypes).map(TypeRef::getType).toArray(Val[]::new);
+				for (FunctionImpl template : potentialTemplates) {
+					FunctionCall call = FunctionCall.makeCall(
+							caller, template, null, typesOfArgsTypes,
+							amIaCastFunction()
+					);
+					if (call == null) continue;
+					FunctionImpl toInvoke = (FunctionImpl)call.invoke(caller, rawTypes);
+					return FunctionCall.makeCall(caller, toInvoke, expectedType, argsTypes, amIaCastFunction()); // todo: deal with all candidates
+				}
 				return null;
 			}
 			throw new IllegalArgumentException("Ambiguous call: " + candidates);
