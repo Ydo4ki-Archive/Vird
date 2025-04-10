@@ -9,14 +9,16 @@ import java.util.function.Predicate;
  */
 public final class TypeRef {
 	private final Type type;
+	private final boolean vararg;
 	private final Predicate<Val> constraints;
 	
-	public TypeRef(Type type) {
-		this(type, val -> true);
+	public TypeRef(Type type, boolean vararg) {
+		this(type, vararg, val -> true);
 	}
 	// todo
-	private TypeRef(Type type, Predicate<Val> constraints) {
+	private TypeRef(Type type, boolean vararg, Predicate<Val> constraints) {
 		this.type = type;
+		this.vararg = vararg;
 		this.constraints = constraints;
 	}
 	
@@ -24,8 +26,12 @@ public final class TypeRef {
 		return type;
 	}
 	
+	public boolean isVararg() {
+		return vararg;
+	}
+	
 	public boolean matches(Val val) {
-		return val.getType().equals(type) && constraints.test(val);
+		return val.getRawType().equals(type) && constraints.test(val);
 	}
 	public boolean matchesType(TypeRef type) {
 		return this.equals(type);

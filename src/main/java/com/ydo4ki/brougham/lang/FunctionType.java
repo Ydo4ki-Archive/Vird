@@ -25,6 +25,12 @@ public final class FunctionType extends Type {
 		return params;
 	}
 	
+	public boolean isVarargFunction() {
+		if (params.length == 0) return false;
+		TypeRef last = params[params.length-1];
+		return last.isVararg();
+	}
+	
 	@Override
 	public String toString() {
 		return "function$"+returnType+"("+Arrays.stream(params).map(TypeRef::toString).collect(Collectors.joining(" "))+")";

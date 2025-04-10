@@ -23,25 +23,25 @@ public final class FunctionSet implements Val {
 	}
 	
 	@Override
-	public Type getType() {
+	public Type getRawType() {
 		return FunctionSetType.instance;
 	}
 	
 	public void addImpl(FunctionImpl function) {
-		if (findImplByType(function.getType()) != null)
-			throw new IllegalArgumentException("This types of arguments are already occupied " + Arrays.toString(function.getType().getParams()));
+		if (findImplByType(function.getRawType()) != null)
+			throw new IllegalArgumentException("This types of arguments are already occupied " + Arrays.toString(function.getRawType().getParams()));
 		specificFunctions.add(function);
 	}
 	
 	public FunctionImpl findImplByType(FunctionType type) {
 		for (FunctionImpl function : specificFunctions) {
-			if (function.getType().equals(type)) return function;
+			if (function.getRawType().equals(type)) return function;
 		}
 		return null;
 	}
 	
 	public FunctionCall findImplForArgs(DList caller, TypeRef expectedType, Val[] args) {
-		return findImplForArgs(caller, expectedType, Arrays.stream(args).map(Val::getTypeRef).toArray(TypeRef[]::new));
+		return findImplForArgs(caller, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
 	}
 	public FunctionCall findImplForArgs(DList caller, TypeRef expectedType, TypeRef[] argsTypes) {
 		System.out.println("# Finding function: " + Arrays.toString(argsTypes) + " -> " + expectedType);
@@ -49,9 +49,14 @@ public final class FunctionSet implements Val {
 		
 		search:
 		for (FunctionImpl function : specificFunctions) {
+			if (function.getRawType().isVarargFunction()) {
+				if (function.getRawType().getParams().length > argsTypes.length) continue search;
+			} else {
+				if (function.getRawType().getParams().length != argsTypes.length) continue search;
+			}
 			boolean exactMatch = true;
 			FunctionCall return_type_cast = null;
-			TypeRef returnType = function.getType().getReturnType();
+			TypeRef returnType = function.getRawType().getReturnType();
 			if (expectedType != null) {
 				if (returnType != null && !returnType.matchesType(expectedType)) {
 					if (amIaCastFunction()) continue search;
@@ -64,18 +69,24 @@ public final class FunctionSet implements Val {
 				exactMatch = false;
 			}
 			
-			TypeRef[] params = function.getType().getParams();
-			FunctionCall[] casts = new FunctionCall[params.length];
-			for (int i = 0; i < params.length; i++) {
-				if (params[i].matchesType(argsTypes[i])) continue; // cast = null (not needed)
+			TypeRef[] params = function.getRawType().getParams();
+			FunctionCall[] casts = new FunctionCall[argsTypes.length];
+			for (int i = 0; i < argsTypes.length; i++) {
+				TypeRef param;
+				if (i >= params.length && function.getRawType().isVarargFunction()) {
+					param = params[params.length-1];
+				} else {
+					param = params[i];
+				}
+				if (param.matchesType(argsTypes[i])) continue; // cast = null (not needed)
 				else {
 					exactMatch = false;
 					FunctionCall cast;
-					TypeRef neededReturnType = params[i];
+					TypeRef neededReturnType = param;
 					TypeRef inputWeHave = argsTypes[i];
 					if (amIaCastFunction() && Objects.equals(neededReturnType, expectedType)) {
 						cast = null;
-					}else{
+					} else {
 						cast = caller.resolveFunctionImpl(new Symbol(""), neededReturnType, new TypeRef[]{inputWeHave});
 					}
 					if (cast == null) continue search;

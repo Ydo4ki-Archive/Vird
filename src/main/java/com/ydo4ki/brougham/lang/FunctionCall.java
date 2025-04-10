@@ -33,7 +33,7 @@ public final class FunctionCall {
 	
 	public TypeRef getReturnType() {
 		if (needsResultCast()) return cast_result.getReturnType();
-		return function.getType().getReturnType();
+		return function.getRawType().getReturnType();
 	}
 	
 	public Val invoke(DList caller, Val[] args) {

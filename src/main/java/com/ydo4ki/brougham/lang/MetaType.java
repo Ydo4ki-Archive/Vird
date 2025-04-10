@@ -22,7 +22,7 @@ public final class MetaType extends Type {
 	}
 	
 	@Override
-	public Type getType() {
+	public Type getRawType() {
 		return MetaType.of(depth + 1);
 	}
 	

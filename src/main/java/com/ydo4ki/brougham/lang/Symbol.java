@@ -21,7 +21,7 @@ public final class Symbol implements Val {
 	}
 	
 	@Override
-	public Type getType() {
+	public Type getRawType() {
 		return SymbolType.instance;
 	}
 	

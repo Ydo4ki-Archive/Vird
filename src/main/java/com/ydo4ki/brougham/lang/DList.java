@@ -37,7 +37,7 @@ public final class DList implements Val {
 		return null;
 	}
 	public FunctionCall resolveFunctionImpl(Symbol name, TypeRef returnType, Val[] args) {
-		return resolveFunctionImpl(name, returnType, Arrays.stream(args).map(Val::getTypeRef).toArray(TypeRef[]::new));
+		return resolveFunctionImpl(name, returnType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
 	}
 	public FunctionCall resolveFunctionImpl(Symbol name, TypeRef returnType, TypeRef[] argTypes) {
 //		System.out.println("## Resolving: " + name + Arrays.toString(argTypes) + " -> " + returnType);
@@ -91,7 +91,7 @@ public final class DList implements Val {
 	}
 	
 	@Override
-	public Type getType() {
+	public Type getRawType() {
 		return DListType.of(bracketsType);
 	}
 	

@@ -15,10 +15,10 @@ public final class Vector implements Val {
 	public Vector(Val[] values) {
 		int len = values.length;
 		
-		Type type = len == 0 ? SymbolType.instance : values[0].getType();
+		Type type = len == 0 ? SymbolType.instance : values[0].getRawType();
 		for (int i = 1; i < len; ++i) {
-			if (!values[i].getType().equals(type))
-				throw new IllegalArgumentException("Vector element type mismatch (" + values[i].getType() + " found, " + type + " expected)");
+			if (!values[i].getRawType().equals(type))
+				throw new IllegalArgumentException("Vector element type mismatch (" + values[i].getRawType() + " found, " + type + " expected)");
 		}
 		this.type = new VectorType(len, type);
 		this.values = values;
@@ -29,7 +29,7 @@ public final class Vector implements Val {
 	}
 	
 	@Override
-	public Type getType() {
+	public Type getRawType() {
 		return type;
 	}
 	

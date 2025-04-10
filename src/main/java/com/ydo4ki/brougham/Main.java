@@ -73,8 +73,8 @@ public class Main {
 				),
 				new FunctionImpl(
 						new FunctionType(
-								new TypeRef(BlobType.of(4)),
-								new TypeRef[]{new TypeRef(SymbolType.instance)}
+								BlobType.of(4).ref(),
+								new TypeRef[]{SymbolType.instance.ref()}
 						),
 						(caller, args) -> Blob.ofInt(Integer.parseInt(args[0].toString()))
 				)
@@ -129,6 +129,21 @@ public class Main {
 						}
 				)
 		);
+		program.defineFunction(new Symbol("run"),
+				new FunctionImpl(
+						new FunctionType(
+								null,
+								new TypeRef[]{DListType.of(BracketsType.ROUND).vararg()}
+						),
+						(caller, args) -> {
+							Val last = null;
+							for (Val arg : args) {
+								last = evaluate(null, arg);
+							}
+							return last;
+						}
+				)
+		);
 		
 		System.out.println(test_function_evaluate(null, program));
 	}
@@ -170,7 +185,7 @@ public class Main {
 		}
 		FunctionCall func = program.resolveFunctionImpl((Symbol) functionName, expectedType, args);
 		if (func == null)
-			throw new IllegalArgumentException("Function not found: " + functionName + " " + Arrays.stream(args).map(Val::getTypeRef).collect(Collectors.toList()));
+			throw new IllegalArgumentException("Function not found: " + functionName + " " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));
 		return func.invoke(program, args);
 	}
 }

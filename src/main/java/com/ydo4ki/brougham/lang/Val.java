@@ -1,16 +1,14 @@
 package com.ydo4ki.brougham.lang;
 
-import java.util.function.Function;
-
 /**
  * @since 4/7/2025 9:43 PM
  * @author Sulphuris
  */
 public interface Val {
-	Type getType();
+	Type getRawType();
 	
 	// todo
-	default TypeRef getTypeRef() {
-		return new TypeRef(getType());
+	default TypeRef getType() {
+		return new TypeRef(getRawType(), false);
 	}
 }

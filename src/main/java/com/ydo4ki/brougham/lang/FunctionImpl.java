@@ -28,7 +28,7 @@ public final class FunctionImpl implements Val {
 //	}
 	
 	@Override
-	public FunctionType getType() {
+	public FunctionType getRawType() {
 		return type;
 	}
 	

@@ -21,12 +21,12 @@ public final class Tuple implements Val {
 	}
 	
 	@Override
-	public Type getType() {
+	public Type getRawType() {
 		if (type == null) {
 			int len = values.length;
 			Type[] types = new Type[len];
 			for (int i = 0; i < len; i++) {
-				types[i] = values[i].getType();
+				types[i] = values[i].getRawType();
 			}
 			this.type = new TupleType(types);
 		}

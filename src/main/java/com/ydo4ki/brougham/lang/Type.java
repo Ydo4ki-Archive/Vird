@@ -7,12 +7,15 @@ package com.ydo4ki.brougham.lang;
 */
 public abstract class Type implements Val {
 	@Override
-	public Type getType() {
+	public Type getRawType() {
 		return MetaType.of(0);
 	}
 	
 	public final TypeRef ref() {
-		return new TypeRef(this);
+		return new TypeRef(this, false);
+	}
+	public final TypeRef vararg() {
+		return new TypeRef(this, true);
 	}
 }
 

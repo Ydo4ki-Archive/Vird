@@ -25,7 +25,7 @@ public final class Blob implements Val {
 	}
 	
 	@Override
-	public Type getType() {
+	public Type getRawType() {
 		return BlobType.of(data.length);
 	}
 	
