@@ -46,7 +46,7 @@ public class Main {
 	}
 	
 	public static void main(String[] __args) throws IOException {
-		DList program = (DList) new Parser().read(null, "(+ 5 (+ 2 2))");
+		DList program = (DList) new Parser().read(null, "(include 'brougham/source.bham')");
 		System.out.println(program);
 		
 		program.defineFunction(new Symbol(""),
@@ -111,6 +111,25 @@ public class Main {
 						)
 				)
 		);
+		
+		program.defineFunction(new Symbol("include"),
+				new FunctionImpl(
+						new FunctionType(
+								null, //DListType.of(BracketsType.ROUND).ref(),
+								new TypeRef[]{SymbolType.instance.ref()}
+						),
+						(caller, args) -> {
+							String fileName = args[0].toString();
+							fileName = fileName.substring(1, fileName.length()-1); // remove quotes
+							try {
+								return evaluate(null, ((DList)new Parser().read(caller, new File(fileName))).getElements().get(1));
+							} catch (IOException e) {
+								throw new RuntimeException(e);
+							}
+						}
+				)
+		);
+		
 		System.out.println(test_function_evaluate(null, program));
 	}
 	
@@ -128,6 +147,15 @@ public class Main {
 //				(caller, args) -> new Tuple(Arrays.stream(((Tuple)args[0]).getValues()).map(v -> mapper.invoke(caller, new Val[]{v})).toArray(Val[]::new))
 //		);
 //	}
+	
+	static Val evaluate(TypeRef expectedType, Val val) {
+		if (expectedType != null && expectedType.matches(val)) return val;
+		if (val instanceof DList) return test_function_evaluate(expectedType, (DList)val);
+		if (expectedType != null) {
+			// maybe find cast function... idk
+		}
+		return val;
+	}
 	
 	static Val test_function_evaluate(TypeRef expectedType, DList program) {
 		Val functionName = program.getElements().get(0);
