@@ -28,7 +28,7 @@ public final class FunctionCall {
 		FunctionCall return_type_cast = null;
 		TypeRef returnType = function.getRawType().getReturnType();
 		if (expectedType != null) {
-			if (returnType != null && !returnType.matchesType(expectedType)) {
+			if (returnType != null && !returnType.valueOfGivenTypeMatchesMe(caller, expectedType)) {
 				if (amIaCastFunction) return null;
 				FunctionCall cast = caller.resolveFunctionImpl("", expectedType, new TypeRef[]{returnType});
 				if (cast == null) return null;
@@ -45,7 +45,7 @@ public final class FunctionCall {
 			} else {
 				param = params[i];
 			}
-			if (param.matchesType(argsTypes[i])) continue; // cast = null (not needed)
+			if (param.valueOfGivenTypeMatchesMe(caller, argsTypes[i])) continue; // cast = null (not needed)
 			else {
 				FunctionCall cast;
 				TypeRef neededReturnType = param;

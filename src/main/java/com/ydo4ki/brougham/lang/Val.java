@@ -7,8 +7,7 @@ package com.ydo4ki.brougham.lang;
 public interface Val {
 	Type getRawType();
 	
-	// todo
 	default TypeRef getType() {
-		return new TypeRef(getRawType(), false);
+		return getRawType().ref(new ComplexComputingEquipment.Equality(this));
 	}
 }

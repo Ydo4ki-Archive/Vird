@@ -3,7 +3,6 @@ package com.ydo4ki.brougham.lang;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * @author Sulphuris
@@ -33,7 +32,10 @@ public final class FunctionImpl implements Val {
 	}
 	
 	public Val invoke(DList caller, Val[] args) {
-		return transformer.apply(caller, args);
+		return Objects.requireNonNull(
+				transformer.apply(caller, args),
+				"Function just returned null. This is outrageous. " + Arrays.toString(args)
+		);
 	}
 	
 	@Override

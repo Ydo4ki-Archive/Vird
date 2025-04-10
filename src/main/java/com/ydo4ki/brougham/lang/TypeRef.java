@@ -1,7 +1,7 @@
 package com.ydo4ki.brougham.lang;
 
+import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 /**
  * @author Sulphuris
@@ -10,13 +10,13 @@ import java.util.function.Predicate;
 public final class TypeRef {
 	private final Type type;
 	private final boolean vararg;
-	private final Predicate<Val> constraints;
+	private final ComplexComputingEquipment constraints;
 	
 	public TypeRef(Type type, boolean vararg) {
-		this(type, vararg, val -> true);
+		this(type, vararg, ComplexComputingEquipment.free);
 	}
-	// todo
-	private TypeRef(Type type, boolean vararg, Predicate<Val> constraints) {
+	
+	TypeRef(Type type, boolean vararg, ComplexComputingEquipment constraints) {
 		this.type = type;
 		this.vararg = vararg;
 		this.constraints = constraints;
@@ -30,11 +30,13 @@ public final class TypeRef {
 		return vararg;
 	}
 	
-	public boolean matches(Val val) {
-		return val.getRawType().equals(type) && constraints.test(val);
+	public boolean matches(DList caller, Val val) {
+		if (!val.getRawType().equals(type)) return false;
+		return constraints.test(caller, val);
 	}
-	public boolean matchesType(TypeRef type) {
-		return this.equals(type);
+	public boolean valueOfGivenTypeMatchesMe(DList caller, TypeRef other) {
+		if (!this.type.equals(other.type)) return false;
+		return this.constraints.contains(caller, other.constraints);
 	}
 	
 	@Override
@@ -42,17 +44,16 @@ public final class TypeRef {
 		return type.toString();
 	}
 	
-	// TEMP
 	
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass()) return false;
 		TypeRef typeRef = (TypeRef) o;
-		return Objects.equals(type, typeRef.type);
+		return vararg == typeRef.vararg && Objects.equals(type, typeRef.type) && Objects.equals(constraints, typeRef.constraints);
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(type);
+		return Objects.hash(type, vararg, constraints);
 	}
 }

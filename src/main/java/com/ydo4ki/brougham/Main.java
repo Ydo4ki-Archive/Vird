@@ -41,7 +41,7 @@ public class Main {
 				),
 				(caller, args) -> {
 					DList list = (DList) args[0];
-					return test_function_evaluate(returnType, list);
+					return test_function_evaluate(caller, returnType, list);
 				}
 		);
 	}
@@ -49,6 +49,11 @@ public class Main {
 	public static void main(String[] __args) throws IOException {
 		DList program = (DList) new Parser().read(null, "(include 'brougham/source.bham')");
 		System.out.println(program);
+		
+		program.define(new Symbol(program, "Symbol"), SymbolType.instance);
+		program.define(new Symbol(program, "DListB"), DListType.of(BracketsType.BRACES));
+		program.define(new Symbol(program, "DListR"), DListType.of(BracketsType.ROUND));
+		program.define(new Symbol(program, "DListS"), DListType.of(BracketsType.SQUARE));
 		
 		program.defineFunction(new Symbol(program, ""),
 				DList2ToTuple,
@@ -82,23 +87,27 @@ public class Main {
 				new FunctionImpl(
 						new FunctionType(
 								FunctionSetType.instance.ref(),
-								new TypeRef[]{SymbolType.instance.ref()}
+								new TypeRef[]{SymbolType.instance.ref(
+										new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref())
+								)}
 						),
 						(caller, args) -> caller.resolveFunction((Symbol) args[0])
 				),
 				new FunctionImpl(
 						new FunctionType(
 								MetaType.of(0).ref(),
-								new TypeRef[]{SymbolType.instance.ref()}
+								new TypeRef[]{SymbolType.instance.ref(new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref()))}
 						),
 						(caller, args) -> {
 							String name = ((Symbol)args[0]).getValue();
-							switch (name) {
-								case "Symbol":
-									return SymbolType.instance;
-								case "DListR":
-									return DListType.of(BracketsType.ROUND);
-							}
+							Val type = caller.resolve(((Symbol)args[0]));
+							if (type != null && MetaType.of(0).ref().matches(caller, type)) return type;
+//							switch (name) {
+//								case "Symbol":
+//									return SymbolType.instance;
+//								case "DListR":
+//									return DListType.of(BracketsType.ROUND);
+//							}
 							throw new ThisIsNotTheBookClubException(name);
 						}
 				)
@@ -148,8 +157,8 @@ public class Main {
 							fileName = fileName.substring(1, fileName.length() - 1); // remove quotes
 							try {
 								Val p = ((DList) new Parser().read(caller, new File(fileName))).getElements().get(1);
-								System.out.println(p);
-								return evaluate(null, p);
+//								System.out.println(p);
+								return evaluate(caller,null, p);
 							} catch (IOException e) {
 								throw new RuntimeException(e);
 							}
@@ -175,7 +184,7 @@ public class Main {
 									(caller, args) -> {
 										Val last = null;
 										for (Val arg : args) {
-											last = evaluate(null, arg);
+											last = evaluate(caller, null, arg);
 										}
 										return last;
 									}
@@ -193,14 +202,14 @@ public class Main {
 							DList body = ((DList)args[0]);
 							Val last = null;
 							for (Val val : body.getElements()) {
-								last = evaluate(null, val);
+								last = evaluate(caller, null, val);
 							}
 							return last;
 						}
 				)
 		);
 
-		System.out.println(test_function_evaluate(null, program));
+		System.out.println(test_function_evaluate(program, null, program));
 	}
 
 
@@ -218,9 +227,9 @@ public class Main {
 //		);
 //	}
 	
-	static Val evaluate(TypeRef expectedType, Val val) {
-		if (expectedType != null && expectedType.matches(val)) return val;
-		if (val instanceof DList) return test_function_evaluate(expectedType, (DList) val);
+	static Val evaluate(DList caller, TypeRef expectedType, Val val) {
+		if (expectedType != null && expectedType.matches(caller, val)) return val;
+		if (val instanceof DList) return test_function_evaluate(caller, expectedType, (DList) val);
 		if (val instanceof Symbol) return resolveFunctionSet((Symbol) val);
 		if (expectedType != null) {
 			// maybe find a cast function... idk
@@ -228,9 +237,9 @@ public class Main {
 		return val;
 	}
 	
-	static Val test_function_evaluate(TypeRef expectedType, DList program) {
+	static Val test_function_evaluate(DList caller, TypeRef expectedType, DList program) {
 		Val functionId = program.getElements().get(0);
-		Val function = evaluate(null, functionId);
+		Val function = evaluate(caller, null, functionId);
 		
 		
 		final Val[] args;

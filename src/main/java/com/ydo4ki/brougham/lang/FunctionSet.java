@@ -44,7 +44,7 @@ public final class FunctionSet implements Val {
 		return findImplForArgs(caller, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
 	}
 	public FunctionCall findImplForArgs(DList caller, TypeRef expectedType, TypeRef[] argsTypes) {
-		System.out.println("# Finding function: " + Arrays.toString(argsTypes) + " -> " + expectedType);
+//		System.out.println("# Finding function: " + Arrays.toString(argsTypes) + " -> " + expectedType);
 		List<FunctionCall> candidates = new ArrayList<>();
 		
 		search:
