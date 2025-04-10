@@ -1,4 +1,5 @@
-(run
+((run& DListR DListR Symbol)
 	(+ 5 (+ 2 2))
 	(+ 7 1 3)
+	+
 )

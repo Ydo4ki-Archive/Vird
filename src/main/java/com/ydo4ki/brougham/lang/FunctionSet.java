@@ -54,47 +54,10 @@ public final class FunctionSet implements Val {
 			} else {
 				if (function.getRawType().getParams().length != argsTypes.length) continue search;
 			}
-			boolean exactMatch = true;
-			FunctionCall return_type_cast = null;
-			TypeRef returnType = function.getRawType().getReturnType();
-			if (expectedType != null) {
-				if (returnType != null && !returnType.matchesType(expectedType)) {
-					if (amIaCastFunction()) continue search;
-					exactMatch = false;
-					FunctionCall cast = caller.resolveFunctionImpl(new Symbol(""), expectedType, new TypeRef[]{returnType});
-					if (cast == null) continue search;
-					return_type_cast = cast;
-				}
-			} else {
-				exactMatch = false;
-			}
 			
-			TypeRef[] params = function.getRawType().getParams();
-			FunctionCall[] casts = new FunctionCall[argsTypes.length];
-			for (int i = 0; i < argsTypes.length; i++) {
-				TypeRef param;
-				if (i >= params.length && function.getRawType().isVarargFunction()) {
-					param = params[params.length-1];
-				} else {
-					param = params[i];
-				}
-				if (param.matchesType(argsTypes[i])) continue; // cast = null (not needed)
-				else {
-					exactMatch = false;
-					FunctionCall cast;
-					TypeRef neededReturnType = param;
-					TypeRef inputWeHave = argsTypes[i];
-					if (amIaCastFunction() && Objects.equals(neededReturnType, expectedType)) {
-						cast = null;
-					} else {
-						cast = caller.resolveFunctionImpl(new Symbol(""), neededReturnType, new TypeRef[]{inputWeHave});
-					}
-					if (cast == null) continue search;
-					casts[i] = cast;
-				}
-			}
-			FunctionCall call = new FunctionCall(function, return_type_cast, casts);
-			if (exactMatch) return call;
+			FunctionCall call = FunctionCall.makeCall(caller, function, expectedType, argsTypes, amIaCastFunction());
+			if (call == null) continue search;
+			if (call.isExactMatch()) return call;
 			else candidates.add(call);
 		}
 //		System.out.println("# candidates (" + Arrays.toString(argsTypes) + " -> " + expectedType + "): " + candidates);

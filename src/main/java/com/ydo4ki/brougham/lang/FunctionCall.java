@@ -1,6 +1,7 @@
 package com.ydo4ki.brougham.lang;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * @author Sulphuris
@@ -21,6 +22,44 @@ public final class FunctionCall {
 			if (implicitCast != null) casts++;
 		}
 		this.casts = casts;
+	}
+	
+	public static FunctionCall makeCall(DList caller, FunctionImpl function, TypeRef expectedType, TypeRef[] argsTypes, boolean amIaCastFunction) {
+		FunctionCall return_type_cast = null;
+		TypeRef returnType = function.getRawType().getReturnType();
+		if (expectedType != null) {
+			if (returnType != null && !returnType.matchesType(expectedType)) {
+				if (amIaCastFunction) return null;
+				FunctionCall cast = caller.resolveFunctionImpl("", expectedType, new TypeRef[]{returnType});
+				if (cast == null) return null;
+				return_type_cast = cast;
+			}
+		}
+		
+		TypeRef[] params = function.getRawType().getParams();
+		FunctionCall[] casts = new FunctionCall[argsTypes.length];
+		for (int i = 0; i < argsTypes.length; i++) {
+			TypeRef param;
+			if (i >= params.length && function.getRawType().isVarargFunction()) {
+				param = params[params.length-1];
+			} else {
+				param = params[i];
+			}
+			if (param.matchesType(argsTypes[i])) continue; // cast = null (not needed)
+			else {
+				FunctionCall cast;
+				TypeRef neededReturnType = param;
+				TypeRef inputWeHave = argsTypes[i];
+				if (amIaCastFunction && Objects.equals(neededReturnType, expectedType)) {
+					cast = null;
+				} else {
+					cast = caller.resolveFunctionImpl("", neededReturnType, new TypeRef[]{inputWeHave});
+				}
+				if (cast == null) return null;
+				casts[i] = cast;
+			}
+		}
+		return new FunctionCall(function, return_type_cast, casts);
 	}
 	
 	public boolean needsResultCast() {
@@ -54,5 +93,9 @@ public final class FunctionCall {
 				", cast_result=" + cast_result +
 				", implicit_cast_calls=" + Arrays.toString(implicit_cast_calls) +
 				'}';
+	}
+	
+	public boolean isExactMatch() {
+		return casts == 0 && cast_result == null;
 	}
 }

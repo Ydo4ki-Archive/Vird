@@ -31,15 +31,15 @@ public final class DList implements Val {
 		return parent == null ? null : parent.resolveFunction(symbol);
 	}
 	
-	private FunctionSet resolveFunctionNoParents(Symbol symbol) {
-		Val dereferenced = definedSymbols.get(symbol.getValue());
+	private FunctionSet resolveFunctionNoParents(String name) {
+		Val dereferenced = definedSymbols.get(name);
 		if (dereferenced instanceof FunctionSet) return (FunctionSet)dereferenced;
 		return null;
 	}
-	public FunctionCall resolveFunctionImpl(Symbol name, TypeRef returnType, Val[] args) {
+	public FunctionCall resolveFunctionImpl(String name, TypeRef returnType, Val[] args) {
 		return resolveFunctionImpl(name, returnType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
 	}
-	public FunctionCall resolveFunctionImpl(Symbol name, TypeRef returnType, TypeRef[] argTypes) {
+	public FunctionCall resolveFunctionImpl(String name, TypeRef returnType, TypeRef[] argTypes) {
 //		System.out.println("## Resolving: " + name + Arrays.toString(argTypes) + " -> " + returnType);
 		DList caller = this;
 		while (true) {

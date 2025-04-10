@@ -7,13 +7,16 @@ import java.util.Objects;
  * @author Sulphuris
  */
 public final class Symbol implements Val {
+	private final DList parent;
 	private final String value;
 	
-	public Symbol(String value) {
+	public Symbol(DList parent, String value) {
+		this.parent = parent;
 		this.value = value;
 	}
-	public Symbol(DList parent, String value) {
-		this.value = value;
+	
+	public DList getParent() {
+		return parent;
 	}
 	
 	public String getValue() {

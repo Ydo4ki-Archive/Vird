@@ -30,6 +30,7 @@ public class Main {
 				return new Tuple(values);
 			}
 	);
+	
 	static FunctionImpl DList2ToFunctionCall(TypeRef returnType) {
 		return new FunctionImpl(
 				new FunctionType(
@@ -49,7 +50,7 @@ public class Main {
 		DList program = (DList) new Parser().read(null, "(include 'brougham/source.bham')");
 		System.out.println(program);
 		
-		program.defineFunction(new Symbol(""),
+		program.defineFunction(new Symbol(program, ""),
 				DList2ToTuple,
 				DList2ToFunctionCall(null),
 				new FunctionImpl(
@@ -77,6 +78,29 @@ public class Main {
 								new TypeRef[]{SymbolType.instance.ref()}
 						),
 						(caller, args) -> Blob.ofInt(Integer.parseInt(args[0].toString()))
+				),
+				new FunctionImpl(
+						new FunctionType(
+								FunctionSetType.instance.ref(),
+								new TypeRef[]{SymbolType.instance.ref()}
+						),
+						(caller, args) -> caller.resolveFunction((Symbol) args[0])
+				),
+				new FunctionImpl(
+						new FunctionType(
+								MetaType.of(0).ref(),
+								new TypeRef[]{SymbolType.instance.ref()}
+						),
+						(caller, args) -> {
+							String name = ((Symbol)args[0]).getValue();
+							switch (name) {
+								case "Symbol":
+									return SymbolType.instance;
+								case "DListR":
+									return DListType.of(BracketsType.ROUND);
+							}
+							throw new ThisIsNotTheBookClubException(name);
+						}
 				)
 		);
 
@@ -93,7 +117,7 @@ public class Main {
 //				}
 //		);
 		
-		program.define(new Symbol("+"),
+		program.define(new Symbol(program, "+"),
 				new FunctionSet(
 						new FunctionImpl(
 								new FunctionType(
@@ -113,7 +137,7 @@ public class Main {
 				)
 		);
 		
-		program.defineFunction(new Symbol("include"),
+		program.defineFunction(new Symbol(program, "include"),
 				new FunctionImpl(
 						new FunctionType(
 								null, //DListType.of(BracketsType.ROUND).ref(),
@@ -121,35 +145,62 @@ public class Main {
 						),
 						(caller, args) -> {
 							String fileName = args[0].toString();
-							fileName = fileName.substring(1, fileName.length()-1); // remove quotes
+							fileName = fileName.substring(1, fileName.length() - 1); // remove quotes
 							try {
-								return evaluate(null, ((DList)new Parser().read(caller, new File(fileName))).getElements().get(1));
+								return evaluate(null, ((DList) new Parser().read(caller, new File(fileName))).getElements().get(1));
 							} catch (IOException e) {
 								throw new RuntimeException(e);
 							}
 						}
 				)
 		);
-		program.defineFunction(new Symbol("run"),
+		program.defineFunction(new Symbol(program, "run&"),
 				new FunctionImpl(
 						new FunctionType(
 								null,
-								new TypeRef[]{DListType.of(BracketsType.ROUND).vararg()}
+								new TypeRef[]{MetaType.of(0).vararg()}
 						),
-						(caller, args) -> {
-							Val last = null;
-							for (Val arg : args) {
-								last = evaluate(null, arg);
+						(caller_, args_) -> {
+							TypeRef[] argumentTypes = new TypeRef[args_.length];
+							for (int i = 0; i < argumentTypes.length; i++) {
+								argumentTypes[i] = ((Type)args_[i]).ref();
 							}
-							return last;
+							return new FunctionImpl(
+									new FunctionType(
+											null,
+											argumentTypes
+									),
+									(caller, args) -> {
+										Val last = null;
+										for (Val arg : args) {
+											last = evaluate(null, arg);
+										}
+										return last;
+									}
+							);
 						}
 				)
 		);
-		
+//		program.defineFunction(new Symbol(program,"run"),
+//				new FunctionImpl(
+//						new FunctionType(
+//								null,
+//								new TypeRef[]{DListType.of(BracketsType.ROUND).vararg()}
+//						),
+//						(caller, args) -> {
+//							Val last = null;
+//							for (Val arg : args) {
+//								last = evaluate(null, arg);
+//							}
+//							return last;
+//						}
+//				)
+//		);
+//
 		System.out.println(test_function_evaluate(null, program));
 	}
-	
-	
+
+
 //	static FunctionImpl mapFunction(Type from, Type to, int size, FunctionImpl mapper) {
 //		Type[] fromTuple = new Type[size];
 //		Arrays.fill(fromTuple, from);
@@ -166,17 +217,18 @@ public class Main {
 	
 	static Val evaluate(TypeRef expectedType, Val val) {
 		if (expectedType != null && expectedType.matches(val)) return val;
-		if (val instanceof DList) return test_function_evaluate(expectedType, (DList)val);
+		if (val instanceof DList) return test_function_evaluate(expectedType, (DList) val);
+		if (val instanceof Symbol) return resolveFunctionSet((Symbol) val);
 		if (expectedType != null) {
-			// maybe find cast function... idk
+			// maybe find a cast function... idk
 		}
 		return val;
 	}
 	
 	static Val test_function_evaluate(TypeRef expectedType, DList program) {
-		Val functionName = program.getElements().get(0);
-		if (!(functionName instanceof Symbol))
-			throw new IllegalArgumentException("This is not the book club! " + functionName);
+		Val functionId = program.getElements().get(0);
+		Val function = evaluate(null, functionId);
+		
 		
 		final Val[] args;
 		{
@@ -184,9 +236,36 @@ public class Main {
 			args0.remove(0);
 			args = args0.toArray(new Val[0]);
 		}
-		FunctionCall func = program.resolveFunctionImpl((Symbol) functionName, expectedType, args);
+		FunctionCall call = null;
+		if (function instanceof FunctionSet) {
+			FunctionSet set = (FunctionSet) function;
+			call = set.findImplForArgs(program, expectedType, args);
+			if (call == null)
+				throw new IllegalArgumentException("Function not found: " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));
+		} else if (function instanceof FunctionImpl) {
+			call = function_call(program, (FunctionImpl)function, expectedType, args);
+		}
+		if (call == null) throw new ThisIsNotTheBookClubException(String.valueOf(function));
+		
+		return call.invoke(program, args);
+	}
+	
+	static FunctionSet resolveFunctionSet(Symbol name) {
+		return name.getParent().resolveFunction(name);
+	}
+	
+	static FunctionCall function_call(TypeRef expectedType, Symbol name, Val[] args) {
+		FunctionCall func = name.getParent().resolveFunctionImpl(name.getValue(), expectedType, args);
 		if (func == null)
-			throw new IllegalArgumentException("Function not found: " + functionName + " " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));
-		return func.invoke(program, args);
+			throw new IllegalArgumentException("Function not found: " + name + " " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));
+		return func;
+	}
+	
+	static FunctionCall function_call(DList caller, FunctionImpl function, TypeRef expectedType, Val[] args) {
+		FunctionCall call = FunctionCall.makeCall(caller, function, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new), false);
+		if (call == null) {
+			throw new IllegalArgumentException("Function not found: " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));
+		}
+		return call;
 	}
 }
