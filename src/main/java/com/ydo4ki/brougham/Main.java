@@ -28,7 +28,7 @@ public class Main {
 					values[i++] = element;
 				}
 				return new Tuple(values);
-			}
+			}, true
 	);
 	
 	static FunctionImpl DList2ToFunctionCall(TypeRef returnType) {
@@ -42,7 +42,7 @@ public class Main {
 				(caller, args) -> {
 					DList list = (DList) args[0];
 					return test_function_evaluate(caller, returnType, list);
-				}
+				}, true
 		);
 	}
 	
@@ -75,14 +75,15 @@ public class Main {
 								Arrays.stream(((Tuple) args[0]).getValues())
 										.map(e -> Blob.ofInt(Integer.parseInt(e.toString())))
 										.toArray(Val[]::new)
-						)
+						), true
 				),
 				new FunctionImpl(
 						new FunctionType(
 								BlobType.of(4).ref(),
 								new TypeRef[]{SymbolType.instance.ref()}
 						),
-						(caller, args) -> Blob.ofInt(Integer.parseInt(args[0].toString()))
+						(caller, args) -> Blob.ofInt(Integer.parseInt(args[0].toString())),
+						true
 				),
 				new FunctionImpl(
 						new FunctionType(
@@ -91,7 +92,8 @@ public class Main {
 										new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref())
 								)}
 						),
-						(caller, args) -> caller.resolveFunction((Symbol) args[0])
+						(caller, args) -> caller.resolveFunction((Symbol) args[0]),
+						true
 				),
 				new FunctionImpl(
 						new FunctionType(
@@ -109,7 +111,7 @@ public class Main {
 //									return DListType.of(BracketsType.ROUND);
 //							}
 							throw new ThisIsNotTheBookClubException(name);
-						}
+						}, true
 				)
 		);
 
@@ -141,7 +143,7 @@ public class Main {
 										sum += ((Blob) arg).toInt();
 									}
 									return Blob.ofInt(sum);
-								}
+								}, true
 						)
 				)
 		);
@@ -162,7 +164,7 @@ public class Main {
 							} catch (IOException e) {
 								throw new RuntimeException(e);
 							}
-						}
+						}, true
 				)
 		);
 		program.defineFunction(new Symbol(program, "run&"),
@@ -187,9 +189,9 @@ public class Main {
 											last = evaluate(caller, null, arg);
 										}
 										return last;
-									}
+									}, true
 							);
-						}
+						}, true
 				)
 		);
 		program.defineFunction(new Symbol(program,"run"),
@@ -205,7 +207,7 @@ public class Main {
 								last = evaluate(caller, null, val);
 							}
 							return last;
-						}
+						}, true
 				)
 		);
 

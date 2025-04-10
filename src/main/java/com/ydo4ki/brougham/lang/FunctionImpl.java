@@ -12,17 +12,23 @@ public final class FunctionImpl implements Val {
 	private final FunctionType type;
 //	private final Symbol[] paramNames;
 	private final BiFunction<DList, Val[], Val> transformer;
+	private final boolean pure;
 	
-	public FunctionImpl(FunctionType type, BiFunction<DList, Val[], Val> transformer) {
+	public FunctionImpl(FunctionType type, BiFunction<DList, Val[], Val> transformer, boolean pure) {
 		this.type = type;
 		this.transformer = transformer;
 //		if (paramNames.length != type.getParams().length)
 //			throw new IllegalArgumentException("paramNames and paramTypes length mismatch (" +
 //					paramNames.length + " != " + type.getParams().length + ")");
 //		this.paramNames = paramNames;
+		this.pure = pure;
 	}
 	
-//	public Symbol[] getParamNames() {
+	public boolean isPure() {
+		return pure;
+	}
+	
+	//	public Symbol[] getParamNames() {
 //		return paramNames;
 //	}
 	
