@@ -147,7 +147,9 @@ public class Main {
 							String fileName = args[0].toString();
 							fileName = fileName.substring(1, fileName.length() - 1); // remove quotes
 							try {
-								return evaluate(null, ((DList) new Parser().read(caller, new File(fileName))).getElements().get(1));
+								Val p = ((DList) new Parser().read(caller, new File(fileName))).getElements().get(1);
+								System.out.println(p);
+								return evaluate(null, p);
 							} catch (IOException e) {
 								throw new RuntimeException(e);
 							}
@@ -181,22 +183,23 @@ public class Main {
 						}
 				)
 		);
-//		program.defineFunction(new Symbol(program,"run"),
-//				new FunctionImpl(
-//						new FunctionType(
-//								null,
-//								new TypeRef[]{DListType.of(BracketsType.ROUND).vararg()}
-//						),
-//						(caller, args) -> {
-//							Val last = null;
-//							for (Val arg : args) {
-//								last = evaluate(null, arg);
-//							}
-//							return last;
-//						}
-//				)
-//		);
-//
+		program.defineFunction(new Symbol(program,"run"),
+				new FunctionImpl(
+						new FunctionType(
+								null,
+								new TypeRef[]{DListType.of(BracketsType.BRACES).ref()}
+						),
+						(caller, args) -> {
+							DList body = ((DList)args[0]);
+							Val last = null;
+							for (Val val : body.getElements()) {
+								last = evaluate(null, val);
+							}
+							return last;
+						}
+				)
+		);
+
 		System.out.println(test_function_evaluate(null, program));
 	}
 

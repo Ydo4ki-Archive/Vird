@@ -16,10 +16,13 @@ import java.util.List;
  */
 public class Parser {
 	private char ch;
+	private char next_ch;
 	
 	private char next(BufferedReader in) throws IOException {
-		char ch = (char) in.read();
-		if (ch == '/' && this.ch == '/') while (ch != '\n' && ch != 0xFFFF) ch = next(in);
+		ch = next_ch == 0 ? (char) in.read() : next_ch;
+		next_ch = (char) in.read();
+		
+		if (ch == '/' && next_ch == '/') while (next_ch != '\n' && next_ch != 0xFFFF) ch = next(in);
 		return ch;
 	}
 	
