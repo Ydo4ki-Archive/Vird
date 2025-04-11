@@ -1,9 +1,12 @@
 package com.ydo4ki.brougham.lang;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * @since 4/6/2025 8:43 PM
  * @author Sulphuris
  */
+@RequiredArgsConstructor
 public enum BracketsType {
 	ROUND('(',')'),
 	SQUARE('[',']'),
@@ -11,11 +14,6 @@ public enum BracketsType {
 	;
 	public final char open;
 	public final char close;
-	
-	BracketsType(char open, char close) {
-		this.open = open;
-		this.close = close;
-	}
 	
 	public static BracketsType byOpen(char ch) {
 		switch (ch) {

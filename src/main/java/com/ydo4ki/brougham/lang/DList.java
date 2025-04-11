@@ -1,6 +1,9 @@
 package com.ydo4ki.brougham.lang;
 
 import com.ydo4ki.brougham.Location;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,10 +12,16 @@ import java.util.stream.Collectors;
  * @author Sulphuris
  * @since 4/8/2025 8:24 PM
  */
+@EqualsAndHashCode
 public final class DList implements Val {
+	@Getter
+	@Setter
 	private Location location;
+	@Getter
 	private final DList parent;
+	@Getter
 	private final BracketsType bracketsType;
+	@Getter
 	private final List<Val> elements;
 	
 	private final Map<String, Val> definedSymbols = new HashMap<>();
@@ -22,18 +31,6 @@ public final class DList implements Val {
 		this.parent = parent;
 		this.bracketsType = bracketsType;
 		this.elements = elements;
-	}
-	
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-	
-	public Location getLocation() {
-		return location;
-	}
-	
-	public DList getParent() {
-		return parent;
 	}
 	
 	public Val resolve(Symbol symbol) {
@@ -97,14 +94,6 @@ public final class DList implements Val {
 		definedSymbols.put(name, value);
 	}
 	
-	public List<Val> getElements() {
-		return elements;
-	}
-	
-	public BracketsType getBracketsType() {
-		return bracketsType;
-	}
-	
 	@Override
 	public Type getRawType() {
 		return DListType.of(bracketsType);
@@ -113,17 +102,5 @@ public final class DList implements Val {
 	@Override
 	public String toString() {
 		return "DList"+bracketsType.open + elements.stream().map(Val::toString).collect(Collectors.joining(" "))+bracketsType.close;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (o == null || getClass() != o.getClass()) return false;
-		DList dList = (DList) o;
-		return bracketsType == dList.bracketsType && Objects.equals(elements, dList.elements);
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hash(bracketsType, elements);
 	}
 }

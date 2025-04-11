@@ -1,8 +1,13 @@
 package com.ydo4ki.brougham.lang;
 
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
+@RequiredArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public final class BlobType extends Type {
 	
 	private static final ArrayList<BlobType> types = new ArrayList<>();
@@ -14,27 +19,10 @@ public final class BlobType extends Type {
 		return types.get(length);
 	}
 	
-	
 	private final int length;
-	
-	private BlobType(int length) {
-		this.length = length;
-	}
 	
 	@Override
 	public String toString() {
 		return "Blob"+length;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (o == null || getClass() != o.getClass()) return false;
-		BlobType blobType = (BlobType) o;
-		return length == blobType.length;
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(length);
 	}
 }

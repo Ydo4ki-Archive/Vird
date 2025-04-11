@@ -1,5 +1,7 @@
 package com.ydo4ki.brougham.lang;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -7,11 +9,12 @@ import java.util.Objects;
  * @author Sulphuris
  * @since 4/9/2025 9:38 AM
  */
+@Getter
 public final class FunctionCall {
 	private final FunctionImpl function;
 	private final FunctionCall cast_result;
 	private final FunctionCall[] implicit_cast_calls;
-	private final int casts;
+	private final int castsCount;
 	
 	public FunctionCall(FunctionImpl function, FunctionCall castResult, FunctionCall[] implicitCasts) {
 		this.function = function;
@@ -21,7 +24,7 @@ public final class FunctionCall {
 		for (FunctionCall implicitCast : implicitCasts) {
 			if (implicitCast != null) casts++;
 		}
-		this.casts = casts;
+		this.castsCount = casts;
 	}
 	
 	public static FunctionCall makeCall(DList caller, FunctionImpl function, TypeRef expectedType, TypeRef[] argsTypes, boolean amIaCastFunction) {
@@ -66,10 +69,6 @@ public final class FunctionCall {
 		return cast_result != null;
 	}
 	
-	public int castsCount() {
-		return casts;
-	}
-	
 	public TypeRef getReturnType() {
 		if (needsResultCast()) return cast_result.getReturnType();
 		return function.getRawType().getReturnType();
@@ -96,6 +95,6 @@ public final class FunctionCall {
 	}
 	
 	public boolean isExactMatch() {
-		return casts == 0 && cast_result == null;
+		return castsCount == 0 && cast_result == null;
 	}
 }

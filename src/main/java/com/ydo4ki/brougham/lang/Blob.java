@@ -1,15 +1,18 @@
 package com.ydo4ki.brougham.lang;
 
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Arrays;
 import java.util.Objects;
 
+@EqualsAndHashCode
+@RequiredArgsConstructor
+@Getter
 public final class Blob implements Val {
 	private final byte[] data;
-	
-	public Blob(byte[] data) {
-		this.data = data;
-	}
 	
 	public static Blob ofInt(int value) {
 		return new Blob(new byte[]{
@@ -27,18 +30,6 @@ public final class Blob implements Val {
 	@Override
 	public Type getRawType() {
 		return BlobType.of(data.length);
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (o == null || getClass() != o.getClass()) return false;
-		Blob blob = (Blob) o;
-		return Objects.deepEquals(data, blob.data);
-	}
-	
-	@Override
-	public int hashCode() {
-		return Arrays.hashCode(data);
 	}
 	
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();

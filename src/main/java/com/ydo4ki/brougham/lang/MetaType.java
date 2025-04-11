@@ -1,8 +1,14 @@
 package com.ydo4ki.brougham.lang;
 
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@EqualsAndHashCode(callSuper = false)
 public final class MetaType extends Type {
 	private static final ArrayList<MetaType> types = new ArrayList<>();
 	
@@ -17,10 +23,6 @@ public final class MetaType extends Type {
 	
 	private final int depth;
 	
-	private MetaType(int depth) {
-		this.depth = depth;
-	}
-	
 	@Override
 	public Type getRawType() {
 		return MetaType.of(depth + 1);
@@ -30,17 +32,5 @@ public final class MetaType extends Type {
 	public String toString() {
 		if (depth == 0) return "Type";
 		return "Type" + depth;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (o == null || getClass() != o.getClass()) return false;
-		MetaType metaType = (MetaType) o;
-		return depth == metaType.depth;
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(depth);
 	}
 }

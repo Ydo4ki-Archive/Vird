@@ -69,11 +69,11 @@ public final class FunctionSet implements Val {
 //		System.out.println("# candidates (" + Arrays.toString(argsTypes) + " -> " + expectedType + "): " + candidates);
 		int minCasts = Integer.MAX_VALUE;
 		for (FunctionCall candidate : candidates) {
-			if (candidate.castsCount() < minCasts)
-				minCasts = candidate.castsCount();
+			if (candidate.getCastsCount() < minCasts)
+				minCasts = candidate.getCastsCount();
 		}
 		final int MinCasts = minCasts;
-		candidates.removeIf(f -> f.castsCount() > MinCasts);
+		candidates.removeIf(f -> f.getCastsCount() > MinCasts);
 		List<FunctionCall> exact = candidates.stream()
 				.filter(f -> !f.needsResultCast())
 				.collect(Collectors.toList());
