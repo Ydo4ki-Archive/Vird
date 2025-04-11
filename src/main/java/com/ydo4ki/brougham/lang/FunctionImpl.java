@@ -59,7 +59,7 @@ public final class FunctionImpl implements Val {
 	
 	public boolean isTemplate() {
 		if (!isPure() || (getRawType().getReturnType() != null
-				&& !(getRawType().getReturnType().getType() instanceof FunctionType))) {
+				&& !(getRawType().getReturnType().getTargetType() instanceof FunctionType))) {
 			return false;
 		}
 //		for (TypeRef param : type.getParams()) {

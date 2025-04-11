@@ -20,16 +20,16 @@ public class Interpreter {
 	private final Scope program = new Scope(null);
 	
 	public Interpreter() {
-		program.define("Symbol", SymbolType.instance);
-		program.define("DListB", DListType.of(BracketsType.BRACES));
-		program.define("DListR", DListType.of(BracketsType.ROUND));
-		program.define("DListS", DListType.of(BracketsType.SQUARE));
+		program.define("Symbol", Symbol.TYPE);
+		program.define("DListB", DList.TYPE(BracketsType.BRACES));
+		program.define("DListR", DList.TYPE(BracketsType.ROUND));
+		program.define("DListS", DList.TYPE(BracketsType.SQUARE));
 		
 		program.defineFunction("define", new FunctionImpl(
 				new FunctionType(
 						BlobType.of(4).ref(),
 						new TypeRef[]{
-								SymbolType.instance.ref(),
+								Symbol.TYPE,
 								BlobType.of(4).ref()
 						}
 				),
@@ -40,12 +40,12 @@ public class Interpreter {
 		));
 		
 		program.defineImplicitCast(
-				BlobType.of(4).ref(), DListType.of(BracketsType.ROUND).ref(),
+				BlobType.of(4).ref(), DList.TYPE(BracketsType.ROUND),
 				(caller, arg) -> evaluate_function(caller, BlobType.of(4).ref(), (DList)arg),
 				true
 		);
 		program.defineImplicitCast(
-				BlobType.of(4).ref(), SymbolType.instance.ref(),
+				BlobType.of(4).ref(), Symbol.TYPE,
 				(caller, arg) -> {
 					try {
 						return Blob.ofInt(Integer.parseInt(arg.toString()));
@@ -56,15 +56,15 @@ public class Interpreter {
 				true
 		);
 		program.defineImplicitCast(
-				FunctionSetType.instance.ref(), SymbolType.instance.ref(
+				FunctionSetType.instance.ref(), Symbol.TYPE.also(
 						new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref())
 				),
 				(caller, arg) -> caller.resolveFunction(((Symbol) arg).getValue()),
 				true
 		);
 		program.defineImplicitCast(
-				MetaType.of(0).ref(),
-				SymbolType.instance.ref(new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref())),
+				TypeRefType.instance.ref(),
+				Symbol.TYPE.also(new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref())),
 				(caller, arg) -> {
 					String name = ((Symbol) arg).getValue();
 					Val type = caller.resolve(((Symbol) arg));
@@ -98,7 +98,7 @@ public class Interpreter {
 				new FunctionImpl(
 						new FunctionType(
 								null, //DListType.of(BracketsType.ROUND).ref(),
-								new TypeRef[]{SymbolType.instance.ref()}
+								new TypeRef[]{Symbol.TYPE}
 						),
 						(caller, args) -> {
 							String fileName = args[0].toString();
@@ -117,7 +117,7 @@ public class Interpreter {
 				new FunctionImpl(
 						new FunctionType(
 								null,
-								new TypeRef[]{DListType.of(BracketsType.BRACES).ref()}
+								new TypeRef[]{DList.TYPE(BracketsType.BRACES)}
 						),
 						(caller, args) -> {
 							DList body = ((DList) args[0]);

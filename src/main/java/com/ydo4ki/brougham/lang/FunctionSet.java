@@ -85,8 +85,8 @@ public final class FunctionSet implements Val {
 				return candidates.get(0);
 			}
 			if (candidates.isEmpty()) {
-				TypeRef[] typesOfArgsTypes = Arrays.stream(argsTypes).map(t -> t.getType().getType()).toArray(TypeRef[]::new);
-				Val[] rawTypes = Arrays.stream(argsTypes).map(TypeRef::getType).toArray(Val[]::new);
+				TypeRef[] typesOfArgsTypes = Arrays.stream(argsTypes).map(t -> t.getTargetType().getType()).toArray(TypeRef[]::new);
+				Val[] rawTypes = Arrays.stream(argsTypes).map(TypeRef::getTargetType).toArray(Val[]::new);
 				for (FunctionImpl template : potentialTemplates) {
 					FunctionCall call = FunctionCall.makeCall(
 							caller, template, null, typesOfArgsTypes,

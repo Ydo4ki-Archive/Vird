@@ -13,7 +13,13 @@ import java.util.stream.Collectors;
  * @since 4/8/2025 8:24 PM
  */
 @EqualsAndHashCode(callSuper = false)
-public final class DList extends Scope implements Val {
+public final class DList extends Scope implements SyntaxStructure {
+	
+	
+	public static TypeRef TYPE(BracketsType type) {
+		return SyntaxStructureType.instance.ref(new ComplexComputingEquipment.IsDList(type));
+	}
+	
 	@Getter
 	@Setter
 	private Location location;
@@ -40,10 +46,9 @@ public final class DList extends Scope implements Val {
 //		return parent == null ? null : parent.resolveFunctionExact(symbol, type);
 //	}
 	
-	
 	@Override
-	public Type getRawType() {
-		return DListType.of(bracketsType);
+	public TypeRef getType() {
+		return SyntaxStructureType.instance.ref(new ComplexComputingEquipment.IsDList(bracketsType));
 	}
 	
 	@Override

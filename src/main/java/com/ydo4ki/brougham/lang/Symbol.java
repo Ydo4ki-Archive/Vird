@@ -14,15 +14,17 @@ import java.util.Objects;
  */
 @Getter
 @RequiredArgsConstructor
-@EqualsAndHashCode
-public final class Symbol implements Val {
+@EqualsAndHashCode(callSuper = false)
+public final class Symbol implements SyntaxStructure {
+	public static final TypeRef TYPE = SyntaxStructureType.instance.ref(ComplexComputingEquipment.isSymbol);
+	
 	private final Location location;
 	private final Scope parent;
 	private final String value;
 	
 	@Override
-	public Type getRawType() {
-		return SymbolType.instance;
+	public TypeRef getType() {
+		return TYPE;
 	}
 	
 	@Override
