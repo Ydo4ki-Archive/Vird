@@ -17,9 +17,11 @@ public class Main {
 //		System.out.println(program);
 		Interpreter interpreter = new Interpreter();
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		Val ret = interpreter.next("(include 'brougham/source.bham')");
+		System.out.println(ret);
 		while (true) {
 			try {
-				Val ret = interpreter.next(in);
+				ret = interpreter.next(in);
 				System.out.println(ret);
 			} catch (Exception e) {
 				e.printStackTrace(System.err);

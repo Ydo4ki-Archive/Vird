@@ -176,6 +176,9 @@ public class Interpreter {
 		);
 	}
 	
+	public Val next(String in) throws IOException {
+		return evaluate(program, null, new Parser().read(program, new Source.OfString(in)));
+	}
 	public Val next(BufferedReader in) throws IOException {
 		return evaluate(program, null, new Parser().read(program, new Source.Raw(in)));
 	}
