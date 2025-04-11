@@ -1,5 +1,7 @@
 package com.ydo4ki.brougham.lang;
 
+import com.ydo4ki.brougham.Location;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
  * @since 4/8/2025 8:24 PM
  */
 public final class DList implements Val {
+	private Location location;
 	private final DList parent;
 	private final BracketsType bracketsType;
 	private final List<Val> elements;
@@ -15,9 +18,22 @@ public final class DList implements Val {
 	private final Map<String, Val> definedSymbols = new HashMap<>();
 	
 	public DList(DList parent, BracketsType bracketsType, List<Val> elements) {
+		this.location = new Location(null, 0, 0);
 		this.parent = parent;
 		this.bracketsType = bracketsType;
 		this.elements = elements;
+	}
+	
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+	
+	public Location getLocation() {
+		return location;
+	}
+	
+	public DList getParent() {
+		return parent;
 	}
 	
 	public Val resolve(Symbol symbol) {
@@ -25,10 +41,10 @@ public final class DList implements Val {
 		if (dereferenced != null) return dereferenced;
 		return parent == null ? null : parent.resolve(symbol);
 	}
-	public FunctionSet resolveFunction(Symbol symbol) {
-		Val dereferenced = definedSymbols.get(symbol.getValue());
+	public FunctionSet resolveFunction(String name) {
+		Val dereferenced = definedSymbols.get(name);
 		if (dereferenced instanceof FunctionSet) return (FunctionSet)dereferenced;
-		return parent == null ? null : parent.resolveFunction(symbol);
+		return parent == null ? null : parent.resolveFunction(name);
 	}
 	
 	private FunctionSet resolveFunctionNoParents(String name) {
@@ -63,21 +79,20 @@ public final class DList implements Val {
 //		return parent == null ? null : parent.resolveFunctionExact(symbol, type);
 //	}
 	
-	public void defineFunction(Symbol id, FunctionImpl... function) {
-		FunctionSet set = resolveFunction(id);
+	public void defineFunction(String name, FunctionImpl... function) {
+		FunctionSet set = resolveFunction(name);
 		if (set == null) {
 			set = new FunctionSet(function);
-			define(id, set);
+			define(name, set);
 		} else {
 			for (FunctionImpl f : function) {
 				set.addImpl(f);
 			}
 		}
 	}
-	public void define(Symbol id, Val value) {
-		String name = id.getValue();
+	public void define(String name, Val value) {
 		if (definedSymbols.containsKey(name))
-			throw new IllegalArgumentException(id + " is already defined");
+			throw new IllegalArgumentException(name + " is already defined");
 		if (name.isEmpty() && value instanceof FunctionSet) ((FunctionSet)value).cast = true;
 		definedSymbols.put(name, value);
 	}

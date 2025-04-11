@@ -50,14 +50,14 @@ public class Main {
 		DList program = (DList) new Parser().read(null, "(include 'brougham/source.bham')");
 		System.out.println(program);
 		
-		program.define(new Symbol(program, "Symbol"), SymbolType.instance);
-		program.define(new Symbol(program, "DListB"), DListType.of(BracketsType.BRACES));
-		program.define(new Symbol(program, "DListR"), DListType.of(BracketsType.ROUND));
-		program.define(new Symbol(program, "DListS"), DListType.of(BracketsType.SQUARE));
+		program.define("Symbol", SymbolType.instance);
+		program.define("DListB", DListType.of(BracketsType.BRACES));
+		program.define("DListR", DListType.of(BracketsType.ROUND));
+		program.define("DListS", DListType.of(BracketsType.SQUARE));
 		
-		program.defineFunction(new Symbol(program, ""),
+		program.defineFunction("",
 				DList2ToTuple,
-				DList2ToFunctionCall(null),
+				DList2ToFunctionCall(BlobType.of(4).ref()),
 				new FunctionImpl(
 						new FunctionType(
 								new TupleType(
@@ -82,7 +82,13 @@ public class Main {
 								BlobType.of(4).ref(),
 								new TypeRef[]{SymbolType.instance.ref()}
 						),
-						(caller, args) -> Blob.ofInt(Integer.parseInt(args[0].toString())),
+						(caller, args) -> {
+							try {
+								return Blob.ofInt(Integer.parseInt(args[0].toString()));
+							} catch (NumberFormatException e) {
+								return caller.resolve((Symbol) args[0]);
+							}
+						},
 						true
 				),
 				new FunctionImpl(
@@ -92,7 +98,7 @@ public class Main {
 										new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref())
 								)}
 						),
-						(caller, args) -> caller.resolveFunction((Symbol) args[0]),
+						(caller, args) -> caller.resolveFunction(((Symbol) args[0]).getValue()),
 						true
 				),
 				new FunctionImpl(
@@ -128,7 +134,7 @@ public class Main {
 //				}
 //		);
 		
-		program.define(new Symbol(program, "+"),
+		program.define("+",
 				new FunctionSet(
 						new FunctionImpl(
 								new FunctionType(
@@ -148,7 +154,23 @@ public class Main {
 				)
 		);
 		
-		program.defineFunction(new Symbol(program, "include"),
+		program.defineFunction("define",
+				new FunctionImpl(
+						new FunctionType(
+								BlobType.of(4).ref(),
+								new TypeRef[]{
+										SymbolType.instance.ref(),
+										BlobType.of(4).ref()
+								}
+						),
+						(caller, args) -> {
+							caller.getParent().define(((Symbol) args[0]).getValue(), args[1]);
+							return args[1];
+						}, false
+				)
+		);
+		
+		program.defineFunction("include",
 				new FunctionImpl(
 						new FunctionType(
 								null, //DListType.of(BracketsType.ROUND).ref(),
@@ -167,7 +189,7 @@ public class Main {
 						}, true
 				)
 		);
-		program.defineFunction(new Symbol(program, "run&"),
+		program.defineFunction("run&",
 				new FunctionImpl(
 						new FunctionType(
 								null,
@@ -194,7 +216,7 @@ public class Main {
 						}, true
 				)
 		);
-		program.defineFunction(new Symbol(program,"run"),
+		program.defineFunction("run",
 				new FunctionImpl(
 						new FunctionType(
 								null,
@@ -242,7 +264,10 @@ public class Main {
 	static Val test_function_evaluate(DList caller, TypeRef expectedType, DList program) {
 		Val functionId = program.getElements().get(0);
 		Val function = evaluate(caller, null, functionId);
-		
+		if (function == null) {
+			program.getLocation().print(System.err);
+			throw new ThisIsNotTheBookClubException("Function not found: " + functionId);
+		}
 		
 		final Val[] args;
 		{
@@ -259,13 +284,16 @@ public class Main {
 		} else if (function instanceof FunctionImpl) {
 			call = function_call(program, (FunctionImpl)function, expectedType, args);
 		}
-		if (call == null) throw new ThisIsNotTheBookClubException(String.valueOf(function));
+		if (call == null) {
+			program.getLocation().print(System.err);
+			throw new ThisIsNotTheBookClubException("Cannot create function call: " + String.valueOf(function));
+		}
 		
 		return call.invoke(program, args);
 	}
 	
 	static FunctionSet resolveFunctionSet(Symbol name) {
-		return name.getParent().resolveFunction(name);
+		return name.getParent().resolveFunction(name.getValue());
 	}
 	
 	static FunctionCall function_call(TypeRef expectedType, Symbol name, Val[] args) {

@@ -1,9 +1,14 @@
 
+(run {
+	(define X (+ 5 (+ 2 2)))
+	(+ 7 1 3 X)
+})
+
 
 (run&
 	(+ 5 (+ 2 2))
 	(+ 7 1 3)
-	+
+
 )
 
 ((run& DListR DListR Symbol)
@@ -13,9 +18,4 @@
 )
 
 // the rest will be ignored
-
-(run {
-	(+ 5 (+ 2 2))
-    (+ 7 1 3)
-})
 

@@ -1,5 +1,7 @@
 package com.ydo4ki.brougham.lang;
 
+import com.ydo4ki.brougham.ThisIsNotTheBookClubException;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -38,10 +40,29 @@ public final class FunctionImpl implements Val {
 	}
 	
 	public Val invoke(DList caller, Val[] args) {
-		return Objects.requireNonNull(
+		TypeRef[] params = type.getParams();
+		int Len = args.length;
+		int paramsLen = params.length;
+		boolean vararg = type.isVarargFunction();
+		for (int i = 0; i < Len; i++) {
+			TypeRef param;
+			if (vararg && i >= paramsLen) {
+				param = params[params.length-1];
+			} else {
+				param = params[i];
+			}
+			if (!param.matches(caller, args[i])) {
+				throw new ThisIsNotTheBookClubException("Invalid input args: " +
+						Arrays.toString(args) + " (" + Arrays.toString(params) + " types expected)");
+			}
+		}
+		Val ret = Objects.requireNonNull(
 				transformer.apply(caller, args),
 				"Function just returned null. This is outrageous. " + Arrays.toString(args)
 		);
+		if (type.getReturnType() != null && !type.getReturnType().matches(caller, ret))
+			throw new ThisIsNotTheBookClubException("Invalid return value: " + ret + "( " + type.getReturnType() + " expected)");
+		return ret;
 	}
 	
 	@Override

@@ -18,7 +18,7 @@ public class Parser {
 	private char ch;
 	private char next_ch;
 	
-	private char next(BufferedReader in) throws IOException {
+	private char next(Source in) throws IOException {
 		ch = next_ch == 0 ? (char) in.read() : next_ch;
 		next_ch = (char) in.read();
 		
@@ -26,8 +26,9 @@ public class Parser {
 		return ch;
 	}
 	
-	private Symbol parseSymbol(DList parent, BufferedReader in) throws IOException {
+	private Symbol parseSymbol(DList parent, Source in) throws IOException {
 		StringBuilder token = new StringBuilder();
+		int start = in.getCursor();
 		if (ch == '"') {
 			boolean skipNext = false;
 			token.append(ch);
@@ -54,11 +55,12 @@ public class Parser {
 				ch = next(in);
 			}
 		}
-		return new Symbol(parent, token.toString());
+		return new Symbol(new Location(in, start, in.getCursor()), parent, token.toString());
 	}
 	
-	private DList parseDList(DList parent, BracketsType bracketsType, BufferedReader in) throws IOException {
+	private DList parseDList(DList parent, BracketsType bracketsType, Source in) throws IOException {
 		List<Val> elements = new ArrayList<>();
+		int start = in.getCursor();
 		DList DList =  new DList(parent, bracketsType, elements);
 		Val next;
 		while (true) {
@@ -67,10 +69,11 @@ public class Parser {
 			elements.add(next);
 		}
 		ch = next(in);
+		DList.setLocation(new Location(in, start, in.getCursor()));
 		return DList;
 	}
 	
-	private Val parseVal(DList parent, BracketsType brackets, BufferedReader in) throws IOException {
+	private Val parseVal(DList parent, BracketsType brackets, Source in) throws IOException {
 		if (ch == 0xFFFF) return null;
 		while (Character.isWhitespace(ch)) {
 			ch = next(in);
@@ -94,11 +97,11 @@ public class Parser {
 	
 	public Val read(DList parent, File file) throws IOException {
 		DList fileDList = new DList(parent, BracketsType.ROUND, new ArrayList<>());
-		Symbol name = new Symbol(fileDList, file.getName());
+		Symbol name = new Symbol(new Location(null,0,0), fileDList, file.getName());
 		fileDList.getElements().add(name);
 		File[] files = file.listFiles();
 		if (files == null) {
-			BufferedReader in = new BufferedReader(new InputStreamReader(Files.newInputStream(file.toPath())));
+			Source in = new Source.OfFile(file);
 			Val DList = read(fileDList, in);
 			in.close();
 			fileDList.getElements().add(DList);
@@ -118,12 +121,12 @@ public class Parser {
 		return read(null, program);
 	}
 	public Val read(DList parent, String program) throws IOException {
-		BufferedReader in = new BufferedReader(new StringReader(program));
+		Source in = new Source.OfString(program);
 		Val ret = read(parent, in);
 		in.close();
 		return ret;
 	}
-	public Val read(DList parent, BufferedReader in) throws IOException {
+	public Val read(DList parent, Source in) throws IOException {
 		ch = next(in);
 		return parseVal(parent, BracketsType.ROUND, in);
 	}
