@@ -56,4 +56,15 @@ public final class FunctionImpl implements Val {
 	public String toString() {
 		return "f!"+type;
 	}
+	
+	public boolean isTemplate() {
+		if (!isPure() || (getRawType().getReturnType() != null
+				&& !(getRawType().getReturnType().getType() instanceof FunctionType))) {
+			return false;
+		}
+//		for (TypeRef param : type.getParams()) {
+//			if (!(param.getType() instanceof MetaType)) return false;
+//		}
+		return true;
+	}
 }

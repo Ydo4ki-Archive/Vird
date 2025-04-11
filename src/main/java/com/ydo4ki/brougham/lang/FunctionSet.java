@@ -59,8 +59,7 @@ public final class FunctionSet implements Val {
 			
 			FunctionCall call = FunctionCall.makeCall(caller, function, expectedType, argsTypes, amIaCastFunction());
 			if (call == null) {
-				if (!amIaCastFunction() && function.isPure() && (function.getRawType().getReturnType() == null
-						|| function.getRawType().getReturnType().getType() instanceof FunctionType))
+				if (!amIaCastFunction() && function.isTemplate())
 					potentialTemplates.add(function);
 				continue search;
 			}

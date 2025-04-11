@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * @author Sulphuris
@@ -33,6 +34,17 @@ public class Scope {
 				set.addImpl(f);
 			}
 		}
+	}
+	public void defineImplicitCast(TypeRef returnType, TypeRef argType, BiFunction<Scope, Val, Val> transformer, boolean pure) {
+		defineFunction("",
+				new FunctionImpl(
+						new FunctionType(
+								returnType,
+								new TypeRef[]{argType}
+						),
+						(caller, args) -> transformer.apply(caller, args[0]), pure
+				)
+		);
 	}
 	
 	

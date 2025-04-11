@@ -25,82 +25,52 @@ public class Interpreter {
 		program.define("DListR", DListType.of(BracketsType.ROUND));
 		program.define("DListS", DListType.of(BracketsType.SQUARE));
 		
+		program.defineFunction("define", new FunctionImpl(
+				new FunctionType(
+						BlobType.of(4).ref(),
+						new TypeRef[]{
+								SymbolType.instance.ref(),
+								BlobType.of(4).ref()
+						}
+				),
+				(caller, args) -> {
+					caller.getParent().define(((Symbol) args[0]).getValue(), args[1]);
+					return args[1];
+				}, false
+		));
 		
-		program.defineFunction("",
-				new FunctionImpl(
-						new FunctionType(
-								new TupleType(
-										SymbolType.instance,
-										SymbolType.instance
-								).ref(),
-								new TypeRef[]{
-										DListType.of(BracketsType.ROUND).ref()
-								}
-						),
-						(caller, args) -> {
-							DList list = (DList) args[0];
-							Val[] values = new Val[list.getElements().size()];
-							int i = 0;
-							for (Val element : list.getElements()) {
-								values[i++] = element;
-							}
-							return new Tuple(values);
-						}, true
+		program.defineImplicitCast(
+				BlobType.of(4).ref(), DListType.of(BracketsType.ROUND).ref(),
+				(caller, arg) -> evaluate_function(caller, BlobType.of(4).ref(), (DList)arg),
+				true
+		);
+		program.defineImplicitCast(
+				BlobType.of(4).ref(), SymbolType.instance.ref(),
+				(caller, arg) -> {
+					try {
+						return Blob.ofInt(Integer.parseInt(arg.toString()));
+					} catch (NumberFormatException e) {
+						return caller.resolve((Symbol) arg);
+					}
+				},
+				true
+		);
+		program.defineImplicitCast(
+				FunctionSetType.instance.ref(), SymbolType.instance.ref(
+						new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref())
 				),
-				new FunctionImpl(
-						new FunctionType(
-								BlobType.of(4).ref(),
-								new TypeRef[]{
-										DListType.of(BracketsType.ROUND).ref()
-								}
-						),
-						(caller, args) -> {
-							DList list = (DList) args[0];
-							return evaluate_function(caller, BlobType.of(4).ref(), list);
-						}, true
-				),
-				new FunctionImpl(
-						new FunctionType(
-								BlobType.of(4).ref(),
-								new TypeRef[]{SymbolType.instance.ref()}
-						),
-						(caller, args) -> {
-							try {
-								return Blob.ofInt(Integer.parseInt(args[0].toString()));
-							} catch (NumberFormatException e) {
-								return caller.resolve((Symbol) args[0]);
-							}
-						},
-						true
-				),
-				new FunctionImpl(
-						new FunctionType(
-								FunctionSetType.instance.ref(),
-								new TypeRef[]{SymbolType.instance.ref(
-										new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref())
-								)}
-						),
-						(caller, args) -> caller.resolveFunction(((Symbol) args[0]).getValue()),
-						true
-				),
-				new FunctionImpl(
-						new FunctionType(
-								MetaType.of(0).ref(),
-								new TypeRef[]{SymbolType.instance.ref(new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref()))}
-						),
-						(caller, args) -> {
-							String name = ((Symbol)args[0]).getValue();
-							Val type = caller.resolve(((Symbol)args[0]));
-							if (type != null && MetaType.of(0).ref().matches(caller, type)) return type;
-//							switch (name) {
-//								case "Symbol":
-//									return SymbolType.instance;
-//								case "DListR":
-//									return DListType.of(BracketsType.ROUND);
-//							}
-							throw new ThisIsNotTheBookClubException(name);
-						}, true
-				)
+				(caller, arg) -> caller.resolveFunction(((Symbol) arg).getValue()),
+				true
+		);
+		program.defineImplicitCast(
+				MetaType.of(0).ref(),
+				SymbolType.instance.ref(new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref())),
+				(caller, arg) -> {
+					String name = ((Symbol) arg).getValue();
+					Val type = caller.resolve(((Symbol) arg));
+					if (type != null && MetaType.of(0).ref().matches(caller, type)) return type;
+					throw new ThisIsNotTheBookClubException(name);
+				}, true
 		);
 		
 		
@@ -124,21 +94,6 @@ public class Interpreter {
 				)
 		);
 		
-		program.defineFunction("define",
-				new FunctionImpl(
-						new FunctionType(
-								BlobType.of(4).ref(),
-								new TypeRef[]{
-										SymbolType.instance.ref(),
-										BlobType.of(4).ref()
-								}
-						),
-						(caller, args) -> {
-							caller.getParent().define(((Symbol) args[0]).getValue(), args[1]);
-							return args[1];
-						}, false
-				)
-		);
 		program.defineFunction("include",
 				new FunctionImpl(
 						new FunctionType(
@@ -151,7 +106,7 @@ public class Interpreter {
 							try {
 								Val p = ((DList) new Parser().read(caller, new File(fileName))).getElements().get(1);
 //								System.out.println(p);
-								return evaluate(caller,null, p);
+								return evaluate(caller, null, p);
 							} catch (IOException e) {
 								throw new RuntimeException(e);
 							}
@@ -165,7 +120,7 @@ public class Interpreter {
 								new TypeRef[]{DListType.of(BracketsType.BRACES).ref()}
 						),
 						(caller, args) -> {
-							DList body = ((DList)args[0]);
+							DList body = ((DList) args[0]);
 							Val last = null;
 							for (Val val : body.getElements()) {
 								last = evaluate(caller, null, val);
@@ -179,6 +134,7 @@ public class Interpreter {
 	public Val next(String in) throws IOException {
 		return evaluate(program, null, new Parser().read(program, new Source.OfString(in)));
 	}
+	
 	public Val next(BufferedReader in) throws IOException {
 		return evaluate(program, null, new Parser().read(program, new Source.Raw(in)));
 	}
@@ -216,7 +172,7 @@ public class Interpreter {
 				throw new IllegalArgumentException("Function not found: " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));
 			}
 		} else if (function instanceof FunctionImpl) {
-			call = function_call(f, (FunctionImpl)function, expectedType, args);
+			call = function_call(f, (FunctionImpl) function, expectedType, args);
 		}
 		if (call == null) {
 			f.getLocation().print(System.err);
