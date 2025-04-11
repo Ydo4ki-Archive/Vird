@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
  * @since 4/8/2025 8:24 PM
  */
 @EqualsAndHashCode(callSuper = false)
-public final class DList extends Scope implements SyntaxStructure {
+public final class DList extends Scope implements SyntaxElement {
 	
 	
 	public static TypeRef TYPE(BracketsType type) {
-		return SyntaxStructureType.instance.ref(new ComplexComputingEquipment.IsDList(type));
+		return SyntaxElementType.instance.ref(new ComplexComputingEquipment.IsDList(type));
 	}
 	
 	@Getter
@@ -48,7 +48,7 @@ public final class DList extends Scope implements SyntaxStructure {
 	
 	@Override
 	public TypeRef getType() {
-		return SyntaxStructureType.instance.ref(new ComplexComputingEquipment.IsDList(bracketsType));
+		return SyntaxElementType.instance.ref(new ComplexComputingEquipment.IsDList(bracketsType));
 	}
 	
 	@Override

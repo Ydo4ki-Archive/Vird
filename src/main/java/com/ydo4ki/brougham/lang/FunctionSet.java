@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
  * @author Sulphuris
  * @since 4/8/2025 1:13 PM
  */
-public final class FunctionSet implements Val {
+public class FunctionSet implements Val {
 	private final Set<FunctionImpl> specificFunctions = new HashSet<>();
 	
 	public FunctionSet(FunctionImpl... impl) {

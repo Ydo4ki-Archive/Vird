@@ -24,18 +24,22 @@ public class Interpreter {
 		program.define("DListB", DList.TYPE(BracketsType.BRACES));
 		program.define("DListR", DList.TYPE(BracketsType.ROUND));
 		program.define("DListS", DList.TYPE(BracketsType.SQUARE));
+		program.define("Blob4", BlobType.of(4).ref());
 		
 		program.defineFunction("define", new FunctionImpl(
 				new FunctionType(
-						BlobType.of(4).ref(),
+						null,
 						new TypeRef[]{
 								Symbol.TYPE,
-								BlobType.of(4).ref()
+								TypeRefType.instance.ref(),
+								SyntaxElementType.instance.ref()
 						}
 				),
 				(caller, args) -> {
-					caller.getParent().define(((Symbol) args[0]).getValue(), args[1]);
-					return args[1];
+					TypeRef type = (TypeRef)args[1];
+					Val value = evaluate(caller, type, args[2]);
+					caller.getParent().define(((Symbol) args[0]).getValue(), value);
+					return value;
 				}, false
 		));
 		
@@ -142,7 +146,7 @@ public class Interpreter {
 	private Val evaluate(Scope caller, TypeRef expectedType, Val val) {
 		if (expectedType != null && expectedType.matches(caller, val)) return val;
 		if (val instanceof DList) return evaluate_function(caller, expectedType, (DList) val);
-		if (val instanceof Symbol) return resolveFunctionSet((Symbol) val);
+		if (val instanceof Symbol) return resolve((Symbol) val);
 		if (expectedType != null) {
 			// maybe find a cast function... idk
 		}
@@ -182,8 +186,8 @@ public class Interpreter {
 		return call.invoke(f, args);
 	}
 	
-	private FunctionSet resolveFunctionSet(Symbol name) {
-		return name.getParent().resolveFunction(name.getValue());
+	private Val resolve(Symbol name) {
+		return name.getParent().resolve(name);
 	}
 	
 	private FunctionCall function_call(TypeRef expectedType, Symbol name, Val[] args) {
