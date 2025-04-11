@@ -1,5 +1,7 @@
 package com.ydo4ki.brougham;
 
+import lombok.Getter;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.util.stream.Collectors;
@@ -10,14 +12,11 @@ import java.util.stream.Collectors;
  */
 public abstract class Source {
 	private final BufferedReader in;
+	@Getter
 	private int cursor;
 	
 	protected Source(BufferedReader in) {
 		this.in = in;
-	}
-	
-	public int getCursor() {
-		return cursor;
 	}
 	
 	public void close() throws IOException {
@@ -67,5 +66,24 @@ public abstract class Source {
 			out.println(lines.substring(start, end));
 		}
 	}
-	
+	public static class Raw extends Source {
+		protected Raw(BufferedReader in) {
+			super(in);
+		}
+		
+		@Override
+		public void print(PrintStream out, int start, int end) throws IOException {
+			out.println("<input>");
+		}
+		
+		private boolean r = true;
+		@Override
+		public char read() throws IOException {
+			r = !r;
+			if (r) {
+				return ' ';
+			}
+			return super.read();
+		}
+	}
 }

@@ -29,7 +29,8 @@ public final class FunctionSet implements Val {
 	
 	public void addImpl(FunctionImpl function) {
 		if (findImplByType(function.getRawType()) != null)
-			throw new IllegalArgumentException("This types of arguments are already occupied " + Arrays.toString(function.getRawType().getParams()));
+			throw new IllegalArgumentException("This types of arguments are already occupied " +
+					Arrays.toString(function.getRawType().getParams()));
 		specificFunctions.add(function);
 	}
 	

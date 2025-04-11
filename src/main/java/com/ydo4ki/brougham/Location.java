@@ -13,8 +13,8 @@ public final class Location {
 	
 	public Location(Source src, int start, int end) {
 		this.src = src;
-		this.start = start - 5;
-		this.end = end - 5;
+		this.start = start;
+		this.end = end;
 	}
 	
 	public void print(PrintStream out) {
