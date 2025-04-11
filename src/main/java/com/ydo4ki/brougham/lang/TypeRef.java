@@ -24,11 +24,11 @@ public final class TypeRef {
 		this(type, vararg, ComplexComputingEquipment.free);
 	}
 	
-	public boolean matches(DList caller, Val val) {
+	public boolean matches(Scope caller, Val val) {
 		if (!val.getRawType().equals(type)) return false;
 		return constraints.test(caller, val);
 	}
-	public boolean valueOfGivenTypeMatchesMe(DList caller, TypeRef other) {
+	public boolean valueOfGivenTypeMatchesMe(Scope caller, TypeRef other) {
 		if (!this.type.equals(other.type)) return false;
 		return this.constraints.contains(caller, other.constraints);
 	}

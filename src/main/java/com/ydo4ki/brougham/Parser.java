@@ -1,9 +1,6 @@
 package com.ydo4ki.brougham;
 
-import com.ydo4ki.brougham.lang.BracketsType;
-import com.ydo4ki.brougham.lang.DList;
-import com.ydo4ki.brougham.lang.Symbol;
-import com.ydo4ki.brougham.lang.Val;
+import com.ydo4ki.brougham.lang.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -26,7 +23,7 @@ public class Parser {
 		return ch;
 	}
 	
-	private Symbol parseSymbol(DList parent, Source in) throws IOException {
+	private Symbol parseSymbol(Scope parent, Source in) throws IOException {
 		StringBuilder token = new StringBuilder();
 		int start = in.getCursor();
 		if (ch == '"') {
@@ -58,7 +55,7 @@ public class Parser {
 		return new Symbol(new Location(in, start, in.getCursor()), parent, token.toString());
 	}
 	
-	private DList parseDList(DList parent, BracketsType bracketsType, Source in) throws IOException {
+	private DList parseDList(Scope parent, BracketsType bracketsType, Source in) throws IOException {
 		List<Val> elements = new ArrayList<>();
 		int start = in.getCursor();
 		DList DList =  new DList(parent, bracketsType, elements);
@@ -73,7 +70,7 @@ public class Parser {
 		return DList;
 	}
 	
-	private Val parseVal(DList parent, BracketsType brackets, Source in) throws IOException {
+	private Val parseVal(Scope parent, BracketsType brackets, Source in) throws IOException {
 		if (ch == 0xFFFF) return null;
 		while (Character.isWhitespace(ch)) {
 			ch = next(in);
@@ -95,7 +92,7 @@ public class Parser {
 	
 	private static final String delimiter_operators = ";,[]{}()";
 	
-	public Val read(DList parent, File file) throws IOException {
+	public Val read(Scope parent, File file) throws IOException {
 		DList fileDList = new DList(parent, BracketsType.ROUND, new ArrayList<>());
 		Symbol name = new Symbol(new Location(null,0,0), fileDList, file.getName());
 		fileDList.getElements().add(name);
@@ -120,13 +117,13 @@ public class Parser {
 	public Val read(String program) throws IOException {
 		return read(null, program);
 	}
-	public Val read(DList parent, String program) throws IOException {
+	public Val read(Scope parent, String program) throws IOException {
 		Source in = new Source.OfString(program);
 		Val ret = read(parent, in);
 		in.close();
 		return ret;
 	}
-	public Val read(DList parent, Source in) throws IOException {
+	public Val read(Scope parent, Source in) throws IOException {
 		ch = next(in);
 		return parseVal(parent, BracketsType.ROUND, in);
 	}

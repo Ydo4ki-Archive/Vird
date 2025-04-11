@@ -17,7 +17,7 @@ import java.util.Objects;
 @EqualsAndHashCode
 public final class Symbol implements Val {
 	private final Location location;
-	private final DList parent;
+	private final Scope parent;
 	private final String value;
 	
 	@Override

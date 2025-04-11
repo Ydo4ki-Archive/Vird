@@ -17,7 +17,7 @@ import java.util.function.BiFunction;
 @RequiredArgsConstructor
 public final class FunctionImpl implements Val {
 	private final FunctionType type;
-	private final BiFunction<DList, Val[], Val> transformer;
+	private final BiFunction<Scope, Val[], Val> transformer;
 	@Getter
 	private final boolean pure;
 	
@@ -26,7 +26,7 @@ public final class FunctionImpl implements Val {
 		return type;
 	}
 	
-	public Val invoke(DList caller, Val[] args) {
+	public Val invoke(Scope caller, Val[] args) {
 		TypeRef[] params = type.getParams();
 		int Len = args.length;
 		int paramsLen = params.length;

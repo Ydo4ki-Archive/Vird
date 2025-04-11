@@ -27,7 +27,7 @@ public final class FunctionCall {
 		this.castsCount = casts;
 	}
 	
-	public static FunctionCall makeCall(DList caller, FunctionImpl function, TypeRef expectedType, TypeRef[] argsTypes, boolean amIaCastFunction) {
+	public static FunctionCall makeCall(Scope caller, FunctionImpl function, TypeRef expectedType, TypeRef[] argsTypes, boolean amIaCastFunction) {
 		FunctionCall return_type_cast = null;
 		TypeRef returnType = function.getRawType().getReturnType();
 		if (expectedType != null) {
@@ -74,7 +74,7 @@ public final class FunctionCall {
 		return function.getRawType().getReturnType();
 	}
 	
-	public Val invoke(DList caller, Val[] args) {
+	public Val invoke(Scope caller, Val[] args) {
 		for (int i = 0; i < args.length; i++) {
 			FunctionCall cast = implicit_cast_calls[i];
 			if (cast == null) continue;

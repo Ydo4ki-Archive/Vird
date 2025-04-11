@@ -40,10 +40,10 @@ public final class FunctionSet implements Val {
 		return null;
 	}
 	
-	public FunctionCall findImplForArgs(DList caller, TypeRef expectedType, Val[] args) {
+	public FunctionCall findImplForArgs(Scope caller, TypeRef expectedType, Val[] args) {
 		return findImplForArgs(caller, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
 	}
-	public FunctionCall findImplForArgs(DList caller, TypeRef expectedType, TypeRef[] argsTypes) {
+	public FunctionCall findImplForArgs(Scope caller, TypeRef expectedType, TypeRef[] argsTypes) {
 //		System.out.println("# Finding function: " + Arrays.toString(argsTypes) + " -> " + expectedType);
 		List<FunctionCall> candidates = new ArrayList<>();
 		List<FunctionImpl> potentialTemplates = new ArrayList<>();

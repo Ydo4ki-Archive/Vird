@@ -251,7 +251,7 @@ public class Main {
 //		);
 //	}
 	
-	static Val evaluate(DList caller, TypeRef expectedType, Val val) {
+	static Val evaluate(Scope caller, TypeRef expectedType, Val val) {
 		if (expectedType != null && expectedType.matches(caller, val)) return val;
 		if (val instanceof DList) return test_function_evaluate(caller, expectedType, (DList) val);
 		if (val instanceof Symbol) return resolveFunctionSet((Symbol) val);
@@ -261,7 +261,7 @@ public class Main {
 		return val;
 	}
 	
-	static Val test_function_evaluate(DList caller, TypeRef expectedType, DList program) {
+	static Val test_function_evaluate(Scope caller, TypeRef expectedType, DList program) {
 		Val functionId = program.getElements().get(0);
 		Val function = evaluate(caller, null, functionId);
 		if (function == null) {
@@ -303,7 +303,7 @@ public class Main {
 		return func;
 	}
 	
-	static FunctionCall function_call(DList caller, FunctionImpl function, TypeRef expectedType, Val[] args) {
+	static FunctionCall function_call(Scope caller, FunctionImpl function, TypeRef expectedType, Val[] args) {
 		FunctionCall call = FunctionCall.makeCall(caller, function, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new), false);
 		if (call == null) {
 			throw new IllegalArgumentException("Function not found: " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));

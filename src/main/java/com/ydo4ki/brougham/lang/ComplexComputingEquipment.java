@@ -3,21 +3,21 @@ package com.ydo4ki.brougham.lang;
 import java.util.Objects;
 
 public abstract class ComplexComputingEquipment {
-	abstract boolean test(DList caller, Val val);
+	abstract boolean test(Scope caller, Val val);
 	
-	abstract boolean contains(DList caller, ComplexComputingEquipment constraint);
+	abstract boolean contains(Scope caller, ComplexComputingEquipment constraint);
 	
 	public static final Free free = new Free();
 	public static class Free extends ComplexComputingEquipment {
 		Free() {}
 		
 		@Override
-		boolean test(DList caller, Val val) {
+		boolean test(Scope caller, Val val) {
 			return true;
 		}
 		
 		@Override
-		boolean contains(DList caller, ComplexComputingEquipment constraint) {
+		boolean contains(Scope caller, ComplexComputingEquipment constraint) {
 			return true;
 		}
 	}
@@ -30,13 +30,13 @@ public abstract class ComplexComputingEquipment {
 		}
 		
 		@Override
-		boolean test(DList caller, Val val) {
+		boolean test(Scope caller, Val val) {
 			Val resolved = caller.resolve(((Symbol)val));
 			return resolved != null && type.matches(caller, resolved);
 		}
 		
 		@Override
-		boolean contains(DList caller, ComplexComputingEquipment constraint) {
+		boolean contains(Scope caller, ComplexComputingEquipment constraint) {
 			if (this.equals(constraint)) return true;
 			if (constraint instanceof Equality) {
 				return test(caller, ((Equality) constraint).value);
@@ -68,12 +68,12 @@ public abstract class ComplexComputingEquipment {
 		}
 		
 		@Override
-		boolean test(DList caller, Val val) {
+		boolean test(Scope caller, Val val) {
 			return val.equals(value);
 		}
 		
 		@Override
-		boolean contains(DList caller, ComplexComputingEquipment constraint) {
+		boolean contains(Scope caller, ComplexComputingEquipment constraint) {
 			return this.equals(constraint);
 		}
 		
