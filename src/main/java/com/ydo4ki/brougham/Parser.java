@@ -41,6 +41,8 @@ public class Parser {
 				ch = next(in);
 				if (ch == 0xFFFF) return null;
 			}
+			ch = next(in);
+			if (ch == 0xFFFF) return null;
 			token.append('"');
 		} else {
 			if (delimiter_operators.contains(String.valueOf(ch))) {

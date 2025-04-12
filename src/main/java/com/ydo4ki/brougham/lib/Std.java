@@ -4,6 +4,7 @@ import com.ydo4ki.brougham.Interpreter;
 import com.ydo4ki.brougham.Location;
 import com.ydo4ki.brougham.lang.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -29,6 +30,19 @@ public final class Std {
 		TypeRef blob4 = scope.define("Blob4", BlobType.of(4).ref());
 //		ConversionRule.ConversionTypes conversionTypes = new ConversionRule.ConversionTypes(blob4, Symbol.TYPE);
 //		scope.defineConversionRule(new ConversionRule(conversionTypes, blob4.getFunctionBySignature(conversionTypes.toFunctionType())));
+		scope.define("charextract",
+				new Func(
+						new FunctionType(
+								null,
+								new TypeRef[]{
+										Symbol.TYPE
+								}
+						),
+						(caller, args) -> {
+							return new Blob(((Symbol)args[0]).getValue().getBytes(StandardCharsets.UTF_8));
+						}, true
+				)
+		);
 		scope.define("blob4",
 				new Func(
 						new FunctionType(
