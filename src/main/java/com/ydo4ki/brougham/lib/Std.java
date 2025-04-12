@@ -34,13 +34,15 @@ public final class Std {
 						new FunctionType(
 								BlobType.of(4).ref(),
 								new TypeRef[]{
-										BlobType.of(4).ref(),
-										BlobType.of(4).ref()
+										BlobType.of(4).vararg(),
 								}
 						),
 						(caller, args) -> {
-							System.out.println(Arrays.toString(args));
-							return Blob.ofInt(((Blob)args[0]).toInt() + ((Blob)args[1]).toInt());
+							int sum = 0;
+							for (Val arg : args) {
+								sum += ((Blob)arg).toInt();
+							}
+							return Blob.ofInt(sum);
 						}
 						, true
 				)

@@ -5,6 +5,7 @@ import com.ydo4ki.brougham.lib.Std;
 import lombok.Getter;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +31,12 @@ public class Interpreter {
 	
 	public Val next(BufferedReader in) throws IOException {
 		return evaluate(program, null, new Parser().read(program, new Source.Raw(in)));
+	}
+	
+	public Val next(Source in) throws IOException {
+		Val parsed = new Parser().read(program, in);
+		if (parsed == null) throw new EOFException();
+		return evaluate(program, null, parsed);
 	}
 	
 	public static Val evaluate(Scope caller, TypeRef expectedType, Val val) {

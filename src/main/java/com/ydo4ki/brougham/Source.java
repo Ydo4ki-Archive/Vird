@@ -76,13 +76,8 @@ public abstract class Source {
 			out.println("<input>");
 		}
 		
-		private boolean r = true;
 		@Override
 		public char read() throws IOException {
-			r = !r;
-			if (r) {
-				return ' ';
-			}
 			return super.read();
 		}
 	}

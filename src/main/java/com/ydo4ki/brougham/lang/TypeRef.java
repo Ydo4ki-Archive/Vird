@@ -33,6 +33,7 @@ public final class TypeRef implements Val {
 		return constraint.test(scope, val);
 	}
 	public boolean isCompatibleWith(Scope scope, TypeRef other) {
+		if (other == null) return true;
 		if (!this.baseType.equals(other.baseType)) return false;
 		return this.constraint.implies(scope, other.constraint);
 	}
