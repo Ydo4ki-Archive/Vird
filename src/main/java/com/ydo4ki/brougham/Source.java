@@ -63,7 +63,7 @@ public abstract class Source {
 		@Override
 		public void print(PrintStream out, int start, int end) throws IOException {
 			String lines = String.join("\n", Files.readAllLines(file.toPath()));
-			out.println(lines.substring(start, end));
+			out.println(lines.substring(start, Math.min(end, lines.length())));
 		}
 	}
 	public static class Raw extends Source {

@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
  * @since 4/8/2025 8:24 PM
  */
 @Getter
-@EqualsAndHashCode(callSuper = false)
 public final class DList extends Scope implements SyntaxElement {
 	
 	public static TypeRef TYPE(BracketsType type) {
@@ -43,5 +42,17 @@ public final class DList extends Scope implements SyntaxElement {
 	@Override
 	public String toString() {
 		return "DList" + bracketsType.open + elements.stream().map(Val::toString).collect(Collectors.joining(" ")) + bracketsType.close;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass()) return false;
+		DList dList = (DList) o;
+		return bracketsType == dList.bracketsType && Objects.equals(elements, dList.elements);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(bracketsType, elements);
 	}
 }

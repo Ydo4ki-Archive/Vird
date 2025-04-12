@@ -29,7 +29,7 @@ public final class Symbol implements SyntaxElement {
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass()) return false;
 		Symbol symbol = (Symbol) o;
-		return Objects.equals(location, symbol.location) && Objects.equals(value, symbol.value);
+		return Objects.equals(value, symbol.value);
 	}
 	
 	@Override

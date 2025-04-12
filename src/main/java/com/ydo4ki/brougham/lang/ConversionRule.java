@@ -18,7 +18,8 @@ public class ConversionRule implements ConcreteFunction {
 	private final ConversionTypes types;
 	private final FunctionImpl function;
 	
-	public ConversionRule(ConversionTypes types, FunctionImpl function) {
+	public ConversionRule(ConversionTypes types, ConcreteFunction f) {
+		FunctionImpl function = f.asFunctionImpl();
 		this.types = Objects.requireNonNull(types, "ConversionTypes is null");
 		this.function = Objects.requireNonNull(function, "function is null");
 		if (!function.isPure())

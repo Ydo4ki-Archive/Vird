@@ -86,6 +86,12 @@ public final class FunctionCall {
 						if (param.isCompatibleWith(caller, call.getReturnType())) {
 							cast = new ConversionRule(ct, Std.evaluate);
 						} else return null;
+					} else if (inputWeHave.isCompatibleWith(caller, Symbol.TYPE)) {
+						Symbol value = (Symbol)((EqualityConstraint)inputWeHave.getConstraint()).getExpected();
+						Val call = Interpreter.resolve(value);
+						if (call != null && param.isCompatibleWith(caller, call.getType())) {
+							cast = new ConversionRule(ct, Std.evaluate);
+						} else return null;
 					} else return null;
 				}
 				casts[i] = cast;

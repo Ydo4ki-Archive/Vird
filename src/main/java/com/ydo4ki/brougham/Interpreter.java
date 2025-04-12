@@ -93,7 +93,7 @@ public class Interpreter {
 		return get_function_call(caller, expectedType, f).invoke(f, args);
 	}
 	
-	private static Val resolve(Symbol name) {
+	public static Val resolve(Symbol name) {
 		return name.getParent().resolve(name.getValue());
 	}
 	
