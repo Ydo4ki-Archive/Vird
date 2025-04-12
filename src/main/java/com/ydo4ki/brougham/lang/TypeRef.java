@@ -40,7 +40,10 @@ public final class TypeRef implements Val {
 	
 	@Override
 	public String toString() {
-		return baseType.toString();
+		String str = baseType.toString();
+		if (vararg) str += "...";
+		if (constraint != FreeConstraint.INSTANCE) str += " requires " + constraint;
+		return str;
 	}
 	
 	@Override

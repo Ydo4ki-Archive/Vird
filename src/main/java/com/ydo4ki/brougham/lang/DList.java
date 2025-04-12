@@ -52,11 +52,6 @@ public final class DList extends Scope implements SyntaxElement {
 //	}
 	
 	@Override
-	public TypeRef getType() {
-		return TYPE(bracketsType);
-	}
-	
-	@Override
 	public String toString() {
 		return "DList" + bracketsType.open + elements.stream().map(Val::toString).collect(Collectors.joining(" ")) + bracketsType.close;
 	}

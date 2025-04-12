@@ -19,7 +19,7 @@ public class ConversionRule implements ConcreteFunction {
 	public ConversionRule(ConversionTypes types, FunctionImpl function) {
 		this.types = types;
 		this.function = function;
-		if (!function.getRawType().getReturnType().equals(types.getTargetType())
+		if (!function.isPure() || !function.getRawType().getReturnType().equals(types.getTargetType())
 				|| function.getRawType().getParams().length != 1
 				|| function.getRawType().getParams()[0].equals(types.getFrom()))
 			throw new IllegalArgumentException("Invalid function signature: " + function.getType() + " (" + types + " expected)");

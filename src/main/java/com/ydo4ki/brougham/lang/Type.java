@@ -6,7 +6,7 @@ import com.ydo4ki.brougham.lang.constraint.Constraint;
 * @since 4/7/2025 9:43 PM
 * @author Sulphuris
 */
-public abstract class Type implements Val {
+public abstract class Type extends FunctionSetImpl {
 	@Override
 	public Type getRawType() {
 		return MetaType.of(0);

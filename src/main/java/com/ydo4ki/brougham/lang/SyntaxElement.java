@@ -9,8 +9,5 @@ public interface SyntaxElement extends Val {
 	default Type getRawType() {
 		return SyntaxElementType.instance;
 	}
-	
-	@Override
-	TypeRef getType();
 }
 

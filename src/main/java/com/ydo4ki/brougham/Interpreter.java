@@ -1,6 +1,7 @@
 package com.ydo4ki.brougham;
 
 import com.ydo4ki.brougham.lang.*;
+import com.ydo4ki.brougham.lib.Std;
 import lombok.Getter;
 
 import java.io.BufferedReader;
@@ -19,7 +20,7 @@ public class Interpreter {
 	private final Scope program = new Scope(null);
 	
 	public Interpreter() {
-	
+		Std.setup(program);
 	}
 	
 	public Val next(String in) throws IOException {
@@ -43,10 +44,11 @@ public class Interpreter {
 	private Val evaluate_function(Scope caller, TypeRef expectedType, DList f) {
 		Val functionId = f.getElements().get(0);
 		Val function = evaluate(caller, null, functionId);
-		if (function == null) {
+		if (!(function instanceof FunctionSet)) {
 			f.getLocation().print(System.err);
 			throw new ThisIsNotTheBookClubException("Function not found: " + functionId);
 		}
+		FunctionSet func = ((FunctionSet) function);
 		
 		final Val[] args;
 		{
@@ -54,21 +56,17 @@ public class Interpreter {
 			args0.remove(0);
 			args = args0.toArray(new Val[0]);
 		}
-		FunctionCall call = null;
-		if (function instanceof FunctionSet) {
-			FunctionSet set = (FunctionSet) function;
-			call = set.makeCall(f, expectedType, args);
-			if (call == null) {
-				f.getLocation().print(System.err);
-				throw new IllegalArgumentException("Function not found: " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));
-			}
-		} else if (function instanceof FunctionImpl) {
-			call = function_call(f, (FunctionImpl) function, expectedType, args);
-		}
+		FunctionCall call = func.makeCall(f, expectedType, args);
 		if (call == null) {
 			f.getLocation().print(System.err);
-			throw new ThisIsNotTheBookClubException("Cannot create function call: " + function);
+			throw new IllegalArgumentException("Function not found: " + functionId +
+					Arrays.stream(args).map(Val::getType).collect(Collectors.toList()) +
+					" (for " + Arrays.toString(args) + ")");
 		}
+//		if (func instanceof FunctionSet) {
+//		} else if (function instanceof FunctionImpl) {
+//			call = function_call(f, (FunctionImpl) function, expectedType, args);
+//		}
 		
 		return call.invoke(f, args);
 	}

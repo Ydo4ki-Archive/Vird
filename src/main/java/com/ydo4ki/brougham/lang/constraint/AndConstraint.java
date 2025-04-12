@@ -27,4 +27,9 @@ public final class AndConstraint extends Constraint {
 	public boolean implies(Scope scope, Constraint other) {
 		return constraints.stream().anyMatch(c -> c.implies(scope, other));
 	}
+	
+	@Override
+	public String toString() {
+		return "And" + constraints;
+	}
 }
