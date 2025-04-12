@@ -27,12 +27,12 @@ public final class FunctionCall {
 		this.castsCount = casts;
 	}
 	
-	public static FunctionCall makeCall(Scope caller, FunctionImpl function, TypeRef expectedType, TypeRef[] argsTypes, boolean amIaCastFunction) {
+	public static FunctionCall makeCall(Scope caller, FunctionImpl function, TypeRef expectedType, TypeRef[] argsTypes) {
 		FunctionCall return_type_cast = null;
 		TypeRef returnType = function.getRawType().getReturnType();
 		if (expectedType != null) {
-			if (returnType != null && !returnType.valueOfGivenTypeMatchesMe(caller, expectedType)) {
-				if (amIaCastFunction) return null;
+			if (returnType != null && !returnType.isCompatibleWith(caller, expectedType)) {
+//				if (amIaCastFunction) return null;
 				FunctionCall cast = caller.resolveFunctionImpl("", expectedType, new TypeRef[]{returnType});
 				if (cast == null) return null;
 				return_type_cast = cast;
@@ -48,12 +48,12 @@ public final class FunctionCall {
 			} else {
 				param = params[i];
 			}
-			if (param.valueOfGivenTypeMatchesMe(caller, argsTypes[i])) continue; // cast = null (not needed)
+			if (param.isCompatibleWith(caller, argsTypes[i])) continue; // cast = null (not needed)
 			else {
 				FunctionCall cast;
 				TypeRef neededReturnType = param;
 				TypeRef inputWeHave = argsTypes[i];
-				if (amIaCastFunction && Objects.equals(neededReturnType, expectedType)) {
+				if (/*amIaCastFunction &&*/ Objects.equals(neededReturnType, expectedType)) {
 					cast = null;
 				} else {
 					cast = caller.resolveFunctionImpl("", neededReturnType, new TypeRef[]{inputWeHave});

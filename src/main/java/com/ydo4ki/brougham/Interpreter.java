@@ -4,7 +4,6 @@ import com.ydo4ki.brougham.lang.*;
 import lombok.Getter;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,119 +19,7 @@ public class Interpreter {
 	private final Scope program = new Scope(null);
 	
 	public Interpreter() {
-		program.define("Symbol", Symbol.TYPE);
-		program.define("DListB", DList.TYPE(BracketsType.BRACES));
-		program.define("DListR", DList.TYPE(BracketsType.ROUND));
-		program.define("DListS", DList.TYPE(BracketsType.SQUARE));
-		program.define("Blob4", BlobType.of(4).ref());
-		
-		program.defineFunction("define", new FunctionImpl(
-				new FunctionType(
-						null,
-						new TypeRef[]{
-								Symbol.TYPE,
-								TypeRefType.instance.ref(),
-								SyntaxElementType.instance.ref()
-						}
-				),
-				(caller, args) -> {
-					TypeRef type = (TypeRef)args[1];
-					Val value = evaluate(caller, type, args[2]);
-					caller.getParent().define(((Symbol) args[0]).getValue(), value);
-					return value;
-				}, false
-		));
-		
-		program.defineImplicitCast(
-				BlobType.of(4).ref(), DList.TYPE(BracketsType.ROUND),
-				(caller, arg) -> evaluate_function(caller, BlobType.of(4).ref(), (DList)arg),
-				true
-		);
-		program.defineImplicitCast(
-				BlobType.of(4).ref(), Symbol.TYPE,
-				(caller, arg) -> {
-					try {
-						return Blob.ofInt(Integer.parseInt(arg.toString()));
-					} catch (NumberFormatException e) {
-						return caller.resolve((Symbol) arg);
-					}
-				},
-				true
-		);
-		program.defineImplicitCast(
-				FunctionSetType.instance.ref(), Symbol.TYPE.also(
-						new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref())
-				),
-				(caller, arg) -> caller.resolveFunction(((Symbol) arg).getValue()),
-				true
-		);
-		program.defineImplicitCast(
-				TypeRefType.instance.ref(),
-				Symbol.TYPE.also(new ComplexComputingEquipment.HasDefinedInContext(MetaType.of(0).ref())),
-				(caller, arg) -> {
-					String name = ((Symbol) arg).getValue();
-					Val type = caller.resolve(((Symbol) arg));
-					if (type != null && MetaType.of(0).ref().matches(caller, type)) return type;
-					throw new ThisIsNotTheBookClubException(name);
-				}, true
-		);
-		
-		
-		program.define("+",
-				new FunctionSet(
-						new FunctionImpl(
-								new FunctionType(
-										BlobType.of(4).ref(),
-										new TypeRef[]{
-												BlobType.of(4).vararg(),
-										}
-								),
-								(caller, allArgs) -> {
-									int sum = 0;
-									for (Val arg : allArgs) {
-										sum += ((Blob) arg).toInt();
-									}
-									return Blob.ofInt(sum);
-								}, true
-						)
-				)
-		);
-		
-		program.defineFunction("include",
-				new FunctionImpl(
-						new FunctionType(
-								null, //DListType.of(BracketsType.ROUND).ref(),
-								new TypeRef[]{Symbol.TYPE}
-						),
-						(caller, args) -> {
-							String fileName = args[0].toString();
-							fileName = fileName.substring(1, fileName.length() - 1); // remove quotes
-							try {
-								Val p = ((DList) new Parser().read(caller, new File(fileName))).getElements().get(1);
-//								System.out.println(p);
-								return evaluate(caller, null, p);
-							} catch (IOException e) {
-								throw new RuntimeException(e);
-							}
-						}, true
-				)
-		);
-		program.defineFunction("run",
-				new FunctionImpl(
-						new FunctionType(
-								null,
-								new TypeRef[]{DList.TYPE(BracketsType.BRACES)}
-						),
-						(caller, args) -> {
-							DList body = ((DList) args[0]);
-							Val last = null;
-							for (Val val : body.getElements()) {
-								last = evaluate(caller, null, val);
-							}
-							return last;
-						}, true
-				)
-		);
+	
 	}
 	
 	public Val next(String in) throws IOException {
@@ -170,7 +57,7 @@ public class Interpreter {
 		FunctionCall call = null;
 		if (function instanceof FunctionSet) {
 			FunctionSet set = (FunctionSet) function;
-			call = set.findImplForArgs(f, expectedType, args);
+			call = set.makeCall(f, expectedType, args);
 			if (call == null) {
 				f.getLocation().print(System.err);
 				throw new IllegalArgumentException("Function not found: " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));
@@ -187,7 +74,7 @@ public class Interpreter {
 	}
 	
 	private Val resolve(Symbol name) {
-		return name.getParent().resolve(name);
+		return name.getParent().resolve(name.getValue());
 	}
 	
 	private FunctionCall function_call(TypeRef expectedType, Symbol name, Val[] args) {
@@ -198,7 +85,7 @@ public class Interpreter {
 	}
 	
 	private FunctionCall function_call(Scope caller, FunctionImpl function, TypeRef expectedType, Val[] args) {
-		FunctionCall call = FunctionCall.makeCall(caller, function, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new), false);
+		FunctionCall call = FunctionCall.makeCall(caller, function, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
 		if (call == null) {
 			throw new IllegalArgumentException("Function not found: " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));
 		}

@@ -1,5 +1,8 @@
 package com.ydo4ki.brougham.lang;
 
+import com.ydo4ki.brougham.lang.constraint.AndConstraint;
+import com.ydo4ki.brougham.lang.constraint.Constraint;
+import com.ydo4ki.brougham.lang.constraint.FreeConstraint;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,30 +16,31 @@ import lombok.RequiredArgsConstructor;
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class TypeRef implements Val {
-	private final Type targetType;
+	private final Type baseType;
 	private final boolean vararg;
-	private final ComplexComputingEquipment constraints;
+	private final Constraint constraint;
 	
-	TypeRef(Type targetType, boolean vararg) {
-		this(targetType, vararg, ComplexComputingEquipment.free);
+	TypeRef(Type baseType, boolean vararg) {
+		this(baseType, vararg, FreeConstraint.INSTANCE);
 	}
 	
-	public TypeRef also(ComplexComputingEquipment constraints) {
-		return new TypeRef(targetType, vararg, ComplexComputingEquipment.And.of(this.constraints, constraints));
+	public TypeRef also(Constraint constraints) {
+		return new TypeRef(baseType, vararg, AndConstraint.of(this.constraint, constraints));
 	}
 	
-	public boolean matches(Scope caller, Val val) {
-		if (!val.getRawType().equals(targetType)) return false;
-		return constraints.test(caller, val);
+	public boolean matches(Scope scope, Val val) {
+		if (!val.getRawType().equals(baseType)) return false;
+		return constraint.test(scope, val);
 	}
-	public boolean valueOfGivenTypeMatchesMe(Scope caller, TypeRef other) {
-		if (!this.targetType.equals(other.targetType)) return false;
-		return this.constraints.contains(caller, other.constraints);
+	public boolean isCompatibleWith(Scope scope, TypeRef other) {
+		if (!this.baseType.equals(other.baseType)) return false;
+		
+		return this.constraint.implies(scope, other.constraint);
 	}
 	
 	@Override
 	public String toString() {
-		return targetType.toString();
+		return baseType.toString();
 	}
 	
 	@Override

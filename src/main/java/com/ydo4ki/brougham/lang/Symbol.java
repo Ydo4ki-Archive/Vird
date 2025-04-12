@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public final class Symbol implements SyntaxElement {
-	public static final TypeRef TYPE = SyntaxElementType.instance.ref(ComplexComputingEquipment.isSymbol);
+	public static final TypeRef TYPE = SyntaxElementType.instance.ref(Constraint.isSymbol);
 	
 	private final Location location;
 	private final Scope parent;

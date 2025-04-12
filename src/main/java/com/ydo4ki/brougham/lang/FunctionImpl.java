@@ -15,7 +15,7 @@ import java.util.function.BiFunction;
  */
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public final class FunctionImpl implements Val {
+public final class FunctionImpl implements FunctionSet {
 	private final FunctionType type;
 	private final BiFunction<Scope, Val[], Val> transformer;
 	@Getter
@@ -59,12 +59,17 @@ public final class FunctionImpl implements Val {
 	
 	public boolean isTemplate() {
 		if (!isPure() || (getRawType().getReturnType() != null
-				&& !(getRawType().getReturnType().getTargetType() instanceof FunctionType))) {
+				&& !(getRawType().getReturnType().getBaseType() instanceof FunctionType))) {
 			return false;
 		}
 //		for (TypeRef param : type.getParams()) {
 //			if (!(param.getType() instanceof MetaType)) return false;
 //		}
 		return true;
+	}
+	
+	@Override
+	public FunctionCall makeCall(Scope caller, TypeRef expectedType, TypeRef[] argsTypes) {
+		return FunctionCall.makeCall(caller, this, expectedType, argsTypes);
 	}
 }

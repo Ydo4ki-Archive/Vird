@@ -1,6 +1,9 @@
 package com.ydo4ki.brougham.lang;
 
 import com.ydo4ki.brougham.Location;
+import com.ydo4ki.brougham.lang.constraint.AndConstraint;
+import com.ydo4ki.brougham.lang.constraint.DListBracketsConstraint;
+import com.ydo4ki.brougham.lang.constraint.InstanceOfConstraint;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,20 +15,22 @@ import java.util.stream.Collectors;
  * @author Sulphuris
  * @since 4/8/2025 8:24 PM
  */
+@Getter
 @EqualsAndHashCode(callSuper = false)
 public final class DList extends Scope implements SyntaxElement {
 	
-	
 	public static TypeRef TYPE(BracketsType type) {
-		return SyntaxElementType.instance.ref(new ComplexComputingEquipment.IsDList(type));
+		return SyntaxElementType.instance.ref(
+				AndConstraint.of(
+						new InstanceOfConstraint(DList.class),
+						new DListBracketsConstraint(type)
+				)
+		);
 	}
 	
-	@Getter
 	@Setter
 	private Location location;
-	@Getter
 	private final BracketsType bracketsType;
-	@Getter
 	private final List<Val> elements;
 	
 	public DList(Scope parent, BracketsType bracketsType, List<Val> elements) {
@@ -34,7 +39,7 @@ public final class DList extends Scope implements SyntaxElement {
 		this.bracketsType = bracketsType;
 		this.elements = elements;
 	}
-	
+
 
 //	public FunctionImpl resolveFunctionExact(Symbol symbol, FunctionType type) {
 //		Val dereferenced = definedSymbols.get(symbol.getValue());
@@ -48,11 +53,11 @@ public final class DList extends Scope implements SyntaxElement {
 	
 	@Override
 	public TypeRef getType() {
-		return SyntaxElementType.instance.ref(new ComplexComputingEquipment.IsDList(bracketsType));
+		return TYPE(bracketsType);
 	}
 	
 	@Override
 	public String toString() {
-		return "DList"+bracketsType.open + elements.stream().map(Val::toString).collect(Collectors.joining(" "))+bracketsType.close;
+		return "DList" + bracketsType.open + elements.stream().map(Val::toString).collect(Collectors.joining(" ")) + bracketsType.close;
 	}
 }
