@@ -57,7 +57,7 @@ public class Parser {
 	
 	private DList parseDList(Scope parent, BracketsType bracketsType, Source in) throws IOException {
 		List<Val> elements = new ArrayList<>();
-		int start = in.getCursor();
+		int start = in.getCursor()-3;
 		DList DList =  new DList(parent, bracketsType, elements);
 		Val next;
 		while (true) {
@@ -65,8 +65,8 @@ public class Parser {
 			if (next == null) break;
 			elements.add(next);
 		}
+		DList.setLocation(new Location(in, start, in.getCursor()-1));
 		ch = next(in);
-		DList.setLocation(new Location(in, start, in.getCursor()));
 		return DList;
 	}
 	

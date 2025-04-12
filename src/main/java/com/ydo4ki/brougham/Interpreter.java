@@ -67,7 +67,7 @@ public class Interpreter {
 		}
 		if (call == null) {
 			f.getLocation().print(System.err);
-			throw new ThisIsNotTheBookClubException("Cannot create function call: " + String.valueOf(function));
+			throw new ThisIsNotTheBookClubException("Cannot create function call: " + function);
 		}
 		
 		return call.invoke(f, args);
@@ -75,13 +75,6 @@ public class Interpreter {
 	
 	private Val resolve(Symbol name) {
 		return name.getParent().resolve(name.getValue());
-	}
-	
-	private FunctionCall function_call(TypeRef expectedType, Symbol name, Val[] args) {
-		FunctionCall func = name.getParent().resolveFunctionImpl(name.getValue(), expectedType, args);
-		if (func == null)
-			throw new IllegalArgumentException("Function not found: " + name + " " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));
-		return func;
 	}
 	
 	private FunctionCall function_call(Scope caller, FunctionImpl function, TypeRef expectedType, Val[] args) {
