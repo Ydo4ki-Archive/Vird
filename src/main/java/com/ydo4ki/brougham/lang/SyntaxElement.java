@@ -7,7 +7,7 @@ package com.ydo4ki.brougham.lang;
 public interface SyntaxElement extends Val {
 	@Override
 	default Type getRawType() {
-		return SyntaxElementType.instance;
+		return SyntaxElementType.INSTANCE;
 	}
 }
 

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -32,9 +33,18 @@ public class Interpreter {
 	}
 	
 	public static Val evaluate(Scope caller, TypeRef expectedType, Val val) {
+		Objects.requireNonNull(val, "sho?");
 		if (expectedType != null && expectedType.matches(caller, val)) return val;
-		if (val instanceof DList) return evaluate_function(caller, expectedType, (DList) val);
-		if (val instanceof Symbol) return resolve((Symbol) val);
+		if (val instanceof DList)
+			return Objects.requireNonNull(
+					evaluate_function(caller, expectedType, (DList) val),
+					"Cannot evaluate function: " + val
+			);
+		if (val instanceof Symbol)
+			return Objects.requireNonNull(
+					resolve((Symbol) val),
+					"Cannot resolve symbol: " + val
+			);
 		if (expectedType != null) {
 			// maybe find a cast function... idk
 		}

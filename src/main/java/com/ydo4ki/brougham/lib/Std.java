@@ -15,6 +15,20 @@ public final class Std {
 	public static void setup(Scope scope) {
 		scope.define("Blob4", BlobType.of(4));
 		
+		scope.define("evaluate",
+				new FunctionImpl(
+						new FunctionType(
+								null,
+								new TypeRef[]{
+										SyntaxElementType.INSTANCE.ref(),
+								}
+						),
+						(caller, args) -> {
+							return Interpreter.evaluate(caller, null, args[0]);
+						}
+						, true
+				)
+		);
 		scope.define("+",
 				new FunctionImpl(
 						new FunctionType(
@@ -36,14 +50,18 @@ public final class Std {
 						new FunctionType(
 								TypeRefType.instance.ref(),
 								new TypeRef[]{
-										SyntaxElementType.instance.ref()
+										SyntaxElementType.INSTANCE.ref()
 								}
 						),
 						(caller, args) -> {
-							Val evaluated = Interpreter.evaluate(caller,
-									null,
-									args[0]);
-							if (evaluated == null) evaluated = args[0];
+							Val evaluated;
+							try {
+								evaluated = Interpreter.evaluate(caller,
+										null,
+										args[0]);
+							} catch (NullPointerException e) {
+								evaluated = args[0];
+							}
 							return evaluated.getType();
 						}
 						, true
