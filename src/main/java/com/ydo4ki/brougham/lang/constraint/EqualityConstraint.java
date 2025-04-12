@@ -3,10 +3,12 @@ package com.ydo4ki.brougham.lang.constraint;
 import com.ydo4ki.brougham.lang.Scope;
 import com.ydo4ki.brougham.lang.Val;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
+@Getter
 public final class EqualityConstraint extends Constraint {
 	private final Val expected;
 	

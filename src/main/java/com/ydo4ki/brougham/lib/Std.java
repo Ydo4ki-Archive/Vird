@@ -12,23 +12,23 @@ import java.util.Arrays;
 public final class Std {
 	private Std() {}
 	
+	public static final FunctionImpl evaluate = new FunctionImpl(
+			new FunctionType(
+					null,
+					new TypeRef[]{
+							SyntaxElementType.INSTANCE.ref(),
+					}
+			),
+			(caller, args) -> Interpreter.evaluate(caller, null, args[0]),
+			true
+	);
+	
 	public static void setup(Scope scope) {
 		Type blob4 = scope.define("Blob4", BlobType.of(4));
 		ConversionRule.ConversionTypes conversionTypes = new ConversionRule.ConversionTypes(blob4.ref(), Symbol.TYPE);
 		scope.defineConversionRule(new ConversionRule(conversionTypes, blob4.getFunctionBySignature(conversionTypes.toFunctionType())));
 		
-		scope.define("evaluate",
-				new FunctionImpl(
-						new FunctionType(
-								null,
-								new TypeRef[]{
-										SyntaxElementType.INSTANCE.ref(),
-								}
-						),
-						(caller, args) -> Interpreter.evaluate(caller, null, args[0]),
-						true
-				)
-		);
+		scope.define("evaluate",evaluate);
 		scope.define("+",
 				new FunctionImpl(
 						new FunctionType(

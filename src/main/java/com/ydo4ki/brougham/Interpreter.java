@@ -51,7 +51,7 @@ public class Interpreter {
 		return val;
 	}
 	
-	private static Val evaluate_function(Scope caller, TypeRef expectedType, DList f) {
+	public static FunctionCall get_function_call(Scope caller, TypeRef expectedType, DList f) {
 		Val functionId = f.getElements().get(0);
 		Val function = evaluate(caller, null, functionId);
 		if (!(function instanceof FunctionSet)) {
@@ -73,12 +73,17 @@ public class Interpreter {
 					Arrays.stream(args).map(Val::getType).collect(Collectors.toList()) +
 					" (for " + Arrays.toString(args) + ")");
 		}
-//		if (func instanceof FunctionSet) {
-//		} else if (function instanceof FunctionImpl) {
-//			call = function_call(f, (FunctionImpl) function, expectedType, args);
-//		}
-		
-		return call.invoke(f, args);
+		return call;
+	}
+	
+	private static Val evaluate_function(Scope caller, TypeRef expectedType, DList f) {
+		final Val[] args;
+		{
+			List<Val> args0 = new ArrayList<>(f.getElements());
+			args0.remove(0);
+			args = args0.toArray(new Val[0]);
+		}
+		return get_function_call(caller, expectedType, f).invoke(f, args);
 	}
 	
 	private static Val resolve(Symbol name) {

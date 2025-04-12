@@ -23,10 +23,10 @@ public class ConversionRule implements ConcreteFunction {
 		this.function = Objects.requireNonNull(function, "function is null");
 		if (!function.isPure())
 			throw new IllegalArgumentException("Function must be pure");
-		if (!function.getRawType().getReturnType().getRawType().equals(types.getTargetType().getRawType())
-				|| function.getRawType().getParams().length != 1
-				|| !function.getRawType().getParams()[0].getRawType().equals(types.getFrom().getRawType()))
-			throw new IllegalArgumentException("Invalid function signature: " + function.getType() + " (" + types + " expected)");
+//		if (!function.getRawType().getReturnType().getRawType().equals(types.getTargetType().getRawType())
+//				|| function.getRawType().getParams().length != 1
+//				|| !function.getRawType().getParams()[0].getRawType().equals(types.getFrom().getRawType()))
+//			throw new IllegalArgumentException("Invalid function signature: " + function.getType() + " (" + types + " expected)");
 	}
 	
 	public TypeRef getReturnType() {

@@ -1,9 +1,14 @@
 package com.ydo4ki.brougham.lang;
 
+import com.ydo4ki.brougham.Interpreter;
+import com.ydo4ki.brougham.lang.constraint.EqualityConstraint;
+import com.ydo4ki.brougham.lib.Std;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -52,7 +57,9 @@ public final class FunctionCall {
 			if (returnType != null && !expectedType.isCompatibleWith(caller, returnType)) {
 //				if (amIaCastFunction) return null;
 				ConversionRule cast = caller.resolveConversionRule(new ConversionRule.ConversionTypes(expectedType, returnType));
-				if (cast == null) return null;
+				if (cast == null) {
+					return null;
+				}
 				return_type_cast = cast;
 			}
 		}
@@ -65,12 +72,22 @@ public final class FunctionCall {
 			else {
 				ConversionRule cast;
 				TypeRef inputWeHave = argsTypes[i];
+				ConversionRule.ConversionTypes ct = new ConversionRule.ConversionTypes(param, inputWeHave);
 				if (Objects.equals(param, expectedType)) {
 					cast = null;
 				} else {
-					cast = caller.resolveConversionRule(new ConversionRule.ConversionTypes(param, inputWeHave));
+					cast = caller.resolveConversionRule(ct);
 				}
-				if (cast == null) return null;
+				if (cast == null) {
+					// todo make this normal
+					if (inputWeHave.isCompatibleWith(caller, DList.TYPE(BracketsType.ROUND))) {
+						DList value = (DList)((EqualityConstraint)inputWeHave.getConstraint()).getExpected();
+						FunctionCall call = Interpreter.get_function_call(caller, param, value);
+						if (param.isCompatibleWith(caller, call.getReturnType())) {
+							cast = new ConversionRule(ct, Std.evaluate);
+						} else return null;
+					} else return null;
+				}
 				casts[i] = cast;
 			}
 		}
