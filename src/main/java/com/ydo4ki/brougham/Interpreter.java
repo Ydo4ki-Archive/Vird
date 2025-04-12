@@ -31,7 +31,7 @@ public class Interpreter {
 		return evaluate(program, null, new Parser().read(program, new Source.Raw(in)));
 	}
 	
-	private Val evaluate(Scope caller, TypeRef expectedType, Val val) {
+	public static Val evaluate(Scope caller, TypeRef expectedType, Val val) {
 		if (expectedType != null && expectedType.matches(caller, val)) return val;
 		if (val instanceof DList) return evaluate_function(caller, expectedType, (DList) val);
 		if (val instanceof Symbol) return resolve((Symbol) val);
@@ -41,7 +41,7 @@ public class Interpreter {
 		return val;
 	}
 	
-	private Val evaluate_function(Scope caller, TypeRef expectedType, DList f) {
+	private static Val evaluate_function(Scope caller, TypeRef expectedType, DList f) {
 		Val functionId = f.getElements().get(0);
 		Val function = evaluate(caller, null, functionId);
 		if (!(function instanceof FunctionSet)) {
@@ -71,7 +71,7 @@ public class Interpreter {
 		return call.invoke(f, args);
 	}
 	
-	private Val resolve(Symbol name) {
+	private static Val resolve(Symbol name) {
 		return name.getParent().resolve(name.getValue());
 	}
 	

@@ -8,7 +8,8 @@ public class Main {
 	public static void main(String[] __args) throws IOException {
 		Interpreter interpreter = new Interpreter();
 //		Val ret = interpreter.next("(include 'brougham/source.bham')");
-		Val ret = interpreter.next("(+ (Blob4 5) (Blob4 4))");
+//		Val ret = interpreter.next("(+ (Blob4 5) (Blob4 4))");
+		Val ret = interpreter.next("(typeOf 5)");
 		System.out.println(ret);
 		
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));

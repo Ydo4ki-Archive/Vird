@@ -1,5 +1,6 @@
 package com.ydo4ki.brougham.lib;
 
+import com.ydo4ki.brougham.Interpreter;
 import com.ydo4ki.brougham.lang.*;
 
 import java.util.Arrays;
@@ -26,6 +27,24 @@ public final class Std {
 						(caller, args) -> {
 							System.out.println(Arrays.toString(args));
 							return Blob.ofInt(10);
+						}
+						, true
+				)
+		);
+		scope.define("typeOf",
+				new FunctionImpl(
+						new FunctionType(
+								TypeRefType.instance.ref(),
+								new TypeRef[]{
+										SyntaxElementType.instance.ref()
+								}
+						),
+						(caller, args) -> {
+							Val evaluated = Interpreter.evaluate(caller,
+									null,
+									args[0]);
+							if (evaluated == null) evaluated = args[0];
+							return evaluated.getType();
 						}
 						, true
 				)
