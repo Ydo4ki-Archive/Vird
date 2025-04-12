@@ -9,4 +9,10 @@ public interface ConcreteFunction extends FunctionSet {
 	FunctionType getRawType();
 	
 	FunctionImpl asFunctionImpl();
+	
+	@Override
+	default ConcreteFunction getFunctionBySignature(FunctionType type) {
+		if (type.equals(getRawType())) return this;
+		return null;
+	}
 }

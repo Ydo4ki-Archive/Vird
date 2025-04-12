@@ -34,7 +34,6 @@ public final class TypeRef implements Val {
 	}
 	public boolean isCompatibleWith(Scope scope, TypeRef other) {
 		if (!this.baseType.equals(other.baseType)) return false;
-		
 		return this.constraint.implies(scope, other.constraint);
 	}
 	

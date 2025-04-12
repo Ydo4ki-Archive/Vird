@@ -13,7 +13,9 @@ public final class Std {
 	private Std() {}
 	
 	public static void setup(Scope scope) {
-		scope.define("Blob4", BlobType.of(4));
+		Type blob4 = scope.define("Blob4", BlobType.of(4));
+		ConversionRule.ConversionTypes conversionTypes = new ConversionRule.ConversionTypes(blob4.ref(), Symbol.TYPE);
+		scope.defineConversionRule(new ConversionRule(conversionTypes, blob4.getFunctionBySignature(conversionTypes.toFunctionType())));
 		
 		scope.define("evaluate",
 				new FunctionImpl(
@@ -32,13 +34,13 @@ public final class Std {
 						new FunctionType(
 								BlobType.of(4).ref(),
 								new TypeRef[]{
-										Symbol.TYPE,
-										Symbol.TYPE
+										BlobType.of(4).ref(),
+										BlobType.of(4).ref()
 								}
 						),
 						(caller, args) -> {
 							System.out.println(Arrays.toString(args));
-							return Blob.ofInt(10);
+							return Blob.ofInt(((Blob)args[0]).toInt() + ((Blob)args[1]).toInt());
 						}
 						, true
 				)

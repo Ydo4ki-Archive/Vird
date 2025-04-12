@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Objects;
+
 
 /**
  * @author Sulphuris
@@ -17,11 +19,13 @@ public class ConversionRule implements ConcreteFunction {
 	private final FunctionImpl function;
 	
 	public ConversionRule(ConversionTypes types, FunctionImpl function) {
-		this.types = types;
-		this.function = function;
-		if (!function.isPure() || !function.getRawType().getReturnType().equals(types.getTargetType())
+		this.types = Objects.requireNonNull(types, "ConversionTypes is null");
+		this.function = Objects.requireNonNull(function, "function is null");
+		if (!function.isPure())
+			throw new IllegalArgumentException("Function must be pure");
+		if (!function.getRawType().getReturnType().getRawType().equals(types.getTargetType().getRawType())
 				|| function.getRawType().getParams().length != 1
-				|| function.getRawType().getParams()[0].equals(types.getFrom()))
+				|| !function.getRawType().getParams()[0].getRawType().equals(types.getFrom().getRawType()))
 			throw new IllegalArgumentException("Invalid function signature: " + function.getType() + " (" + types + " expected)");
 	}
 	
@@ -55,6 +59,10 @@ public class ConversionRule implements ConcreteFunction {
 		@Override
 		public String toString() {
 			return "(" + from + ") -> " + targetType;
+		}
+		
+		public FunctionType toFunctionType() {
+			return new FunctionType(targetType, new TypeRef[]{from});
 		}
 	}
 }

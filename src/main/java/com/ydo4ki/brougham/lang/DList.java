@@ -39,17 +39,6 @@ public final class DList extends Scope implements SyntaxElement {
 		this.bracketsType = bracketsType;
 		this.elements = elements;
 	}
-
-
-//	public FunctionImpl resolveFunctionExact(Symbol symbol, FunctionType type) {
-//		Val dereferenced = definedSymbols.get(symbol.getValue());
-//		if (dereferenced instanceof FunctionSet) {
-//			FunctionSet set = (FunctionSet) dereferenced;
-//			FunctionImpl exact = set.findImplByType(type);
-//			if (exact != null) return exact;
-//		}
-//		return parent == null ? null : parent.resolveFunctionExact(symbol, type);
-//	}
 	
 	@Override
 	public String toString() {

@@ -30,10 +30,11 @@ public class Scope {
 		return dereferenced != null || parent == null ? dereferenced : parent.resolveConversionRule(types);
 	}
 	
-	public void define(String name, Val value) {
+	public <T extends Val> T define(String name, T value) {
 		if (definedSymbols.containsKey(name))
 			throw new IllegalArgumentException(name + " is already defined");
 		definedSymbols.put(name, value);
+		return value;
 	}
 	
 	public Val resolve(String name) {

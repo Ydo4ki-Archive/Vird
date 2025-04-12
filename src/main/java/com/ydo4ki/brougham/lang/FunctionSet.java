@@ -11,4 +11,5 @@ public interface FunctionSet extends Val {
 		return makeCall(caller, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
 	}
 	FunctionCall makeCall(Scope caller, TypeRef expectedType, TypeRef[] argsTypes);
+	ConcreteFunction getFunctionBySignature(FunctionType type);
 }
