@@ -1,5 +1,5 @@
-(+ (Blob4 5) (Blob4 4))
-(+ (Blob4 19) (Blob4 15))
+(+ (blob4 5) (blob4 4))
+(+ (blob4 19) (blob4 15))
 (define plus (function
 	[(Blob4 a) (Blob4 b)] : Blob4 (+ a b)
 ))

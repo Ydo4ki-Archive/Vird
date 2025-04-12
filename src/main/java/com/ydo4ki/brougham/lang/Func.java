@@ -15,7 +15,7 @@ import java.util.function.BiFunction;
  */
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public final class FunctionImpl implements ConcreteFunction {
+public final class Func implements ConcreteFunction {
 	private final FunctionType type;
 	private final BiFunction<Scope, Val[], Val> transformer;
 	@Getter
@@ -27,7 +27,7 @@ public final class FunctionImpl implements ConcreteFunction {
 	}
 	
 	@Override
-	public FunctionImpl asFunctionImpl() {
+	public Func asFunctionImpl() {
 		return this;
 	}
 	
@@ -73,7 +73,9 @@ public final class FunctionImpl implements ConcreteFunction {
 		return true;
 	}
 	
-	@Override
+	public FunctionCall makeCall(Scope caller, TypeRef expectedType, Val[] args) {
+		return makeCall(caller, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
+	}
 	public FunctionCall makeCall(Scope caller, TypeRef expectedType, TypeRef[] argsTypes) {
 		return FunctionCall.makeCall(caller, this, expectedType, argsTypes);
 	}

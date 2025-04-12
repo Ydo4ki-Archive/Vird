@@ -6,9 +6,7 @@ import com.ydo4ki.brougham.lib.Std;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -18,7 +16,7 @@ import java.util.Objects;
 @Getter
 @EqualsAndHashCode
 public final class FunctionCall {
-	private final FunctionImpl function;
+	private final Func function;
 	private final ConversionRule cast_result;
 	private final ConversionRule[] implicit_cast_calls;
 	private final int castsCount;

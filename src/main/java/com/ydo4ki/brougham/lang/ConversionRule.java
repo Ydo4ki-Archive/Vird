@@ -3,7 +3,6 @@ package com.ydo4ki.brougham.lang;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
 
@@ -16,10 +15,10 @@ import java.util.Objects;
 @Getter
 public class ConversionRule implements ConcreteFunction {
 	private final ConversionTypes types;
-	private final FunctionImpl function;
+	private final Func function;
 	
 	public ConversionRule(ConversionTypes types, ConcreteFunction f) {
-		FunctionImpl function = f.asFunctionImpl();
+		Func function = f.asFunctionImpl();
 		this.types = Objects.requireNonNull(types, "ConversionTypes is null");
 		this.function = Objects.requireNonNull(function, "function is null");
 		if (!function.isPure())
@@ -44,7 +43,7 @@ public class ConversionRule implements ConcreteFunction {
 	}
 	
 	@Override
-	public FunctionImpl asFunctionImpl() {
+	public Func asFunctionImpl() {
 		return function;
 	}
 	

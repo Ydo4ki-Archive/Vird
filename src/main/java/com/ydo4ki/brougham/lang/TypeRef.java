@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public final class TypeRef implements FunctionSet {
+public final class TypeRef implements Val {
 	private final Type baseType;
 	private final boolean vararg;
 	private final Constraint constraint;
@@ -49,15 +49,5 @@ public final class TypeRef implements FunctionSet {
 	@Override
 	public Type getRawType() {
 		return TypeRefType.instance;
-	}
-	
-	@Override
-	public FunctionCall makeCall(Scope caller, TypeRef expectedType, TypeRef[] argsTypes) {
-		return baseType.makeCall(caller, expectedType, argsTypes);
-	}
-	
-	@Override
-	public ConcreteFunction getFunctionBySignature(FunctionType type) {
-		return baseType.getFunctionBySignature(type);
 	}
 }

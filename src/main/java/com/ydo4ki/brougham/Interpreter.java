@@ -61,11 +61,11 @@ public class Interpreter {
 	public static FunctionCall get_function_call(Scope caller, TypeRef expectedType, DList f) {
 		Val functionId = f.getElements().get(0);
 		Val function = evaluate(caller, null, functionId);
-		if (!(function instanceof FunctionSet)) {
+		if (!(function instanceof Func)) {
 			f.getLocation().print(System.err);
 			throw new ThisIsNotTheBookClubException("Function not found: " + functionId);
 		}
-		FunctionSet func = ((FunctionSet) function);
+		Func func = ((Func) function);
 		
 		final Val[] args;
 		{
@@ -97,7 +97,7 @@ public class Interpreter {
 		return name.getParent().resolve(name.getValue());
 	}
 	
-	private FunctionCall function_call(Scope caller, FunctionImpl function, TypeRef expectedType, Val[] args) {
+	private FunctionCall function_call(Scope caller, Func function, TypeRef expectedType, Val[] args) {
 		FunctionCall call = FunctionCall.makeCall(caller, function, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
 		if (call == null) {
 			throw new IllegalArgumentException("Function not found: " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));

@@ -18,20 +18,6 @@ public final class BlobType extends Type {
 		return types.get(length);
 	}
 	
-	{
-		addFunction(new FunctionImpl(
-				new FunctionType(
-						this.ref(),
-						new TypeRef[]{
-								Symbol.TYPE
-						}
-				),
-				(caller, args) -> {
-					return Blob.ofInt(Integer.parseInt(((Symbol)args[0]).getValue()));
-				}, true
-		));
-	}
-	
 	private final int length;
 	
 	@Override

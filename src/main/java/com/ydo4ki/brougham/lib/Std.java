@@ -11,9 +11,10 @@ import java.util.Arrays;
  * @since 4/12/2025 4:20 PM
  */
 public final class Std {
-	private Std() {}
+	private Std() {
+	}
 	
-	public static final FunctionImpl evaluate = new FunctionImpl(
+	public static final Func evaluate = new Func(
 			new FunctionType(
 					null,
 					new TypeRef[]{
@@ -28,9 +29,22 @@ public final class Std {
 		TypeRef blob4 = scope.define("Blob4", BlobType.of(4).ref());
 //		ConversionRule.ConversionTypes conversionTypes = new ConversionRule.ConversionTypes(blob4, Symbol.TYPE);
 //		scope.defineConversionRule(new ConversionRule(conversionTypes, blob4.getFunctionBySignature(conversionTypes.toFunctionType())));
+		scope.define("blob4",
+				new Func(
+						new FunctionType(
+								BlobType.of(4).ref(),
+								new TypeRef[]{
+										Symbol.TYPE
+								}
+						),
+						(caller, args) -> {
+							return Blob.ofInt(Integer.parseInt(((Symbol) args[0]).getValue()));
+						}, true
+				)
+		);
 		
 		scope.define("define",
-				new FunctionImpl(
+				new Func(
 						new FunctionType(
 								null,
 								new TypeRef[]{
@@ -40,15 +54,14 @@ public final class Std {
 						),
 						(caller, args) -> {
 							Val value = Interpreter.evaluate(caller, null, args[1]);
-							caller.getParent().define(((Symbol)args[0]).getValue(), value);
+							caller.getParent().define(((Symbol) args[0]).getValue(), value);
 							return value;
 						},
 						false
 				)
-				
-				);
+		);
 		scope.define("function",
-				new FunctionImpl(
+				new Func(
 						new FunctionType(
 								null,
 								new TypeRef[]{
@@ -64,9 +77,9 @@ public final class Std {
 						}, false
 				)
 		);
-		scope.define("evaluate",evaluate);
+		scope.define("evaluate", evaluate);
 		scope.define("+",
-				new FunctionImpl(
+				new Func(
 						new FunctionType(
 								BlobType.of(4).ref(),
 								new TypeRef[]{
@@ -78,7 +91,7 @@ public final class Std {
 						(caller, args) -> {
 							int sum = 0;
 							for (Val arg : args) {
-								sum += ((Blob)arg).toInt();
+								sum += ((Blob) arg).toInt();
 							}
 							return Blob.ofInt(sum);
 						}
@@ -86,7 +99,7 @@ public final class Std {
 				)
 		);
 		scope.define("typeOf",
-				new FunctionImpl(
+				new Func(
 						new FunctionType(
 								TypeRefType.instance.ref(),
 								new TypeRef[]{
@@ -101,8 +114,7 @@ public final class Std {
 								evaluated = args[0];
 							}
 							return evaluated.getType();
-						}
-						, true
+						}, true
 				)
 		);
 	}
