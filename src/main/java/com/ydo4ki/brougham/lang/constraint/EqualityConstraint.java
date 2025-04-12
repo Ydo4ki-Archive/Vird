@@ -22,4 +22,8 @@ public final class EqualityConstraint extends Constraint {
 		}
 		return false;
 	}
+	@Override
+	public String toString() {
+		return "Equals(" + expected + ")";
+	}
 }

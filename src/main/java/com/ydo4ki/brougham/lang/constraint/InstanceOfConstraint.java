@@ -1,16 +1,14 @@
 package com.ydo4ki.brougham.lang.constraint;
 
-import com.ydo4ki.brougham.lang.BracketsType;
-import com.ydo4ki.brougham.lang.DList;
 import com.ydo4ki.brougham.lang.Scope;
 import com.ydo4ki.brougham.lang.Val;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public final class InstanceOfConstraint extends Constraint {
 	private final Class<? extends Val> targetClass;
-	
-	public InstanceOfConstraint(Class<? extends Val> targetClass) {
-		this.targetClass = targetClass;
-	}
 	
 	@Override
 	public boolean test(Scope scope, Val value) {

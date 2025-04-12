@@ -1,6 +1,7 @@
 package com.ydo4ki.brougham.lang;
 
 import com.ydo4ki.brougham.Location;
+import com.ydo4ki.brougham.lang.constraint.InstanceOfConstraint;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public final class Symbol implements SyntaxElement {
-	public static final TypeRef TYPE = SyntaxElementType.instance.ref(Constraint.isSymbol);
+	public static final TypeRef TYPE = SyntaxElementType.instance.ref(new InstanceOfConstraint(Symbol.class));
 	
 	private final Location location;
 	private final Scope parent;

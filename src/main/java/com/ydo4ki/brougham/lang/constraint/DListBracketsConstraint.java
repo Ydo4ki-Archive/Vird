@@ -4,13 +4,13 @@ import com.ydo4ki.brougham.lang.BracketsType;
 import com.ydo4ki.brougham.lang.DList;
 import com.ydo4ki.brougham.lang.Scope;
 import com.ydo4ki.brougham.lang.Val;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public final class DListBracketsConstraint extends Constraint {
 	private final BracketsType expectedType;
-	
-	public DListBracketsConstraint(BracketsType expectedType) {
-		this.expectedType = expectedType;
-	}
 	
 	@Override
 	public boolean test(Scope scope, Val value) {
@@ -20,7 +20,6 @@ public final class DListBracketsConstraint extends Constraint {
 	
 	@Override
 	public boolean implies(Scope scope, Constraint other) {
-		// Не влечёт другие ограничения, кроме идентичного
 		if (other instanceof DListBracketsConstraint) {
 			return this.expectedType == ((DListBracketsConstraint) other).expectedType;
 		}

@@ -15,7 +15,7 @@ import java.util.function.BiFunction;
  */
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public final class FunctionImpl implements FunctionSet {
+public final class FunctionImpl implements ConcreteFunction {
 	private final FunctionType type;
 	private final BiFunction<Scope, Val[], Val> transformer;
 	@Getter
@@ -26,6 +26,11 @@ public final class FunctionImpl implements FunctionSet {
 		return type;
 	}
 	
+	@Override
+	public FunctionImpl asFunctionImpl() {
+		return this;
+	}
+	
 	public Val invoke(Scope caller, Val[] args) {
 		TypeRef[] params = type.getParams();
 		int Len = args.length;
@@ -34,7 +39,7 @@ public final class FunctionImpl implements FunctionSet {
 		for (int i = 0; i < Len; i++) {
 			TypeRef param;
 			if (vararg && i >= paramsLen) {
-				param = params[params.length-1];
+				param = params[params.length - 1];
 			} else {
 				param = params[i];
 			}
@@ -54,7 +59,7 @@ public final class FunctionImpl implements FunctionSet {
 	
 	@Override
 	public String toString() {
-		return "f!"+type;
+		return "f!" + type;
 	}
 	
 	public boolean isTemplate() {
