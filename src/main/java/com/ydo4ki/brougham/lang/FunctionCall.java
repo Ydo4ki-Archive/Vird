@@ -1,5 +1,6 @@
 package com.ydo4ki.brougham.lang;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.Objects;
  * @since 4/9/2025 9:38 AM
  */
 @Getter
+@EqualsAndHashCode
 public final class FunctionCall {
 	private final FunctionImpl function;
 	private final ConversionRule cast_result;
@@ -28,10 +30,26 @@ public final class FunctionCall {
 	}
 	
 	public static FunctionCall makeCall(Scope caller, ConcreteFunction function, TypeRef expectedType, TypeRef[] argsTypes) {
+		int argsCount = argsTypes.length;
+		TypeRef[] params = function.getRawType().getParams();
+		if (params.length > 0) {
+			TypeRef lastParam = params[params.length-1];
+			if (lastParam.isVararg()) {
+				int oldLen = params.length;
+				params = Arrays.copyOf(params, argsCount);
+				for (int i = oldLen; i < argsCount; i++) {
+					params[i] = lastParam;
+				}
+			}
+		}
+		if (params.length != argsCount) return null;
+		
+		
+		
 		ConversionRule return_type_cast = null;
 		TypeRef returnType = function.getRawType().getReturnType();
 		if (expectedType != null) {
-			if (returnType != null && !returnType.isCompatibleWith(caller, expectedType)) {
+			if (returnType != null && !expectedType.isCompatibleWith(caller, returnType)) {
 //				if (amIaCastFunction) return null;
 				ConversionRule cast = caller.resolveConversionRule(new ConversionRule.ConversionTypes(expectedType, returnType));
 				if (cast == null) return null;
@@ -39,24 +57,18 @@ public final class FunctionCall {
 			}
 		}
 		
-		TypeRef[] params = function.getRawType().getParams();
 		ConversionRule[] casts = new ConversionRule[argsTypes.length];
 		for (int i = 0; i < argsTypes.length; i++) {
 			TypeRef param;
-			if (i >= params.length && function.getRawType().isVarargFunction()) {
-				param = params[params.length-1];
-			} else {
-				param = params[i];
-			}
-			if (param.isCompatibleWith(caller, argsTypes[i])) continue; // cast = null (not needed)
+			param = params[i];
+			if (argsTypes[i].isCompatibleWith(caller, param)) continue; // cast = null (not needed)
 			else {
 				ConversionRule cast;
-				TypeRef neededReturnType = param;
 				TypeRef inputWeHave = argsTypes[i];
-				if (/*amIaCastFunction &&*/ Objects.equals(neededReturnType, expectedType)) {
+				if (Objects.equals(param, expectedType)) {
 					cast = null;
 				} else {
-					cast = caller.resolveConversionRule(new ConversionRule.ConversionTypes(neededReturnType, inputWeHave));
+					cast = caller.resolveConversionRule(new ConversionRule.ConversionTypes(param, inputWeHave));
 				}
 				if (cast == null) return null;
 				casts[i] = cast;

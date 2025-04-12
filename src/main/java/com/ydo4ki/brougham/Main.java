@@ -9,7 +9,7 @@ public class Main {
 		Interpreter interpreter = new Interpreter();
 //		Val ret = interpreter.next("(include 'brougham/source.bham')");
 //		Val ret = interpreter.next("(+ (Blob4 5) (Blob4 4))");
-		Val ret = interpreter.next("(typeOf 5)");
+		Val ret = interpreter.next("(typeOf (Blob4 5))");
 		System.out.println(ret);
 		
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));

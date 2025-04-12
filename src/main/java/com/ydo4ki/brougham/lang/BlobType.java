@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
@@ -20,10 +19,12 @@ public final class BlobType extends Type {
 	}
 	
 	{
-		addImpl(new FunctionImpl(
+		addFunction(new FunctionImpl(
 				new FunctionType(
 						this.ref(),
-						new TypeRef[]{Symbol.TYPE}
+						new TypeRef[]{
+								Symbol.TYPE
+						}
 				),
 				(caller, args) -> {
 					return Blob.ofInt(Integer.parseInt(((Symbol)args[0]).getValue()));

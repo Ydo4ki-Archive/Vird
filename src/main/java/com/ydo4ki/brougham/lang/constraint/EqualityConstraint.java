@@ -20,7 +20,7 @@ public final class EqualityConstraint extends Constraint {
 		if (other instanceof EqualityConstraint) {
 			return this.expected.equals(((EqualityConstraint) other).expected);
 		}
-		return false;
+		return other.test(scope, expected);
 	}
 	@Override
 	public String toString() {

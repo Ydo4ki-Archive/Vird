@@ -23,10 +23,8 @@ public final class Std {
 										SyntaxElementType.INSTANCE.ref(),
 								}
 						),
-						(caller, args) -> {
-							return Interpreter.evaluate(caller, null, args[0]);
-						}
-						, true
+						(caller, args) -> Interpreter.evaluate(caller, null, args[0]),
+						true
 				)
 		);
 		scope.define("+",
@@ -56,9 +54,7 @@ public final class Std {
 						(caller, args) -> {
 							Val evaluated;
 							try {
-								evaluated = Interpreter.evaluate(caller,
-										null,
-										args[0]);
+								evaluated = Interpreter.evaluate(caller, null, args[0]);
 							} catch (NullPointerException e) {
 								evaluated = args[0];
 							}
