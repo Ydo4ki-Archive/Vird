@@ -22,7 +22,7 @@ public final class Std {
 							SyntaxElementType.INSTANCE.ref(),
 					}
 			),
-			(caller, args) -> Interpreter.evaluate(caller, null, (SyntaxElement)args[0]),
+			(caller, args) -> Interpreter.evaluate(caller, null, (SyntaxElement) args[0]),
 			true
 	);
 	
@@ -31,60 +31,36 @@ public final class Std {
 //		ConversionRule.ConversionTypes conversionTypes = new ConversionRule.ConversionTypes(blob4, Symbol.TYPE);
 //		scope.defineConversionRule(new ConversionRule(conversionTypes, blob4.getFunctionBySignature(conversionTypes.toFunctionType())));
 		scope.define("charextract",
-				new Func(
-						new FunctionType(
-								null,
-								new TypeRef[]{
-										Symbol.TYPE
-								}
-						),
+				Func.intrinsic(null, new TypeRef[]{Symbol.TYPE}, true,
 						(caller, args) -> {
 							return new Blob(((Symbol) args[0]).getValue().getBytes(StandardCharsets.UTF_8));
-						}, true
+						}
 				)
 		);
 		scope.define("blob4",
-				new Func(
-						new FunctionType(
-								BlobType.of(4).ref(),
-								new TypeRef[]{
-										Symbol.TYPE
-								}
-						),
+				Func.intrinsic(BlobType.of(4).ref(), new TypeRef[]{Symbol.TYPE}, true,
 						(caller, args) -> {
 							return Blob.ofInt(Integer.parseInt(((Symbol) args[0]).getValue()));
-						}, true
+						}
 				)
 		);
 		
 		scope.define("define",
-				new Func(
-						new FunctionType(
-								null,
-								new TypeRef[]{
-										Symbol.TYPE,
-										SyntaxElementType.INSTANCE.ref()
-								}
-						),
+				Func.intrinsic(null, new TypeRef[]{Symbol.TYPE, SyntaxElementType.INSTANCE.ref()}, false,
 						(caller, args) -> {
-							Val value = Interpreter.evaluate(caller, null, (SyntaxElement)args[1]);
+							Val value = Interpreter.evaluate(caller, null, (SyntaxElement) args[1]);
 							caller.getParent().define(((Symbol) args[0]).getValue(), value);
 							return value;
-						},
-						false
+						}
 				)
 		);
 		scope.define("fn",
-				new Func(
-						new FunctionType(
-								null,
-								new TypeRef[]{
-										DList.TYPE(BracketsType.SQUARE),
-										new Symbol(new Location(null, 0, 0), ":").getType(),
-										TypeRefType.instance.ref(),
-										DList.TYPE(BracketsType.ROUND),
-								}
-						),
+				Func.intrinsic(null, new TypeRef[]{
+								DList.TYPE(BracketsType.SQUARE),
+								new Symbol(new Location(null, 0, 0), ":").getType(),
+								TypeRefType.instance.ref(),
+								DList.TYPE(BracketsType.ROUND),
+						}, false,
 						(caller, args) -> {
 							DList parameters = ((DList) args[0]);
 							TypeRef returnType = (TypeRef) args[2];
@@ -115,46 +91,36 @@ public final class Std {
 									},
 									((Func) function).isPure()
 							);
-						}, false
+						}
 				)
 		);
 		scope.define("evaluate", evaluate);
 		scope.define("+",
-				new Func(
-						new FunctionType(
+				Func.intrinsic(BlobType.of(4).ref(), new TypeRef[]{
 								BlobType.of(4).ref(),
-								new TypeRef[]{
-										BlobType.of(4).ref(),
-										BlobType.of(4).ref(),
-										BlobType.of(4).vararg(),
-								}
-						),
+								BlobType.of(4).ref(),
+								BlobType.of(4).vararg(),
+						}, true,
 						(caller, args) -> {
 							int sum = 0;
 							for (Val arg : args) {
 								sum += ((Blob) arg).toInt();
 							}
 							return Blob.ofInt(sum);
-						}, true
+						}
 				)
 		);
 		scope.define("typeOf",
-				new Func(
-						new FunctionType(
-								TypeRefType.instance.ref(),
-								new TypeRef[]{
-										SyntaxElementType.INSTANCE.ref()
-								}
-						),
+				Func.intrinsic(TypeRefType.instance.ref(), new TypeRef[]{SyntaxElementType.INSTANCE.ref()}, true,
 						(caller, args) -> {
 							Val evaluated;
 							try {
-								evaluated = Interpreter.evaluate(caller, null, (SyntaxElement)args[0]);
+								evaluated = Interpreter.evaluate(caller, null, (SyntaxElement) args[0]);
 							} catch (NullPointerException e) {
 								evaluated = args[0];
 							}
 							return evaluated.getType();
-						}, true
+						}
 				)
 		);
 	}
