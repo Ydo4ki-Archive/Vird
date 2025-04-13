@@ -46,8 +46,15 @@ public final class TypeRef implements Val {
 		return str;
 	}
 	
+	public static final Type TYPE = new Type() {
+		@Override
+		public String toString() {
+			return "TypeRef";
+		}
+	};
+	
 	@Override
 	public Type getRawType() {
-		return TypeRefType.instance;
+		return TYPE;
 	}
 }

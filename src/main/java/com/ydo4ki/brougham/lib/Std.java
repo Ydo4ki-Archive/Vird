@@ -19,7 +19,7 @@ public final class Std {
 			new FunctionType(
 					null,
 					new TypeRef[]{
-							SyntaxElementType.INSTANCE.ref(),
+							SyntaxElement.TYPE.ref(),
 					}
 			),
 			(caller, args) -> Interpreter.evaluate(caller, null, (SyntaxElement) args[0]),
@@ -46,7 +46,7 @@ public final class Std {
 		);
 		
 		scope.define("define",
-				Func.intrinsic(null, new TypeRef[]{Symbol.TYPE, SyntaxElementType.INSTANCE.ref()}, false,
+				Func.intrinsic(null, new TypeRef[]{Symbol.TYPE, SyntaxElement.TYPE.ref()}, false,
 						(caller, args) -> {
 							Val value = Interpreter.evaluate(caller, null, (SyntaxElement) args[1]);
 							caller.getParent().define(((Symbol) args[0]).getValue(), value);
@@ -58,7 +58,7 @@ public final class Std {
 				Func.intrinsic(null, new TypeRef[]{
 								DList.TYPE(BracketsType.SQUARE),
 								new Symbol(new Location(null, 0, 0), ":").getType(),
-								TypeRefType.instance.ref(),
+								TypeRef.TYPE.ref(),
 								DList.TYPE(BracketsType.ROUND),
 						}, false,
 						(caller, args) -> {
@@ -71,7 +71,7 @@ public final class Std {
 							int i = 0;
 							for (Val element : parameters.getElements()) {
 								DList p = (DList) element;
-								paramTypes[i] = (TypeRef) Interpreter.evaluate(caller, TypeRefType.instance.ref(), p.getElements().get(0));
+								paramTypes[i] = (TypeRef) Interpreter.evaluate(caller, TypeRef.TYPE.ref(), p.getElements().get(0));
 								paramNames[i] = ((Symbol) p.getElements().get(1)).getValue();
 								i++;
 							}
@@ -111,7 +111,7 @@ public final class Std {
 				)
 		);
 		scope.define("typeOf",
-				Func.intrinsic(TypeRefType.instance.ref(), new TypeRef[]{SyntaxElementType.INSTANCE.ref()}, true,
+				Func.intrinsic(TypeRef.TYPE.ref(), new TypeRef[]{SyntaxElement.TYPE.ref()}, true,
 						(caller, args) -> {
 							Val evaluated;
 							try {

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public final class DList implements SyntaxElement {
 	
 	public static TypeRef TYPE(BracketsType type) {
-		return SyntaxElementType.INSTANCE.ref(
+		return SyntaxElement.TYPE.ref(
 				AndConstraint.of(
 						new InstanceOfConstraint(DList.class),
 						new DListBracketsConstraint(type)

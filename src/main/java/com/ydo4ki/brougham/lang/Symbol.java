@@ -14,7 +14,7 @@ import java.util.Objects;
 @Getter
 @RequiredArgsConstructor
 public final class Symbol implements SyntaxElement {
-	public static final TypeRef TYPE = SyntaxElementType.INSTANCE.ref(new InstanceOfConstraint(Symbol.class));
+	public static final TypeRef TYPE = SyntaxElement.TYPE.ref(new InstanceOfConstraint(Symbol.class));
 	
 	private final Location location;
 	private final String value;
