@@ -154,12 +154,56 @@ public final class Std {
 								BlobType.of(4).ref(),
 								BlobType.of(4).vararg(),
 						}, true,
+						(caller, args) -> Blob.ofInt(
+								Arrays.stream(args)
+										.mapToInt(arg -> ((Blob) arg).toInt())
+										.sum()
+						)
+				)
+		);
+		scope.define("*",
+				Func.intrinsic(BlobType.of(4).ref(), new TypeRef[]{
+								BlobType.of(4).ref(),
+								BlobType.of(4).ref(),
+								BlobType.of(4).vararg(),
+						}, true,
+						(caller, args) -> Blob.ofInt(
+								Arrays.stream(args)
+										.mapToInt(arg -> ((Blob) arg).toInt())
+										.reduce(1, (a, b) -> a * b)
+						)
+				)
+		);
+		
+		scope.define("-",
+				Func.intrinsic(BlobType.of(4).ref(), new TypeRef[]{
+								BlobType.of(4).ref(),
+								BlobType.of(4).ref(),
+								BlobType.of(4).vararg(),
+						}, true,
 						(caller, args) -> {
-							int sum = 0;
-							for (Val arg : args) {
-								sum += ((Blob) arg).toInt();
+							int ret = ((Blob) args[0]).toInt();
+							for (int i = 1; i < args.length; i++) {
+								Val arg = args[i];
+								ret -= ((Blob) arg).toInt();
 							}
-							return Blob.ofInt(sum);
+							return Blob.ofInt(ret);
+						}
+				)
+		);
+		scope.define("*",
+				Func.intrinsic(BlobType.of(4).ref(), new TypeRef[]{
+								BlobType.of(4).ref(),
+								BlobType.of(4).ref(),
+								BlobType.of(4).vararg(),
+						}, true,
+						(caller, args) -> {
+							int ret = ((Blob) args[0]).toInt();
+							for (int i = 1; i < args.length; i++) {
+								Val arg = args[i];
+								ret /= ((Blob) arg).toInt();
+							}
+							return Blob.ofInt(ret);
 						}
 				)
 		);
