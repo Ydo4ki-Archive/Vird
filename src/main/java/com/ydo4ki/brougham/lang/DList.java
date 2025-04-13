@@ -39,6 +39,10 @@ public final class DList extends Scope implements SyntaxElement {
 		this.elements = elements;
 	}
 	
+	public List<Val> getElements() {
+		return new ArrayList<>(elements);
+	}
+	
 	@Override
 	public String toString() {
 		return "DList" + bracketsType.open + elements.stream().map(Val::toString).collect(Collectors.joining(" ")) + bracketsType.close;
@@ -54,5 +58,9 @@ public final class DList extends Scope implements SyntaxElement {
 	@Override
 	public int hashCode() {
 		return Objects.hash(bracketsType, elements);
+	}
+	
+	public Scope withParent(Scope parent) {
+		return new DList(parent, bracketsType, elements);
 	}
 }

@@ -49,7 +49,7 @@ public class Interpreter {
 			);
 		if (val instanceof Symbol)
 			return Objects.requireNonNull(
-					resolve((Symbol) val),
+					resolve(caller, (Symbol) val),
 					"Cannot resolve symbol: " + val
 			);
 		if (expectedType != null) {
@@ -69,7 +69,7 @@ public class Interpreter {
 		
 		final Val[] args;
 		{
-			List<Val> args0 = new ArrayList<>(f.getElements());
+			List<Val> args0 = f.getElements();
 			args0.remove(0);
 			args = args0.toArray(new Val[0]);
 		}
@@ -79,11 +79,11 @@ public class Interpreter {
 //					Arrays.stream(args).map(Val::getType).collect(Collectors.toList()) +
 //					" (for " + Arrays.toString(args) + ")");
 //		}
-		return func.invoke(f, args);
+		return func.invoke(f.withParent(caller), args);
 	}
 	
-	public static Val resolve(Symbol name) {
-		return name.getParent().resolve(name.getValue());
+	public static Val resolve(Scope caller, Symbol name) {
+		return caller.resolve(name.getValue());
 	}
 	
 }

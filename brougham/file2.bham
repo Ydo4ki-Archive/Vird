@@ -3,6 +3,6 @@
 (define plus (fn
 	[(Blob4 a) (Blob4 b)] : Blob4 (+ a b)
 ))
-plus
+(plus (blob4 1) (blob4 1))
 +
 (charextract "hello world")

@@ -25,7 +25,7 @@ public class Main {
 		} catch (IOException e) {
 		
 		}
-		
+		System.exit(0);
 		
 //		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));

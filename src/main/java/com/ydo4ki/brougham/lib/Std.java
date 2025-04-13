@@ -39,7 +39,7 @@ public final class Std {
 								}
 						),
 						(caller, args) -> {
-							return new Blob(((Symbol)args[0]).getValue().getBytes(StandardCharsets.UTF_8));
+							return new Blob(((Symbol) args[0]).getValue().getBytes(StandardCharsets.UTF_8));
 						}, true
 				)
 		);
@@ -86,8 +86,35 @@ public final class Std {
 								}
 						),
 						(caller, args) -> {
-							System.out.println(Arrays.toString(args));
-							return new Blob(new byte[10]);
+							DList parameters = ((DList) args[0]);
+							TypeRef returnType = (TypeRef) args[2];
+							DList body = (DList) args[3];
+							
+							TypeRef[] paramTypes = new TypeRef[parameters.getElements().size()];
+							String[] paramNames = new String[parameters.getElements().size()];
+							int i = 0;
+							for (Val element : parameters.getElements()) {
+								DList p = (DList) element;
+								paramTypes[i] = (TypeRef) Interpreter.evaluate(caller, TypeRefType.instance.ref(), p.getElements().get(0));
+								paramNames[i] = ((Symbol) p.getElements().get(1)).getValue();
+								i++;
+							}
+							FunctionType functionType = new FunctionType(
+									returnType,
+									paramTypes
+							);
+							Val functionId = body.getElements().get(0);
+							Val function = Interpreter.evaluate(caller, null, functionId);
+							
+							return new Func(functionType,
+									(c, a) -> {
+										for (int i1 = 0; i1 < a.length; i1++) {
+											c.define(paramNames[i1], a[i1]);
+										}
+										return Interpreter.evaluate(c, returnType, body);
+									},
+									((Func) function).isPure()
+							);
 						}, false
 				)
 		);
