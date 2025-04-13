@@ -17,7 +17,6 @@ public final class Symbol implements SyntaxElement {
 	public static final TypeRef TYPE = SyntaxElementType.INSTANCE.ref(new InstanceOfConstraint(Symbol.class));
 	
 	private final Location location;
-	private final Scope parent;
 	private final String value;
 	
 	@Override

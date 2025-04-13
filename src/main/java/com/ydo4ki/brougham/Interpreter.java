@@ -26,15 +26,15 @@ public class Interpreter {
 	}
 	
 	public Val next(String in) throws IOException {
-		return evaluate(program, null, new Parser().read(program, new Source.OfString(in)));
+		return evaluate(program, null, new Parser().read(new Source.OfString(in)));
 	}
 	
 	public Val next(BufferedReader in) throws IOException {
-		return evaluate(program, null, new Parser().read(program, new Source.Raw(in)));
+		return evaluate(program, null, new Parser().read(new Source.Raw(in)));
 	}
 	
 	public Val next(Source in) throws IOException {
-		SyntaxElement parsed = new Parser().read(program, in);
+		SyntaxElement parsed = new Parser().read(in);
 		if (parsed == null) throw new EOFException();
 		return evaluate(program, null, parsed);
 	}

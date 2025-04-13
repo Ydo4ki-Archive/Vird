@@ -19,7 +19,7 @@ public class Parser {
 		return ch;
 	}
 	
-	private Symbol parseSymbol(Scope parent, Source in) throws IOException {
+	private Symbol parseSymbol(Source in) throws IOException {
 		StringBuilder token = new StringBuilder();
 		int start = in.getCursor();
 		if (ch == '"') {
@@ -50,16 +50,16 @@ public class Parser {
 				ch = next(in);
 			}
 		}
-		return new Symbol(new Location(in, start, in.getCursor()), parent, token.toString());
+		return new Symbol(new Location(in, start, in.getCursor()), token.toString());
 	}
 	
-	private DList parseDList(Scope parent, BracketsType bracketsType, Source in) throws IOException {
+	private DList parseDList(BracketsType bracketsType, Source in) throws IOException {
 		List<SyntaxElement> elements = new ArrayList<>();
 		int start = in.getCursor()-3;
 		DList dList =  new DList(bracketsType, elements);
 		SyntaxElement next;
 		while (true) {
-			next = parseVal(new Scope(parent), bracketsType, in);
+			next = parseVal(bracketsType, in);
 			if (next == null) break;
 			elements.add(next);
 		}
@@ -68,7 +68,7 @@ public class Parser {
 		return dList;
 	}
 	
-	private SyntaxElement parseVal(Scope parent, BracketsType brackets, Source in) throws IOException {
+	private SyntaxElement parseVal(BracketsType brackets, Source in) throws IOException {
 		if (ch == 0xFFFF) return null;
 		while (Character.isWhitespace(ch)) {
 			ch = next(in);
@@ -80,27 +80,24 @@ public class Parser {
 		if (ch == '['|| ch == '(' || ch == '{') {
 			char ch = this.ch;
 			this.ch = next(in);
-			return parseDList(parent, BracketsType.byOpen(ch), in);
+			return parseDList(BracketsType.byOpen(ch), in);
 		}
 		if (ch == ']' || ch == ')' || ch == '}') {
 			throw new IllegalArgumentException("Unexpected bracket: " + ch);
 		}
-		return parseSymbol(parent, in);
+		return parseSymbol(in);
 	}
 	
 	private static final String delimiter_operators = ",[]{}()";
 	
 	public SyntaxElement read(String program) throws IOException {
-		return read(null, program);
-	}
-	public SyntaxElement read(Scope parent, String program) throws IOException {
 		Source in = new Source.OfString(program);
-		SyntaxElement ret = read(parent, in);
+		SyntaxElement ret = read(in);
 		in.close();
 		return ret;
 	}
-	public SyntaxElement read(Scope parent, Source in) throws IOException {
+	public SyntaxElement read(Source in) throws IOException {
 		ch = next(in);
-		return parseVal(parent, BracketsType.ROUND, in);
+		return parseVal(BracketsType.ROUND, in);
 	}
 }

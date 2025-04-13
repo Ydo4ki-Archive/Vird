@@ -80,7 +80,7 @@ public final class Std {
 								null,
 								new TypeRef[]{
 										DList.TYPE(BracketsType.SQUARE),
-										new Symbol(new Location(null, 0, 0), scope, ":").getType(),
+										new Symbol(new Location(null, 0, 0), ":").getType(),
 										TypeRefType.instance.ref(),
 										DList.TYPE(BracketsType.ROUND),
 								}
