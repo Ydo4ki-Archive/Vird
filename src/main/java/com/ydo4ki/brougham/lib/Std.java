@@ -5,7 +5,6 @@ import com.ydo4ki.brougham.Location;
 import com.ydo4ki.brougham.lang.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,27 +16,27 @@ public final class Std {
 	private Std() {
 	}
 	
-	public static final Func evaluate = Func.intrinsic(null, new TypeRef[]{SyntaxElement.TYPE.ref()}, true,
-			(caller, args) -> Interpreter.evaluate(caller, null, (SyntaxElement) args[0])
+	public static final Func evaluate = Func.intrinsic(null, new TypeRef[]{Expr.TYPE.ref()}, true,
+			(caller, args) -> Interpreter.evaluate(caller, null, (Expr) args[0])
 	);
-	public static final Func evaluateFinale = Func.intrinsic(null, new TypeRef[]{SyntaxElement.TYPE.ref()}, true,
-			(caller, args) -> Interpreter.evaluateFinale(caller, null, (SyntaxElement) args[0])
+	public static final Func evaluateFinale = Func.intrinsic(null, new TypeRef[]{Expr.TYPE.ref()}, true,
+			(caller, args) -> Interpreter.evaluateFinale(caller, null, (Expr) args[0])
 	);
 	public static final Func macro = Func.intrinsic(null, new TypeRef[]{
 					DList.TYPE(BracketsType.SQUARE),
-					SyntaxElement.TYPE.ref(),
+					Expr.TYPE.ref(),
 			}, false,
 			(caller, args) -> {
 				DList parameters = ((DList) args[0]);
-				SyntaxElement body = (SyntaxElement) args[1];
+				Expr body = (Expr) args[1];
 				TypeRef[] paramTypes = new TypeRef[parameters.getElements().size()];
 				String[] paramNames = new String[parameters.getElements().size()];
 				for (int i = 0; i < paramTypes.length; i++) {
-					paramTypes[i] = SyntaxElement.TYPE.ref();
+					paramTypes[i] = Expr.TYPE.ref();
 					paramNames[i] = ((Symbol) parameters.getElements().get(i)).getValue();
 				}
 				FunctionType functionType = new FunctionType(
-						SyntaxElement.TYPE.ref(),
+						Expr.TYPE.ref(),
 						paramTypes
 				);
 				return new Func(
@@ -47,14 +46,14 @@ public final class Std {
 			}
 	);
 	
-	private static SyntaxElement replaceDefined(SyntaxElement e, Val[] args, String[] names) {
+	private static Expr replaceDefined(Expr e, Val[] args, String[] names) {
 		if (e instanceof DList) {
-			List<SyntaxElement> elements = ((DList) e).getElements();
+			List<Expr> elements = ((DList) e).getElements();
 			elements.replaceAll(syntaxElement -> replaceDefined(syntaxElement, args, names));
 			return new DList(((DList) e).getBracketsType(), elements);
 		} else if (e instanceof Symbol) {
 			for (int i = 0; i < names.length; i++) {
-				if (((Symbol) e).getValue().equals(names[i])) return (SyntaxElement) args[i];
+				if (((Symbol) e).getValue().equals(names[i])) return (Expr) args[i];
 			}
 			return e;
 		}
@@ -62,11 +61,12 @@ public final class Std {
 	}
 	
 	public static void setup(Scope scope) {
-		scope.define("SyntaxElement", SyntaxElement.TYPE.ref());
+		scope.define("Expr", Expr.TYPE.ref());
 		scope.define("Symbol", Symbol.TYPE);
 		scope.define("Blob", Func.intrinsic(TypeRef.TYPE.ref(), new TypeRef[]{BlobType.of(4).ref()}, true,
 				(caller, args) -> BlobType.of(((Blob)args[0]).toInt()).ref()
 		));
+		scope.define("Type", MetaType.of(0).ref());
 //		scope.define("Blob1", BlobType.of(1).ref());
 		scope.define("Blob4", BlobType.of(4).ref());
 //		ConversionRule.ConversionTypes conversionTypes = new ConversionRule.ConversionTypes(blob4, Symbol.TYPE);
@@ -94,9 +94,9 @@ public final class Std {
 		);
 		
 		scope.define("define",
-				Func.intrinsic(null, new TypeRef[]{Symbol.TYPE, SyntaxElement.TYPE.ref()}, false,
+				Func.intrinsic(null, new TypeRef[]{Symbol.TYPE, Expr.TYPE.ref()}, false,
 						(caller, args) -> {
-							Val value = Interpreter.evaluate(caller, null, (SyntaxElement) args[1]);
+							Val value = Interpreter.evaluate(caller, null, (Expr) args[1]);
 							caller.getParent().define(((Symbol) args[0]).getValue(), value);
 							return value;
 						}
@@ -107,12 +107,12 @@ public final class Std {
 								DList.TYPE(BracketsType.SQUARE),
 								new Symbol(new Location(null, 0, 0), ":").getType(),
 								TypeRef.TYPE.ref(),
-								SyntaxElement.TYPE.ref(),
+								Expr.TYPE.ref(),
 						}, false,
 						(caller, args) -> {
 							DList parameters = ((DList) args[0]);
 							TypeRef returnType = (TypeRef) args[2];
-							SyntaxElement body = (SyntaxElement) args[3];
+							Expr body = (Expr) args[3];
 							
 							TypeRef[] paramTypes = new TypeRef[parameters.getElements().size()];
 							String[] paramNames = new String[parameters.getElements().size()];
@@ -129,7 +129,7 @@ public final class Std {
 							);
 							boolean pure;
 							if (body instanceof DList) {
-								SyntaxElement functionId = ((DList)body).getElements().get(0);
+								Expr functionId = ((DList)body).getElements().get(0);
 								Val function = Interpreter.evaluate(caller, null, functionId);
 								pure = ((Func) function).isPure();
 							} else pure = true;
@@ -148,12 +148,16 @@ public final class Std {
 		scope.define("macro", macro);
 		scope.define("eval", evaluate);
 		scope.define("evalfin", evaluateFinale);
+		FunctionType arithmeticFnType = new FunctionType(
+				BlobType.of(4).ref(),
+				new TypeRef[]{
+						BlobType.of(4).ref(),
+						BlobType.of(4).ref(),
+						BlobType.of(4).vararg(),
+				}
+		);
 		scope.define("+",
-				Func.intrinsic(BlobType.of(4).ref(), new TypeRef[]{
-								BlobType.of(4).ref(),
-								BlobType.of(4).ref(),
-								BlobType.of(4).vararg(),
-						}, true,
+				Func.intrinsic(arithmeticFnType , true,
 						(caller, args) -> Blob.ofInt(
 								Arrays.stream(args)
 										.mapToInt(arg -> ((Blob) arg).toInt())
@@ -162,11 +166,7 @@ public final class Std {
 				)
 		);
 		scope.define("*",
-				Func.intrinsic(BlobType.of(4).ref(), new TypeRef[]{
-								BlobType.of(4).ref(),
-								BlobType.of(4).ref(),
-								BlobType.of(4).vararg(),
-						}, true,
+				Func.intrinsic(arithmeticFnType, true,
 						(caller, args) -> Blob.ofInt(
 								Arrays.stream(args)
 										.mapToInt(arg -> ((Blob) arg).toInt())
@@ -176,11 +176,7 @@ public final class Std {
 		);
 		
 		scope.define("-",
-				Func.intrinsic(BlobType.of(4).ref(), new TypeRef[]{
-								BlobType.of(4).ref(),
-								BlobType.of(4).ref(),
-								BlobType.of(4).vararg(),
-						}, true,
+				Func.intrinsic(arithmeticFnType, true,
 						(caller, args) -> {
 							int ret = ((Blob) args[0]).toInt();
 							for (int i = 1; i < args.length; i++) {
@@ -191,12 +187,8 @@ public final class Std {
 						}
 				)
 		);
-		scope.define("*",
-				Func.intrinsic(BlobType.of(4).ref(), new TypeRef[]{
-								BlobType.of(4).ref(),
-								BlobType.of(4).ref(),
-								BlobType.of(4).vararg(),
-						}, true,
+		scope.define("/",
+				Func.intrinsic(arithmeticFnType, true,
 						(caller, args) -> {
 							int ret = ((Blob) args[0]).toInt();
 							for (int i = 1; i < args.length; i++) {
@@ -208,11 +200,11 @@ public final class Std {
 				)
 		);
 		scope.define("typeOf",
-				Func.intrinsic(TypeRef.TYPE.ref(), new TypeRef[]{SyntaxElement.TYPE.ref()}, true,
+				Func.intrinsic(TypeRef.TYPE.ref(), new TypeRef[]{Expr.TYPE.ref()}, true,
 						(caller, args) -> {
 							Val evaluated;
 							try {
-								evaluated = Interpreter.evaluate(caller, null, (SyntaxElement) args[0]);
+								evaluated = Interpreter.evaluate(caller, null, (Expr) args[0]);
 							} catch (NullPointerException e) {
 								evaluated = args[0];
 							}

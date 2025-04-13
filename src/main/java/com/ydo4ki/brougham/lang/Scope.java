@@ -4,10 +4,8 @@ import com.ydo4ki.brougham.lib.Std;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 /**
  * @author Sulphuris
@@ -29,7 +27,7 @@ public final class Scope {
 	public ConversionRule resolveConversionRule(ConversionRule.ConversionTypes types) {
 		ConversionRule dereferenced = conversionRules.get(types);
 		if (dereferenced != null) return dereferenced;
-		if (types.getFrom().getBaseType().equals(SyntaxElement.TYPE)) {
+		if (types.getFrom().getBaseType().equals(Expr.TYPE)) {
 			return new ConversionRule(types, Std.evaluate);
 		}
 		return parent == null ? null : parent.resolveConversionRule(types);

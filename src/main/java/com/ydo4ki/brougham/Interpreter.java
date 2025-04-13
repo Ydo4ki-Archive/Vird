@@ -31,18 +31,18 @@ public class Interpreter {
 	}
 	
 	public Val next(Source in) throws IOException {
-		SyntaxElement parsed = new Parser().read(in);
+		Expr parsed = new Parser().read(in);
 		if (parsed == null) throw new EOFException();
 		return evaluateFinale(program, null, parsed);
 	}
 	
-	public static Val evaluateFinale(Scope scope, TypeRef expectedType, SyntaxElement val) {
+	public static Val evaluateFinale(Scope scope, TypeRef expectedType, Expr val) {
 		Val ret = evaluate(scope, expectedType, val);
-		if (ret instanceof SyntaxElement) ret = evaluateFinale(scope, expectedType, (SyntaxElement) ret);
+		if (ret instanceof Expr) ret = evaluateFinale(scope, expectedType, (Expr) ret);
 		return ret;
 	}
 	
-	public static Val evaluate(Scope scope, TypeRef expectedType, SyntaxElement val) {
+	public static Val evaluate(Scope scope, TypeRef expectedType, Expr val) {
 		Objects.requireNonNull(val, "why null");
 		if (expectedType != null && expectedType.matches(scope, val)) return val;
 		if (val instanceof DList) return Objects.requireNonNull(
@@ -57,7 +57,7 @@ public class Interpreter {
 	}
 	
 	private static Val evaluate_function(Scope scope, TypeRef expectedType, DList f) {
-		SyntaxElement functionId = f.getElements().get(0);
+		Expr functionId = f.getElements().get(0);
 		Val function = evaluate(scope, null, functionId);
 		if (!(function instanceof Func)) {
 			f.getLocation().print(System.err);
@@ -67,7 +67,7 @@ public class Interpreter {
 		
 		final Val[] args;
 		{
-			List<SyntaxElement> args0 = f.getElements();
+			List<Expr> args0 = f.getElements();
 			args0.remove(0);
 			args = args0.toArray(new Val[0]);
 		}

@@ -4,9 +4,6 @@ import com.ydo4ki.brougham.lang.*;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.function.Function;
-import java.util.function.IntSupplier;
 
 public class Main {
 	@SuppressWarnings("InfiniteLoopStatement")

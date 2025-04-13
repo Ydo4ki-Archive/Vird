@@ -4,7 +4,6 @@ import com.ydo4ki.brougham.Location;
 import com.ydo4ki.brougham.lang.constraint.AndConstraint;
 import com.ydo4ki.brougham.lang.constraint.DListBracketsConstraint;
 import com.ydo4ki.brougham.lang.constraint.InstanceOfConstraint;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,10 +15,10 @@ import java.util.stream.Collectors;
  * @since 4/8/2025 8:24 PM
  */
 @Getter
-public final class DList implements SyntaxElement {
+public final class DList implements Expr {
 	
 	public static TypeRef TYPE(BracketsType type) {
-		return SyntaxElement.TYPE.ref(
+		return Expr.TYPE.ref(
 				AndConstraint.of(
 						new InstanceOfConstraint(DList.class),
 						new DListBracketsConstraint(type)
@@ -30,21 +29,21 @@ public final class DList implements SyntaxElement {
 	@Setter
 	private Location location;
 	private final BracketsType bracketsType;
-	private final List<SyntaxElement> elements;
+	private final List<Expr> elements;
 	
-	public DList(BracketsType bracketsType, List<SyntaxElement> elements) {
+	public DList(BracketsType bracketsType, List<Expr> elements) {
 		this.location = new Location(null, 0, 0);
 		this.bracketsType = bracketsType;
 		this.elements = elements;
 	}
 	
-	public List<SyntaxElement> getElements() {
+	public List<Expr> getElements() {
 		return new ArrayList<>(elements);
 	}
 	
 	@Override
 	public String toString() {
-		return "DList" + bracketsType.open + elements.stream().map(Val::toString).collect(Collectors.joining(" ")) + bracketsType.close;
+		return bracketsType.open + elements.stream().map(Val::toString).collect(Collectors.joining(" ")) + bracketsType.close;
 	}
 	
 	@Override

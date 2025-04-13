@@ -54,10 +54,10 @@ public class Parser {
 	}
 	
 	private DList parseDList(BracketsType bracketsType, Source in) throws IOException {
-		List<SyntaxElement> elements = new ArrayList<>();
+		List<Expr> elements = new ArrayList<>();
 		int start = in.getCursor()-3;
 		DList dList =  new DList(bracketsType, elements);
-		SyntaxElement next;
+		Expr next;
 		while (true) {
 			next = parseVal(bracketsType, in);
 			if (next == null) break;
@@ -68,7 +68,7 @@ public class Parser {
 		return dList;
 	}
 	
-	private SyntaxElement parseVal(BracketsType brackets, Source in) throws IOException {
+	private Expr parseVal(BracketsType brackets, Source in) throws IOException {
 		if (ch == 0xFFFF) return null;
 		while (Character.isWhitespace(ch)) {
 			ch = next(in);
@@ -90,13 +90,13 @@ public class Parser {
 	
 	private static final String delimiter_operators = ",[]{}()";
 	
-	public SyntaxElement read(String program) throws IOException {
+	public Expr read(String program) throws IOException {
 		Source in = new Source.OfString(program);
-		SyntaxElement ret = read(in);
+		Expr ret = read(in);
 		in.close();
 		return ret;
 	}
-	public SyntaxElement read(Source in) throws IOException {
+	public Expr read(Source in) throws IOException {
 		ch = next(in);
 		return parseVal(BracketsType.ROUND, in);
 	}

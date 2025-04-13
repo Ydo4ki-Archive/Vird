@@ -25,8 +25,11 @@ public final class Func implements Val {
 		return type;
 	}
 	
+	public static Func intrinsic(FunctionType type, boolean pure, BiFunction<Scope, Val[], Val> transformer) {
+		return new Func(type, transformer, pure);
+	}
 	public static Func intrinsic(TypeRef returnType, TypeRef[] params, boolean pure, BiFunction<Scope, Val[], Val> transformer) {
-		return new Func(new FunctionType(returnType, params), transformer, pure);
+		return intrinsic(new FunctionType(returnType, params), pure, transformer);
 	}
 	
 	public Val invoke(Scope caller, Val[] args) {
