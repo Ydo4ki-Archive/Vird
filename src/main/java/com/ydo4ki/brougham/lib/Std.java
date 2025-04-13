@@ -135,8 +135,7 @@ public final class Std {
 								sum += ((Blob) arg).toInt();
 							}
 							return Blob.ofInt(sum);
-						}
-						, true
+						}, true
 				)
 		);
 		scope.define("typeOf",

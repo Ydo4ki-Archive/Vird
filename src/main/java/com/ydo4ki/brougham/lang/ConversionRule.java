@@ -13,12 +13,11 @@ import java.util.Objects;
  */
 @EqualsAndHashCode
 @Getter
-public class ConversionRule implements ConcreteFunction {
+public class ConversionRule implements Val {
 	private final ConversionTypes types;
 	private final Func function;
 	
-	public ConversionRule(ConversionTypes types, ConcreteFunction f) {
-		Func function = f.asFunc();
+	public ConversionRule(ConversionTypes types, Func function) {
 		this.types = Objects.requireNonNull(types, "ConversionTypes is null");
 		this.function = Objects.requireNonNull(function, "function is null");
 		if (!function.isPure())
@@ -29,17 +28,13 @@ public class ConversionRule implements ConcreteFunction {
 //			throw new IllegalArgumentException("Invalid function signature: " + function.getType() + " (" + types + " expected)");
 	}
 	
-	public TypeRef getReturnType() {
-		return types.targetType;
+	
+	public FunctionType getRawType() {
+		return function.getRawType();
 	}
 	
 	public Val invoke(Scope caller, Val arg) {
 		return function.invoke(caller, new Val[]{arg});
-	}
-	
-	@Override
-	public Func asFunc() {
-		return function;
 	}
 	
 	public static @Data class ConversionTypes {

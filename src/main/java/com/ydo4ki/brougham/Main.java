@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.function.IntSupplier;
 
 public class Main {
+	@SuppressWarnings("InfiniteLoopStatement")
 	public static void main(String[] __args) throws IOException {
 		printPrjInfo(System.out);
 		Interpreter interpreter = new Interpreter();
@@ -19,10 +20,9 @@ public class Main {
 		Val ret = null;
 		try {
 			do {
-				ret = interpreter.next(fileSource);
-				System.out.println(ret);
+				System.out.println(ret = interpreter.next(fileSource));
 			} while(true);
-		} catch (IOException e) {
+		} catch (IOException ignored) {
 		
 		}
 		System.exit(0);
@@ -30,8 +30,7 @@ public class Main {
 //		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		while (true) try {
-			ret = interpreter.next(in);
-			System.out.println(ret);
+			System.out.println(ret = interpreter.next(in));
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
