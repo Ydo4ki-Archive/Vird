@@ -93,11 +93,21 @@ public final class Std {
 				)
 		);
 		
-		scope.define("define",
+		scope.define("::",
 				Func.intrinsic(null, new TypeRef[]{Symbol.TYPE, Expr.TYPE.ref()}, false,
 						(caller, args) -> {
 							Val value = Interpreter.evaluate(caller, null, (Expr) args[1]);
 							caller.getParent().define(((Symbol) args[0]).getValue(), value);
+							return value;
+						}
+				)
+		);
+		
+		scope.define(":",
+				Func.intrinsic(null, new TypeRef[]{TypeRef.TYPE.ref(), Symbol.TYPE, Expr.TYPE.ref()}, false,
+						(caller, args) -> {
+							Val value = Interpreter.evaluate(caller, ((TypeRef) args[0]), (Expr) args[2]);
+							caller.getParent().define(((Symbol) args[1]).getValue(), value);
 							return value;
 						}
 				)

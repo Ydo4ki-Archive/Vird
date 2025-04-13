@@ -1,4 +1,6 @@
-(define Blob1 (Blob (blob4 1)))
+
+
+(: Type Blob1 (Blob (blob4 1)))
 
 (+ (blob4 5) (blob4 4))
 (+ (blob4 19) (blob4 15))
@@ -6,10 +8,10 @@
 ; 	[(Blob4 a) (Blob4 b)] : Blob4 (+ a b)
 ; ))
 
-(define is_string (fn
+(:: is_string (fn
 	[(Symbol s)] : Blob1 (blob1 255)
 ))
-(define plus (macro[a b]
+(:: plus (macro[a b]
 	(+ a b)
 ))
 (plus (blob4 1) (blob4 1))
