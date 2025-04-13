@@ -44,13 +44,21 @@ public final class Func implements ConcreteFunction {
 				param = params[i];
 			}
 			if (!param.matches(caller, args[i])) {
-				throw new ThisIsNotTheBookClubException("Invalid input args: " +
-						Arrays.toString(args) + " (" + Arrays.toString(params) + " types expected)");
+				ConversionRule rule = caller.resolveConversionRule(new ConversionRule.ConversionTypes(param, args[i].getType()));
+				if (rule == null) {
+					throw new ThisIsNotTheBookClubException("Cannot implicitly cast " +
+							args[i].getType() + " (" + (args[i]) + ") to " + param);
+				}
+				args[i] = rule.invoke(caller, args[i]);
+//
+//				throw new ThisIsNotTheBookClubException("Invalid input args: " +
+//						Arrays.toString(args) + " (" + Arrays.toString(params) + " types expected)");
 			}
 		}
+		// lmao
 		Val ret = Objects.requireNonNull(
 				transformer.apply(caller, args),
-				"Function just returned null. This is outrageous. " + Arrays.toString(args)
+				"Function just returned null. This is outrageous. It's unfair. How can you be a function, and not return a value?" + Arrays.toString(args)
 		);
 		if (type.getReturnType() != null && !type.getReturnType().matches(caller, ret))
 			throw new ThisIsNotTheBookClubException("Invalid return value: " + ret + "( " + type.getReturnType() + " expected)");
@@ -71,12 +79,5 @@ public final class Func implements ConcreteFunction {
 //			if (!(param.getType() instanceof MetaType)) return false;
 //		}
 		return true;
-	}
-	
-	public FunctionCall makeCall(Scope caller, TypeRef expectedType, Val[] args) {
-		return makeCall(caller, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
-	}
-	public FunctionCall makeCall(Scope caller, TypeRef expectedType, TypeRef[] argsTypes) {
-		return FunctionCall.makeCall(caller, this, expectedType, argsTypes);
 	}
 }

@@ -9,6 +9,4 @@ public interface ConcreteFunction extends Val {
 	FunctionType getRawType();
 	
 	Func asFunctionImpl();
-	
-	FunctionCall makeCall(Scope caller, TypeRef expectedType, TypeRef[] argsTypes);
 }

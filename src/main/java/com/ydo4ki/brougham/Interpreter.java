@@ -58,7 +58,7 @@ public class Interpreter {
 		return val;
 	}
 	
-	public static FunctionCall get_function_call(Scope caller, TypeRef expectedType, DList f) {
+	private static Val evaluate_function(Scope caller, TypeRef expectedType, DList f) {
 		Val functionId = f.getElements().get(0);
 		Val function = evaluate(caller, null, functionId);
 		if (!(function instanceof Func)) {
@@ -73,35 +73,17 @@ public class Interpreter {
 			args0.remove(0);
 			args = args0.toArray(new Val[0]);
 		}
-		FunctionCall call = func.makeCall(f, expectedType, args);
-		if (call == null) {
-			f.getLocation().print(System.err);
-			throw new IllegalArgumentException("Function not found: " + functionId +
-					Arrays.stream(args).map(Val::getType).collect(Collectors.toList()) +
-					" (for " + Arrays.toString(args) + ")");
-		}
-		return call;
-	}
-	
-	private static Val evaluate_function(Scope caller, TypeRef expectedType, DList f) {
-		final Val[] args;
-		{
-			List<Val> args0 = new ArrayList<>(f.getElements());
-			args0.remove(0);
-			args = args0.toArray(new Val[0]);
-		}
-		return get_function_call(caller, expectedType, f).invoke(f, args);
+//		if (call == null) {
+//			f.getLocation().print(System.err);
+//			throw new IllegalArgumentException("Function not found: " + functionId +
+//					Arrays.stream(args).map(Val::getType).collect(Collectors.toList()) +
+//					" (for " + Arrays.toString(args) + ")");
+//		}
+		return func.invoke(f, args);
 	}
 	
 	public static Val resolve(Symbol name) {
 		return name.getParent().resolve(name.getValue());
 	}
 	
-	private FunctionCall function_call(Scope caller, Func function, TypeRef expectedType, Val[] args) {
-		FunctionCall call = FunctionCall.makeCall(caller, function, expectedType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
-		if (call == null) {
-			throw new IllegalArgumentException("Function not found: " + Arrays.stream(args).map(Val::getType).collect(Collectors.toList()));
-		}
-		return call;
-	}
 }

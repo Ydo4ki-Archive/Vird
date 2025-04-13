@@ -47,11 +47,6 @@ public class ConversionRule implements ConcreteFunction {
 		return function;
 	}
 	
-	@Override
-	public FunctionCall makeCall(Scope caller, TypeRef expectedType, TypeRef[] argsTypes) {
-		return function.makeCall(caller, expectedType, argsTypes);
-	}
-	
 	public static @Data class ConversionTypes {
 		private final TypeRef targetType;
 		private final TypeRef from;

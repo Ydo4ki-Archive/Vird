@@ -1,5 +1,6 @@
 package com.ydo4ki.brougham.lang;
 
+import com.ydo4ki.brougham.lib.Std;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,16 @@ public class Scope {
 	
 	public ConversionRule resolveConversionRule(ConversionRule.ConversionTypes types) {
 		ConversionRule dereferenced = conversionRules.get(types);
-		return dereferenced != null || parent == null ? dereferenced : parent.resolveConversionRule(types);
+		if (dereferenced != null) return dereferenced;
+		if (types.getFrom().getBaseType().equals(SyntaxElementType.INSTANCE)) {
+			return new ConversionRule(types, Std.evaluate);
+		}
+//		if (dereferenced == null) {
+//			for (Map.Entry<ConversionRule.ConversionTypes, ConversionRule> entry : conversionRules.entrySet()) {
+//				if (entry.getKey().equals(types)) return entry.getValue();
+//			}
+//		}
+		return parent == null ? null : parent.resolveConversionRule(types);
 	}
 	
 	public <T extends Val> T define(String name, T value) {
