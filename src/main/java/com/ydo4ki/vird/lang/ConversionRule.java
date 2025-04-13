@@ -20,8 +20,8 @@ public class ConversionRule implements Val {
 	public ConversionRule(ConversionTypes types, Func function) {
 		this.types = Objects.requireNonNull(types, "ConversionTypes is null");
 		this.function = Objects.requireNonNull(function, "function is null");
-		if (!function.isPure())
-			throw new IllegalArgumentException("Function must be pure");
+//		if (!function.isPure())
+//			throw new IllegalArgumentException("Function must be pure");
 //		if (!function.getRawType().getReturnType().getRawType().equals(types.getTargetType().getRawType())
 //				|| function.getRawType().getParams().length != 1
 //				|| !function.getRawType().getParams()[0].getRawType().equals(types.getFrom().getRawType()))

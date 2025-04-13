@@ -17,19 +17,17 @@ import java.util.function.BiFunction;
 public final class Func implements Val {
 	private final FunctionType type;
 	private final BiFunction<Scope, Val[], Val> transformer;
-	@Getter
-	private final boolean pure;
 	
 	@Override
 	public FunctionType getRawType() {
 		return type;
 	}
 	
-	public static Func intrinsic(FunctionType type, boolean pure, BiFunction<Scope, Val[], Val> transformer) {
-		return new Func(type, transformer, pure);
+	public static Func intrinsic(FunctionType type, BiFunction<Scope, Val[], Val> transformer) {
+		return new Func(type, transformer);
 	}
-	public static Func intrinsic(TypeRef returnType, TypeRef[] params, boolean pure, BiFunction<Scope, Val[], Val> transformer) {
-		return intrinsic(new FunctionType(returnType, params), pure, transformer);
+	public static Func intrinsic(TypeRef returnType, TypeRef[] params, BiFunction<Scope, Val[], Val> transformer) {
+		return intrinsic(new FunctionType(returnType, params), transformer);
 	}
 	
 	public Val invoke(Scope caller, Val[] args) {

@@ -16,11 +16,9 @@ import java.util.Objects;
  */
 @Getter
 public class Interpreter {
-	private final Scope program = new Scope(null);
+	private final Scope program = new Scope(Vird.GLOBAL);
 	
-	public Interpreter() {
-		Std.setup(program);
-	}
+	public Interpreter() {}
 	
 	public Val next(String in) throws IOException {
 		return evaluate(program, null, new Parser().read(new Source.OfString(in)));

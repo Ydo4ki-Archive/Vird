@@ -40,6 +40,12 @@ public final class Scope {
 		return value;
 	}
 	
+	/** define val in scope, return it */
+	public Scope d(String name, Val value) {
+		define(name, value);
+		return this;
+	}
+	
 	public Val resolve(String name) {
 		Val dereferenced = definedSymbols.get(name);
 		return dereferenced != null || parent == null ? dereferenced : parent.resolve(name);
@@ -49,9 +55,5 @@ public final class Scope {
 		if (jtype.isInstance(value)) //noinspection unchecked
 			return (T)value;
 		return null;
-	}
-	
-	public Scope withParent(Scope parent) {
-		return new Scope(parent);
 	}
 }
