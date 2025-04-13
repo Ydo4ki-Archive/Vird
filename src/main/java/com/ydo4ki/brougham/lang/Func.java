@@ -31,10 +31,12 @@ public final class Func implements Val {
 	
 	public Val invoke(Scope caller, Val[] args) {
 		TypeRef[] params = type.getParams();
-		int Len = args.length;
+		int argsLen = args.length;
 		int paramsLen = params.length;
 		boolean vararg = type.isVarargFunction();
-		for (int i = 0; i < Len; i++) {
+		if (!vararg ? argsLen != paramsLen : argsLen < paramsLen-1)
+			throw new IllegalArgumentException("Invalid amount of input args: " + Arrays.toString(args) + " (" + paramsLen + " expected)");
+		for (int i = 0; i < argsLen; i++) {
 			TypeRef param;
 			if (vararg && i >= paramsLen) {
 				param = params[params.length - 1];
