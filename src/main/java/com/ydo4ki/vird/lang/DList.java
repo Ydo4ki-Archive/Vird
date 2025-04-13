@@ -1,9 +1,9 @@
-package com.ydo4ki.brougham.lang;
+package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.brougham.Location;
-import com.ydo4ki.brougham.lang.constraint.AndConstraint;
-import com.ydo4ki.brougham.lang.constraint.DListBracketsConstraint;
-import com.ydo4ki.brougham.lang.constraint.InstanceOfConstraint;
+import com.ydo4ki.vird.Location;
+import com.ydo4ki.vird.lang.constraint.AndConstraint;
+import com.ydo4ki.vird.lang.constraint.DListBracketsConstraint;
+import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,6 +1,6 @@
-package com.ydo4ki.brougham;
+package com.ydo4ki.vird;
 
-import com.ydo4ki.brougham.lang.*;
+import com.ydo4ki.vird.lang.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -10,15 +10,15 @@ public class Main {
 	public static void main(String[] __args) throws IOException {
 		printPrjInfo(System.out);
 		Interpreter interpreter = new Interpreter();
-//		Val ret = interpreter.next("(include 'brougham/source.bham')");
+//		Val ret = interpreter.next("(include 'brougham/source.vird')");
 //		Val ret = interpreter.next("(+ (evaluate (Blob4 5)) (Blob4 4))");
 //		Val ret = interpreter.next("(typeOf (Blob4 5))");
-		Source fileSource = new Source.OfFile(new File("brougham/file2.bham"));
+		Source fileSource = new Source.OfFile(new File("brougham/file2.vird"));
 		Val ret = null;
 		try {
-			do {
+			for (;;) {
 				System.out.println(ret = interpreter.next(fileSource));
-			} while(true);
+			}
 		} catch (IOException ignored) {
 		
 		}
@@ -26,7 +26,7 @@ public class Main {
 		
 //		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		while (true) try {
+		for (;;) try {
 			System.out.println(ret = interpreter.next(in));
 		} catch (Exception e) {
 			e.printStackTrace(System.err);

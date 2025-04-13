@@ -1,8 +1,8 @@
-package com.ydo4ki.brougham.lib;
+package com.ydo4ki.vird.lib;
 
-import com.ydo4ki.brougham.Interpreter;
-import com.ydo4ki.brougham.Location;
-import com.ydo4ki.brougham.lang.*;
+import com.ydo4ki.vird.Interpreter;
+import com.ydo4ki.vird.Location;
+import com.ydo4ki.vird.lang.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -210,6 +210,11 @@ public final class Std {
 							}
 							return evaluated.getType();
 						}
+				)
+		);
+		scope.define("baseType",
+				Func.intrinsic(null, new TypeRef[]{TypeRef.TYPE.ref()}, true,
+						(caller, args) -> ((TypeRef)args[0]).getBaseType()
 				)
 		);
 	}

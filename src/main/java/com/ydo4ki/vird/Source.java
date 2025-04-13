@@ -1,10 +1,9 @@
-package com.ydo4ki.brougham;
+package com.ydo4ki.vird;
 
 import lombok.Getter;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.stream.Collectors;
 
 /**
  * @author Sulphuris

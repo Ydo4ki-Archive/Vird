@@ -1,6 +1,6 @@
-package com.ydo4ki.brougham;
+package com.ydo4ki.vird;
 
-import com.ydo4ki.brougham.lang.*;
+import com.ydo4ki.vird.lang.*;
 
 import java.io.*;
 import java.util.ArrayList;

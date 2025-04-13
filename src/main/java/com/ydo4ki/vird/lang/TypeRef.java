@@ -1,8 +1,8 @@
-package com.ydo4ki.brougham.lang;
+package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.brougham.lang.constraint.AndConstraint;
-import com.ydo4ki.brougham.lang.constraint.Constraint;
-import com.ydo4ki.brougham.lang.constraint.FreeConstraint;
+import com.ydo4ki.vird.lang.constraint.AndConstraint;
+import com.ydo4ki.vird.lang.constraint.Constraint;
+import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

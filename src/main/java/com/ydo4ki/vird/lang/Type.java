@@ -1,6 +1,6 @@
-package com.ydo4ki.brougham.lang;
+package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.brougham.lang.constraint.Constraint;
+import com.ydo4ki.vird.lang.constraint.Constraint;
 
 /**
 * @since 4/7/2025 9:43 PM

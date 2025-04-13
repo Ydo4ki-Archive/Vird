@@ -1,4 +1,4 @@
-package com.ydo4ki.brougham.lang;
+package com.ydo4ki.vird.lang;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -1,7 +1,7 @@
-package com.ydo4ki.brougham.lang.constraint;
+package com.ydo4ki.vird.lang.constraint;
 
-import com.ydo4ki.brougham.lang.Scope;
-import com.ydo4ki.brougham.lang.Val;
+import com.ydo4ki.vird.lang.Scope;
+import com.ydo4ki.vird.lang.Val;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,12 +1,9 @@
-package com.ydo4ki.brougham.lang;
+package com.ydo4ki.vird.lang;
 
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Arrays;
-import java.util.Objects;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor

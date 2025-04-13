@@ -1,6 +1,6 @@
-package com.ydo4ki.brougham.lang;
+package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.brougham.lib.Std;
+import com.ydo4ki.vird.lib.Std;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
