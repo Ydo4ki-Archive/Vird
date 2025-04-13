@@ -74,7 +74,7 @@ public final class Std {
 						false
 				)
 		);
-		scope.define("function",
+		scope.define("fn",
 				new Func(
 						new FunctionType(
 								null,

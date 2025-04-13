@@ -18,7 +18,7 @@ public class ConversionRule implements ConcreteFunction {
 	private final Func function;
 	
 	public ConversionRule(ConversionTypes types, ConcreteFunction f) {
-		Func function = f.asFunctionImpl();
+		Func function = f.asFunc();
 		this.types = Objects.requireNonNull(types, "ConversionTypes is null");
 		this.function = Objects.requireNonNull(function, "function is null");
 		if (!function.isPure())
@@ -38,12 +38,7 @@ public class ConversionRule implements ConcreteFunction {
 	}
 	
 	@Override
-	public FunctionType getRawType() {
-		return function.getRawType();
-	}
-	
-	@Override
-	public Func asFunctionImpl() {
+	public Func asFunc() {
 		return function;
 	}
 	

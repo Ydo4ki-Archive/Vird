@@ -6,7 +6,9 @@ package com.ydo4ki.brougham.lang;
  */
 public interface ConcreteFunction extends Val {
 	@Override
-	FunctionType getRawType();
+	default FunctionType getRawType() {
+		return asFunc().getRawType();
+	}
 	
-	Func asFunctionImpl();
+	Func asFunc();
 }

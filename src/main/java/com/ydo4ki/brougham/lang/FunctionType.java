@@ -1,6 +1,5 @@
 package com.ydo4ki.brougham.lang;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

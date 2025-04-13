@@ -27,7 +27,7 @@ public final class Func implements ConcreteFunction {
 	}
 	
 	@Override
-	public Func asFunctionImpl() {
+	public Func asFunc() {
 		return this;
 	}
 	
@@ -68,16 +68,5 @@ public final class Func implements ConcreteFunction {
 	@Override
 	public String toString() {
 		return "f!" + type;
-	}
-	
-	public boolean isTemplate() {
-		if (!isPure() || (getRawType().getReturnType() != null
-				&& !(getRawType().getReturnType().getBaseType() instanceof FunctionType))) {
-			return false;
-		}
-//		for (TypeRef param : type.getParams()) {
-//			if (!(param.getType() instanceof MetaType)) return false;
-//		}
-		return true;
 	}
 }
