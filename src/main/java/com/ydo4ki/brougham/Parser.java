@@ -56,10 +56,10 @@ public class Parser {
 	private DList parseDList(Scope parent, BracketsType bracketsType, Source in) throws IOException {
 		List<SyntaxElement> elements = new ArrayList<>();
 		int start = in.getCursor()-3;
-		DList dList =  new DList(parent, bracketsType, elements);
+		DList dList =  new DList(bracketsType, elements);
 		SyntaxElement next;
 		while (true) {
-			next = parseVal(dList.getScope(), bracketsType, in);
+			next = parseVal(new Scope(parent), bracketsType, in);
 			if (next == null) break;
 			elements.add(next);
 		}

@@ -27,14 +27,12 @@ public final class DList implements SyntaxElement {
 		);
 	}
 	
-	private final Scope scope;
 	@Setter
 	private Location location;
 	private final BracketsType bracketsType;
 	private final List<SyntaxElement> elements;
 	
-	public DList(Scope parent, BracketsType bracketsType, List<SyntaxElement> elements) {
-		this.scope = new Scope(parent);
+	public DList(BracketsType bracketsType, List<SyntaxElement> elements) {
 		this.location = new Location(null, 0, 0);
 		this.bracketsType = bracketsType;
 		this.elements = elements;

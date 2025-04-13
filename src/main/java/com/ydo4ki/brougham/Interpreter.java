@@ -68,7 +68,7 @@ public class Interpreter {
 			args0.remove(0);
 			args = args0.toArray(new Val[0]);
 		}
-		return func.invoke(f.getScope().withParent(scope), args);
+		return func.invoke(new Scope(scope), args);
 	}
 	
 	public static Val resolve(Scope caller, Symbol name) {
