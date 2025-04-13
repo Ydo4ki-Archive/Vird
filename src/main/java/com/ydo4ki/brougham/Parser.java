@@ -95,15 +95,16 @@ public class Parser {
 	private static final String delimiter_operators = ";,[]{}()";
 	
 	public Val read(Scope parent, File file) throws IOException {
-		DList fileDList = new DList(parent, BracketsType.ROUND, new ArrayList<>());
+		List<Val> dListElements = new ArrayList<>();
+		DList fileDList = new DList(parent, BracketsType.ROUND, dListElements);
 		Symbol name = new Symbol(new Location(null,0,0), fileDList, file.getName());
-		fileDList.getElements().add(name);
+		dListElements.add(name);
 		File[] files = file.listFiles();
 		if (files == null) {
 			Source in = new Source.OfFile(file);
 			Val DList = read(fileDList, in);
 			in.close();
-			fileDList.getElements().add(DList);
+			dListElements.add(DList);
 		} else {
 			List<Val> elements = new ArrayList<>();
 			DList group = new DList(fileDList, BracketsType.ROUND, elements);
@@ -111,7 +112,7 @@ public class Parser {
 				if (!file1.getName().endsWith(".bham")) continue;
 				elements.add(read(group, file1));
 			}
-			fileDList.getElements().add(group);
+			dListElements.add(group);
 		}
 		return fileDList;
 	}

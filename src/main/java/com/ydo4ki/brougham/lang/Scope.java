@@ -32,11 +32,6 @@ public class Scope {
 		if (types.getFrom().getBaseType().equals(SyntaxElementType.INSTANCE)) {
 			return new ConversionRule(types, Std.evaluate);
 		}
-//		if (dereferenced == null) {
-//			for (Map.Entry<ConversionRule.ConversionTypes, ConversionRule> entry : conversionRules.entrySet()) {
-//				if (entry.getKey().equals(types)) return entry.getValue();
-//			}
-//		}
 		return parent == null ? null : parent.resolveConversionRule(types);
 	}
 	
@@ -57,65 +52,4 @@ public class Scope {
 			return (T)value;
 		return null;
 	}
-	
-	
-	
-	
-	
-	
-	
-//	public void defineFunction(String name, FunctionImpl... function) {
-//		FunctionSet set = resolveFunction(name);
-//		if (set == null) {
-//			set = new FunctionSetImpl(function);
-//			define(name, set);
-//		} else if (set instanceof FunctionSetImpl ){
-//			for (FunctionImpl f : function) {
-//				((FunctionSetImpl)set).addImpl(f);
-//			}
-//		}
-//	}
-//	public FunctionImpl resolveImplicitCast(TypeRef returnType, TypeRef argType) {
-//
-//	}
-//	public void defineImplicitCast(TypeRef returnType, TypeRef argType, BiFunction<Scope, Val, Val> transformer, boolean pure) {
-//		defineFunction("",
-//				new FunctionImpl(
-//						new FunctionType(
-//								returnType,
-//								new TypeRef[]{argType}
-//						),
-//						(caller, args) -> transformer.apply(caller, args[0]), pure
-//				)
-//		);
-//	}
-	
-	
-
-//	public FunctionSet resolveFunction(String name) {
-//		Val dereferenced = definedSymbols.get(name);
-//		if (dereferenced instanceof FunctionSet) return (FunctionSet)dereferenced;
-//		return parent == null ? null : parent.resolveFunction(name);
-//	}
-//
-//	private FunctionSet resolveFunctionNoParents(String name) {
-//		Val dereferenced = definedSymbols.get(name);
-//		if (dereferenced instanceof FunctionSet) return (FunctionSet)dereferenced;
-//		return null;
-//	}
-//	public FunctionCall resolveFunctionImpl(String name, TypeRef returnType, Val[] args) {
-//		return resolveFunctionImpl(name, returnType, Arrays.stream(args).map(Val::getType).toArray(TypeRef[]::new));
-//	}
-//	public FunctionCall resolveFunctionImpl(String name, TypeRef returnType, TypeRef[] argTypes) {
-//		Scope caller = this;
-//		while (true) {
-//			FunctionSet functionSet = caller.resolveFunctionNoParents(name);
-//			if (functionSet != null) {
-//				FunctionCall call = functionSet.makeCall(caller, returnType, argTypes);
-//				if (call != null) return call;
-//			}
-//			caller = caller.parent;
-//			if (caller == null) return null;
-//		}
-//	}
 }

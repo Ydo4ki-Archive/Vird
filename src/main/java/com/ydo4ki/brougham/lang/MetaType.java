@@ -20,7 +20,6 @@ public final class MetaType extends Type {
 	}
 	
 	
-	
 	private final int depth;
 	
 	@Override

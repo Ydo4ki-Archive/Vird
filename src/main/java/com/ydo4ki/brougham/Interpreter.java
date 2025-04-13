@@ -73,12 +73,6 @@ public class Interpreter {
 			args0.remove(0);
 			args = args0.toArray(new Val[0]);
 		}
-//		if (call == null) {
-//			f.getLocation().print(System.err);
-//			throw new IllegalArgumentException("Function not found: " + functionId +
-//					Arrays.stream(args).map(Val::getType).collect(Collectors.toList()) +
-//					" (for " + Arrays.toString(args) + ")");
-//		}
 		return func.invoke(f.withParent(caller), args);
 	}
 	
