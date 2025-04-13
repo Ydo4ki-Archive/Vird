@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * @since 4/8/2025 8:24 PM
  */
 @Getter
-public final class DList extends Scope implements SyntaxElement {
+public final class DList implements SyntaxElement {
 	
 	public static TypeRef TYPE(BracketsType type) {
 		return SyntaxElementType.INSTANCE.ref(
@@ -27,19 +27,20 @@ public final class DList extends Scope implements SyntaxElement {
 		);
 	}
 	
+	private final Scope scope;
 	@Setter
 	private Location location;
 	private final BracketsType bracketsType;
-	private final List<Val> elements;
+	private final List<SyntaxElement> elements;
 	
-	public DList(Scope parent, BracketsType bracketsType, List<Val> elements) {
-		super(parent);
+	public DList(Scope parent, BracketsType bracketsType, List<SyntaxElement> elements) {
+		this.scope = new Scope(parent);
 		this.location = new Location(null, 0, 0);
 		this.bracketsType = bracketsType;
 		this.elements = elements;
 	}
 	
-	public List<Val> getElements() {
+	public List<SyntaxElement> getElements() {
 		return new ArrayList<>(elements);
 	}
 	
@@ -58,9 +59,5 @@ public final class DList extends Scope implements SyntaxElement {
 	@Override
 	public int hashCode() {
 		return Objects.hash(bracketsType, elements);
-	}
-	
-	public Scope withParent(Scope parent) {
-		return new DList(parent, bracketsType, elements);
 	}
 }

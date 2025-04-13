@@ -34,46 +34,41 @@ public class Interpreter {
 	}
 	
 	public Val next(Source in) throws IOException {
-		Val parsed = new Parser().read(program, in);
+		SyntaxElement parsed = new Parser().read(program, in);
 		if (parsed == null) throw new EOFException();
 		return evaluate(program, null, parsed);
 	}
 	
-	public static Val evaluate(Scope caller, TypeRef expectedType, Val val) {
-		Objects.requireNonNull(val, "sho?");
-		if (expectedType != null && expectedType.matches(caller, val)) return val;
-		if (val instanceof DList)
-			return Objects.requireNonNull(
-					evaluate_function(caller, expectedType, (DList) val),
+	public static Val evaluate(Scope scope, TypeRef expectedType, SyntaxElement val) {
+		Objects.requireNonNull(val, "why null");
+		if (expectedType != null && expectedType.matches(scope, val)) return val;
+		if (val instanceof DList) return Objects.requireNonNull(
+					evaluate_function(scope, expectedType, (DList) val),
 					"Cannot evaluate function: " + val
-			);
-		if (val instanceof Symbol)
-			return Objects.requireNonNull(
-					resolve(caller, (Symbol) val),
+		);
+		if (val instanceof Symbol) return Objects.requireNonNull(
+					resolve(scope, (Symbol) val),
 					"Cannot resolve symbol: " + val
-			);
-		if (expectedType != null) {
-			// maybe find a cast function... idk
-		}
+		);
 		return val;
 	}
 	
-	private static Val evaluate_function(Scope caller, TypeRef expectedType, DList f) {
-		Val functionId = f.getElements().get(0);
-		Val function = evaluate(caller, null, functionId);
+	private static Val evaluate_function(Scope scope, TypeRef expectedType, DList f) {
+		SyntaxElement functionId = f.getElements().get(0);
+		Val function = evaluate(scope, null, functionId);
 		if (!(function instanceof Func)) {
 			f.getLocation().print(System.err);
-			throw new ThisIsNotTheBookClubException("Function not found: " + functionId);
+			throw new IllegalArgumentException("Function not found: " + functionId);
 		}
 		Func func = ((Func) function);
 		
 		final Val[] args;
 		{
-			List<Val> args0 = f.getElements();
+			List<SyntaxElement> args0 = f.getElements();
 			args0.remove(0);
 			args = args0.toArray(new Val[0]);
 		}
-		return func.invoke(f.withParent(caller), args);
+		return func.invoke(f.getScope().withParent(scope), args);
 	}
 	
 	public static Val resolve(Scope caller, Symbol name) {

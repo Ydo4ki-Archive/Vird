@@ -3,7 +3,6 @@ package com.ydo4ki.brougham;
 import com.ydo4ki.brougham.lang.*;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,21 +54,21 @@ public class Parser {
 	}
 	
 	private DList parseDList(Scope parent, BracketsType bracketsType, Source in) throws IOException {
-		List<Val> elements = new ArrayList<>();
+		List<SyntaxElement> elements = new ArrayList<>();
 		int start = in.getCursor()-3;
-		DList DList =  new DList(parent, bracketsType, elements);
-		Val next;
+		DList dList =  new DList(parent, bracketsType, elements);
+		SyntaxElement next;
 		while (true) {
-			next = parseVal(DList, bracketsType, in);
+			next = parseVal(dList.getScope(), bracketsType, in);
 			if (next == null) break;
 			elements.add(next);
 		}
-		DList.setLocation(new Location(in, start, in.getCursor()-1));
+		dList.setLocation(new Location(in, start, in.getCursor()-1));
 		ch = next(in);
-		return DList;
+		return dList;
 	}
 	
-	private Val parseVal(Scope parent, BracketsType brackets, Source in) throws IOException {
+	private SyntaxElement parseVal(Scope parent, BracketsType brackets, Source in) throws IOException {
 		if (ch == 0xFFFF) return null;
 		while (Character.isWhitespace(ch)) {
 			ch = next(in);
@@ -89,41 +88,18 @@ public class Parser {
 		return parseSymbol(parent, in);
 	}
 	
-	private static final String delimiter_operators = ";,[]{}()";
+	private static final String delimiter_operators = ",[]{}()";
 	
-	public Val read(Scope parent, File file) throws IOException {
-		List<Val> dListElements = new ArrayList<>();
-		DList fileDList = new DList(parent, BracketsType.ROUND, dListElements);
-		Symbol name = new Symbol(new Location(null,0,0), fileDList, file.getName());
-		dListElements.add(name);
-		File[] files = file.listFiles();
-		if (files == null) {
-			Source in = new Source.OfFile(file);
-			Val DList = read(fileDList, in);
-			in.close();
-			dListElements.add(DList);
-		} else {
-			List<Val> elements = new ArrayList<>();
-			DList group = new DList(fileDList, BracketsType.ROUND, elements);
-			for (File file1 : files) {
-				if (!file1.getName().endsWith(".bham")) continue;
-				elements.add(read(group, file1));
-			}
-			dListElements.add(group);
-		}
-		return fileDList;
-	}
-	
-	public Val read(String program) throws IOException {
+	public SyntaxElement read(String program) throws IOException {
 		return read(null, program);
 	}
-	public Val read(Scope parent, String program) throws IOException {
+	public SyntaxElement read(Scope parent, String program) throws IOException {
 		Source in = new Source.OfString(program);
-		Val ret = read(parent, in);
+		SyntaxElement ret = read(parent, in);
 		in.close();
 		return ret;
 	}
-	public Val read(Scope parent, Source in) throws IOException {
+	public SyntaxElement read(Scope parent, Source in) throws IOException {
 		ch = next(in);
 		return parseVal(parent, BracketsType.ROUND, in);
 	}

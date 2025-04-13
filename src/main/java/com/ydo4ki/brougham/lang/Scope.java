@@ -15,7 +15,7 @@ import java.util.function.BiFunction;
  */
 @RequiredArgsConstructor
 @Getter
-public class Scope {
+public final class Scope {
 	private final Scope parent;
 	private final Map<String, Val> definedSymbols = new HashMap<>();
 	private final Map<ConversionRule.ConversionTypes, ConversionRule> conversionRules = new HashMap<>();
@@ -51,5 +51,9 @@ public class Scope {
 		if (jtype.isInstance(value)) //noinspection unchecked
 			return (T)value;
 		return null;
+	}
+	
+	public Scope withParent(Scope parent) {
+		return new Scope(parent);
 	}
 }

@@ -22,7 +22,7 @@ public final class Std {
 							SyntaxElementType.INSTANCE.ref(),
 					}
 			),
-			(caller, args) -> Interpreter.evaluate(caller, null, args[0]),
+			(caller, args) -> Interpreter.evaluate(caller, null, (SyntaxElement)args[0]),
 			true
 	);
 	
@@ -67,7 +67,7 @@ public final class Std {
 								}
 						),
 						(caller, args) -> {
-							Val value = Interpreter.evaluate(caller, null, args[1]);
+							Val value = Interpreter.evaluate(caller, null, (SyntaxElement)args[1]);
 							caller.getParent().define(((Symbol) args[0]).getValue(), value);
 							return value;
 						},
@@ -103,7 +103,7 @@ public final class Std {
 									returnType,
 									paramTypes
 							);
-							Val functionId = body.getElements().get(0);
+							SyntaxElement functionId = body.getElements().get(0);
 							Val function = Interpreter.evaluate(caller, null, functionId);
 							
 							return new Func(functionType,
@@ -149,7 +149,7 @@ public final class Std {
 						(caller, args) -> {
 							Val evaluated;
 							try {
-								evaluated = Interpreter.evaluate(caller, null, args[0]);
+								evaluated = Interpreter.evaluate(caller, null, (SyntaxElement)args[0]);
 							} catch (NullPointerException e) {
 								evaluated = args[0];
 							}

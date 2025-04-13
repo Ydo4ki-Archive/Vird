@@ -1,6 +1,5 @@
 package com.ydo4ki.brougham.lang;
 
-import com.ydo4ki.brougham.ThisIsNotTheBookClubException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +40,7 @@ public final class Func implements Val {
 			if (!param.matches(caller, args[i])) {
 				ConversionRule rule = caller.resolveConversionRule(new ConversionRule.ConversionTypes(param, args[i].getType()));
 				if (rule == null) {
-					throw new ThisIsNotTheBookClubException("Cannot implicitly cast " +
+					throw new IllegalArgumentException("Cannot implicitly cast " +
 							args[i].getType() + " (" + (args[i]) + ") to " + param);
 				}
 				args[i] = rule.invoke(caller, args[i]);
@@ -56,7 +55,7 @@ public final class Func implements Val {
 				"Function just returned null. This is outrageous. It's unfair. How can you be a function, and not return a value?" + Arrays.toString(args)
 		);
 		if (type.getReturnType() != null && !type.getReturnType().matches(caller, ret))
-			throw new ThisIsNotTheBookClubException("Invalid return value: " + ret + "( " + type.getReturnType() + " expected)");
+			throw new IllegalArgumentException("Invalid return value: " + ret + "( " + type.getReturnType() + " expected)");
 		return ret;
 	}
 	
