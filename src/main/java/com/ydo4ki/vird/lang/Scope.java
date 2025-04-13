@@ -1,6 +1,6 @@
 package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.vird.lib.Std;
+import com.ydo4ki.vird.Vird;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +28,7 @@ public final class Scope {
 		ConversionRule dereferenced = conversionRules.get(types);
 		if (dereferenced != null) return dereferenced;
 		if (types.getFrom().getBaseType().equals(Expr.TYPE)) {
-			return new ConversionRule(types, Std.evaluate);
+			return new ConversionRule(types, Vird.evaluate);
 		}
 		return parent == null ? null : parent.resolveConversionRule(types);
 	}
