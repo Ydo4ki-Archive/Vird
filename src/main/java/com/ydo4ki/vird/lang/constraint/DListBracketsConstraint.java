@@ -1,7 +1,7 @@
 package com.ydo4ki.vird.lang.constraint;
 
 import com.ydo4ki.vird.lang.BracketsType;
-import com.ydo4ki.vird.lang.DList;
+import com.ydo4ki.vird.lang.ExprList;
 import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.lang.Val;
 import lombok.EqualsAndHashCode;
@@ -14,8 +14,8 @@ public final class DListBracketsConstraint extends Constraint {
 	
 	@Override
 	public boolean test(Scope scope, Val value) {
-		return value instanceof DList
-				&& ((DList) value).getBracketsType() == expectedType;
+		return value instanceof ExprList
+				&& ((ExprList) value).getBracketsType() == expectedType;
 	}
 	
 	@Override

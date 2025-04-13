@@ -3,9 +3,6 @@ package com.ydo4ki.vird;
 import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.lib.Std;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-
 /**
  * @author Sulphuris
  * @since 4/13/2025 11:05 PM
@@ -34,9 +31,9 @@ public class Vird {
 			).d("blob1",
 					Func.intrinsic(BlobType.of(1).ref(), new TypeRef[]{Symbol.TYPE},
 							(caller, args) -> new Blob(new byte[]{(byte) Integer.parseInt(((Symbol) args[0]).getValue())}))
-			).d("macro", Func.intrinsic(null, new TypeRef[]{DList.TYPE(BracketsType.SQUARE), Expr.TYPE.ref()},
+			).d("macro", Func.intrinsic(null, new TypeRef[]{ExprList.TYPE(BracketsType.SQUARE), Expr.TYPE.ref()},
 					(caller, args) -> {
-						DList parameters = ((DList) args[0]);
+						ExprList parameters = ((ExprList) args[0]);
 						Expr body = (Expr) args[1];
 						return Std.macro(parameters, body);
 					})
@@ -44,12 +41,12 @@ public class Vird {
 			.d("fineval", Std.evaluateFinale)
 			.d("fn",
 					Func.intrinsic(null, new TypeRef[]{
-									DList.TYPE(BracketsType.SQUARE),
+									ExprList.TYPE(BracketsType.SQUARE),
 									new Symbol(new Location(null, 0, 0), ":").getType(),
 									TypeRef.TYPE.ref(),
 									Expr.TYPE.ref(),
 							},
-							(caller, args) -> Std.fn(caller, ((DList) args[0]), (TypeRef) args[2], (Expr) args[3])
+							(caller, args) -> Std.fn(caller, ((ExprList) args[0]), (TypeRef) args[2], (Expr) args[3])
 					)
 			)
 			

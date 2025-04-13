@@ -1,10 +1,8 @@
 package com.ydo4ki.vird.lib;
 
 import com.ydo4ki.vird.Interpreter;
-import com.ydo4ki.vird.Location;
 import com.ydo4ki.vird.lang.*;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.IntBinaryOperator;
@@ -25,17 +23,14 @@ public final class Std {
 			(caller, args) -> Interpreter.evaluateFinale(caller, null, (Expr) args[0])
 	);
 	
-	public static Func macro(DList parameters, Expr body) {
-		TypeRef[] paramTypes = new TypeRef[parameters.getElements().size()];
-		String[] paramNames = new String[parameters.getElements().size()];
+	public static Func macro(ExprList parameters, Expr body) {
+		TypeRef[] paramTypes = new TypeRef[parameters.elementsCount()];
+		String[] paramNames = new String[parameters.elementsCount()];
 		for (int i = 0; i < paramTypes.length; i++) {
 			paramTypes[i] = Expr.TYPE.ref();
-			paramNames[i] = ((Symbol) parameters.getElements().get(i)).getValue();
+			paramNames[i] = ((Symbol) parameters.getElement(i)).getValue();
 		}
-		FunctionType functionType = new FunctionType(
-				Expr.TYPE.ref(),
-				paramTypes
-		);
+		FunctionType functionType = new FunctionType(Expr.TYPE.ref(), paramTypes);
 		return new Func(
 				functionType,
 				(c, a) -> replaceDefined(body, a, paramNames)
@@ -70,10 +65,10 @@ public final class Std {
 	}
 	
 	private static Expr replaceDefined(Expr e, Val[] args, String[] names) {
-		if (e instanceof DList) {
-			List<Expr> elements = ((DList) e).getElements();
+		if (e instanceof ExprList) {
+			List<Expr> elements = ((ExprList) e).getElements();
 			elements.replaceAll(syntaxElement -> replaceDefined(syntaxElement, args, names));
-			return new DList(((DList) e).getBracketsType(), elements);
+			return new ExprList(((ExprList) e).getBracketsType(), elements);
 		} else if (e instanceof Symbol) {
 			for (int i = 0; i < names.length; i++) {
 				if (((Symbol) e).getValue().equals(names[i])) return (Expr) args[i];
@@ -98,14 +93,14 @@ public final class Std {
 		}
 		return evaluated.getType();
 	}
-	public static Func fn(Scope scope, DList parameters, TypeRef returnType, Expr body) {
-		TypeRef[] paramTypes = new TypeRef[parameters.getElements().size()];
-		String[] paramNames = new String[parameters.getElements().size()];
+	public static Func fn(Scope scope, ExprList parameters, TypeRef returnType, Expr body) {
+		TypeRef[] paramTypes = new TypeRef[parameters.elementsCount()];
+		String[] paramNames = new String[parameters.elementsCount()];
 		int i = 0;
-		for (Val element : parameters.getElements()) {
-			DList p = (DList) element;
-			paramTypes[i] = (TypeRef) Interpreter.evaluate(scope, TypeRef.TYPE.ref(), p.getElements().get(0));
-			paramNames[i] = ((Symbol) p.getElements().get(1)).getValue();
+		for (Val element : parameters) {
+			ExprList p = (ExprList) element;
+			paramTypes[i] = (TypeRef) Interpreter.evaluate(scope, TypeRef.TYPE.ref(), p.getElement(0));
+			paramNames[i] = ((Symbol) p.getElement(1)).getValue();
 			i++;
 		}
 		FunctionType functionType = new FunctionType(

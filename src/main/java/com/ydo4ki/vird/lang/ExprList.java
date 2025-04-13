@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
  * @since 4/8/2025 8:24 PM
  */
 @Getter
-public final class DList implements Expr {
+public final class ExprList implements Expr, Iterable<Expr> {
 	
 	public static TypeRef TYPE(BracketsType type) {
 		return Expr.TYPE.ref(
 				AndConstraint.of(
-						new InstanceOfConstraint(DList.class),
+						new InstanceOfConstraint(ExprList.class),
 						new DListBracketsConstraint(type)
 				)
 		);
@@ -31,7 +31,7 @@ public final class DList implements Expr {
 	private final BracketsType bracketsType;
 	private final List<Expr> elements;
 	
-	public DList(BracketsType bracketsType, List<Expr> elements) {
+	public ExprList(BracketsType bracketsType, List<Expr> elements) {
 		this.location = new Location(null, 0, 0);
 		this.bracketsType = bracketsType;
 		this.elements = elements;
@@ -39,6 +39,14 @@ public final class DList implements Expr {
 	
 	public List<Expr> getElements() {
 		return new ArrayList<>(elements);
+	}
+	
+	public int elementsCount() {
+		return elements.size();
+	}
+	
+	public Expr getElement(int index) {
+		return elements.get(index);
 	}
 	
 	@Override
@@ -49,12 +57,17 @@ public final class DList implements Expr {
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass()) return false;
-		DList dList = (DList) o;
-		return bracketsType == dList.bracketsType && Objects.equals(elements, dList.elements);
+		ExprList exprList = (ExprList) o;
+		return bracketsType == exprList.bracketsType && Objects.equals(elements, exprList.elements);
 	}
 	
 	@Override
 	public int hashCode() {
 		return Objects.hash(bracketsType, elements);
+	}
+	
+	@Override
+	public Iterator<Expr> iterator() {
+		return elements.iterator();
 	}
 }

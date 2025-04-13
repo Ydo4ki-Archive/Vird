@@ -53,19 +53,19 @@ public class Parser {
 		return new Symbol(new Location(in, start, in.getCursor()), token.toString());
 	}
 	
-	private DList parseDList(BracketsType bracketsType, Source in) throws IOException {
+	private ExprList parseDList(BracketsType bracketsType, Source in) throws IOException {
 		List<Expr> elements = new ArrayList<>();
 		int start = in.getCursor()-3;
-		DList dList =  new DList(bracketsType, elements);
+		ExprList exprList =  new ExprList(bracketsType, elements);
 		Expr next;
 		while (true) {
 			next = parseVal(bracketsType, in);
 			if (next == null) break;
 			elements.add(next);
 		}
-		dList.setLocation(new Location(in, start, in.getCursor()-1));
+		exprList.setLocation(new Location(in, start, in.getCursor()-1));
 		ch = next(in);
-		return dList;
+		return exprList;
 	}
 	
 	private Expr parseVal(BracketsType brackets, Source in) throws IOException {

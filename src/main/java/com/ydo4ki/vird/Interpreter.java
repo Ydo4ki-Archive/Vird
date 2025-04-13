@@ -1,7 +1,6 @@
 package com.ydo4ki.vird;
 
 import com.ydo4ki.vird.lang.*;
-import com.ydo4ki.vird.lib.Std;
 import lombok.Getter;
 
 import java.io.BufferedReader;
@@ -43,8 +42,8 @@ public class Interpreter {
 	public static Val evaluate(Scope scope, TypeRef expectedType, Expr val) {
 		Objects.requireNonNull(val, "why null");
 		if (expectedType != null && expectedType.matches(scope, val)) return val;
-		if (val instanceof DList) return Objects.requireNonNull(
-					evaluate_function(scope, expectedType, (DList) val),
+		if (val instanceof ExprList) return Objects.requireNonNull(
+					evaluate_function(scope, expectedType, (ExprList) val),
 					"Cannot evaluate function: " + val
 		);
 		if (val instanceof Symbol) return Objects.requireNonNull(
@@ -54,8 +53,8 @@ public class Interpreter {
 		return val;
 	}
 	
-	private static Val evaluate_function(Scope scope, TypeRef expectedType, DList f) {
-		Expr functionId = f.getElements().get(0);
+	private static Val evaluate_function(Scope scope, TypeRef expectedType, ExprList f) {
+		Expr functionId = f.getElement(0);
 		Val function = evaluate(scope, null, functionId);
 		if (!(function instanceof Func)) {
 			f.getLocation().print(System.err);
