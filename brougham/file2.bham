@@ -1,8 +1,11 @@
 (+ (blob4 5) (blob4 4))
 (+ (blob4 19) (blob4 15))
-(define plus (fn
-	[(Blob4 a) (Blob4 b)] : Blob4 (+ a b)
+; (define plus (fn
+; 	[(Blob4 a) (Blob4 b)] : Blob4 (+ a b)
+; ))
+(define plus (macro[a b]
+	(+ a b)
 ))
 (plus (blob4 1) (blob4 1))
-+
+
 (charextract "hello world")

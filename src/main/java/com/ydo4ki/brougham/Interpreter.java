@@ -33,7 +33,13 @@ public class Interpreter {
 	public Val next(Source in) throws IOException {
 		SyntaxElement parsed = new Parser().read(in);
 		if (parsed == null) throw new EOFException();
-		return evaluate(program, null, parsed);
+		return evaluateFinale(program, null, parsed);
+	}
+	
+	public static Val evaluateFinale(Scope scope, TypeRef expectedType, SyntaxElement val) {
+		Val ret = evaluate(scope, expectedType, val);
+		if (ret instanceof SyntaxElement) ret = evaluateFinale(scope, expectedType, (SyntaxElement) ret);
+		return ret;
 	}
 	
 	public static Val evaluate(Scope scope, TypeRef expectedType, SyntaxElement val) {

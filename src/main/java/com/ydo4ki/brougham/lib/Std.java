@@ -5,7 +5,9 @@ import com.ydo4ki.brougham.Location;
 import com.ydo4ki.brougham.lang.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Sulphuris
@@ -15,19 +17,53 @@ public final class Std {
 	private Std() {
 	}
 	
-	public static final Func evaluate = new Func(
-			new FunctionType(
-					null,
-					new TypeRef[]{
-							SyntaxElement.TYPE.ref(),
-					}
-			),
-			(caller, args) -> Interpreter.evaluate(caller, null, (SyntaxElement) args[0]),
-			true
+	public static final Func evaluate = Func.intrinsic(null, new TypeRef[]{SyntaxElement.TYPE.ref()},true,
+			(caller, args) -> Interpreter.evaluate(caller, null, (SyntaxElement) args[0])
 	);
+	public static final Func evaluateFinale = Func.intrinsic(null, new TypeRef[]{SyntaxElement.TYPE.ref()},true,
+			(caller, args) -> Interpreter.evaluateFinale(caller, null, (SyntaxElement) args[0])
+	);
+	public static final Func macro = Func.intrinsic(null, new TypeRef[]{
+					DList.TYPE(BracketsType.SQUARE),
+					SyntaxElement.TYPE.ref(),
+			}, false,
+			(caller, args) -> {
+				DList parameters = ((DList) args[0]);
+				SyntaxElement body = (SyntaxElement)args[1];
+				TypeRef[] paramTypes = new TypeRef[parameters.getElements().size()];
+				String[] paramNames = new String[parameters.getElements().size()];
+				for (int i = 0; i < paramTypes.length; i++) {
+					paramTypes[i] = SyntaxElement.TYPE.ref();
+					paramNames[i] = ((Symbol) parameters.getElements().get(i)).getValue();
+				}
+				FunctionType functionType = new FunctionType(
+						SyntaxElement.TYPE.ref(),
+						paramTypes
+				);
+				return new Func(
+						functionType,
+						(c, a) -> replaceDefined(body, a, paramNames), true
+				);
+			}
+	);
+	private static SyntaxElement replaceDefined(SyntaxElement e, Val[] args, String[] names) {
+		if (e instanceof DList) {
+			List<SyntaxElement> elements = ((DList) e).getElements();
+			elements.replaceAll(syntaxElement -> replaceDefined(syntaxElement, args, names));
+			return new DList(((DList) e).getBracketsType(), elements);
+		} else if (e instanceof Symbol) {
+			for (int i = 0; i < names.length; i++) {
+				if (((Symbol) e).getValue().equals(names[i])) return (SyntaxElement) args[i];
+			}
+			return e;
+		}
+		return e;
+	}
 	
 	public static void setup(Scope scope) {
-		TypeRef blob4 = scope.define("Blob4", BlobType.of(4).ref());
+		scope.define("SyntaxElement", SyntaxElement.TYPE.ref());
+		scope.define("Symbol", Symbol.TYPE);
+		scope.define("Blob4", BlobType.of(4).ref());
 //		ConversionRule.ConversionTypes conversionTypes = new ConversionRule.ConversionTypes(blob4, Symbol.TYPE);
 //		scope.defineConversionRule(new ConversionRule(conversionTypes, blob4.getFunctionBySignature(conversionTypes.toFunctionType())));
 		scope.define("charextract",
@@ -59,7 +95,7 @@ public final class Std {
 								DList.TYPE(BracketsType.SQUARE),
 								new Symbol(new Location(null, 0, 0), ":").getType(),
 								TypeRef.TYPE.ref(),
-								DList.TYPE(BracketsType.ROUND),
+								SyntaxElement.TYPE.ref(),
 						}, false,
 						(caller, args) -> {
 							DList parameters = ((DList) args[0]);
@@ -94,7 +130,9 @@ public final class Std {
 						}
 				)
 		);
-		scope.define("evaluate", evaluate);
+		scope.define("macro", macro);
+		scope.define("eval", evaluate);
+		scope.define("evalfin", evaluateFinale);
 		scope.define("+",
 				Func.intrinsic(BlobType.of(4).ref(), new TypeRef[]{
 								BlobType.of(4).ref(),
