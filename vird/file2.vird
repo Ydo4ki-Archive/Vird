@@ -3,7 +3,7 @@
 (: Type Blob1 (Blob (blob4 1)))
 (:: baseTypeOf (macro[x] (baseType (typeOf x))))
 
-(baseTypeOf +(baseTypeOf (baseTypeOf Blob1)))
+(baseTypeOf (baseTypeOf (baseTypeOf Blob1)))
 
 ; (+ (blob4 5) (blob4 4))
 ; (+ (blob4 19) (blob4 15))
