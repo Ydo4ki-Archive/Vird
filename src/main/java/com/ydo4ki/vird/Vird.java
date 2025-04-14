@@ -158,7 +158,7 @@ public class Vird {
 	public static TypeRef typeOf(Scope scope, Expr expr) {
 		Val evaluated;
 		try {
-			evaluated = Interpreter.evaluate(scope, null, expr);
+			evaluated = Interpreter.evaluateFinale(scope, null, expr);
 		} catch (NullPointerException e) {
 			evaluated = expr;
 		}
