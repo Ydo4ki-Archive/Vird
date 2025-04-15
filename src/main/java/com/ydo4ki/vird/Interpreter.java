@@ -1,6 +1,9 @@
 package com.ydo4ki.vird;
 
 import com.ydo4ki.vird.lang.*;
+import com.ydo4ki.vird.lang.expr.Expr;
+import com.ydo4ki.vird.lang.expr.ExprList;
+import com.ydo4ki.vird.lang.expr.Symbol;
 import lombok.Getter;
 
 import java.io.BufferedReader;

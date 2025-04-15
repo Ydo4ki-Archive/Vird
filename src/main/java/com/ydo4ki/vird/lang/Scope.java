@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.Vird;
+import com.ydo4ki.vird.lang.expr.Expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,8 +13,8 @@ import java.util.Map;
  * @since 4/11/2025 12:16 PM
  */
 @RequiredArgsConstructor
-@Getter
 public final class Scope {
+	@Getter
 	private final Scope parent;
 	private final Map<String, Val> definedSymbols = new HashMap<>();
 	private final Map<ConversionRule.ConversionTypes, ConversionRule> conversionRules = new HashMap<>();

@@ -1,4 +1,7 @@
-package com.ydo4ki.vird.lang;
+package com.ydo4ki.vird.lang.expr;
+
+import com.ydo4ki.vird.lang.Type;
+import com.ydo4ki.vird.lang.Val;
 
 /**
  * @author Sulphuris
@@ -13,7 +16,7 @@ public interface Expr extends Val {
 	Type TYPE = new Type() {
 		@Override
 		public String toString() {
-			return "SyntaxElement";
+			return "Expr";
 		}
 	};
 }

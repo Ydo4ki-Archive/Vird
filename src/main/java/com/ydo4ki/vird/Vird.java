@@ -1,6 +1,9 @@
 package com.ydo4ki.vird;
 
 import com.ydo4ki.vird.lang.*;
+import com.ydo4ki.vird.lang.expr.Expr;
+import com.ydo4ki.vird.lang.expr.ExprList;
+import com.ydo4ki.vird.lang.expr.Symbol;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -32,7 +35,7 @@ public class Vird {
 	);
 	public static final Scope GLOBAL = new Scope(null)
 			.d("Expr", Expr.TYPE.ref())
-			.d("Sym", Symbol.TYPE)
+			.d("Symbol", Symbol.TYPE)
 			.d("Type", MetaType.of(0).ref())
 			.d("Blob", Func.intrinsic(TypeRef.TYPE.ref(), new TypeRef[]{BlobType.of(4).ref()},
 					(caller, args) -> BlobType.of(((Blob) args[0]).toInt()).ref())
