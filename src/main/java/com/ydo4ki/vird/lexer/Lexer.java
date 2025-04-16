@@ -53,7 +53,7 @@ public class Lexer {
 	private Token nextToken() throws UnexpectedTokenException {
 		char ch = nextChar();
 
-		//skip
+		// skip
 		while (ch == ' ' || ch == '\n' || ch == '\t') {
 			if (ch == '\n') line++;
 			ch = nextChar();
@@ -62,7 +62,7 @@ public class Lexer {
 		if (ch == '\0')
 			return new Token(TokenType.EOF, pos - 1, pos, line, file);
 
-		//comments
+		// comments
 		if (ch == '/') {
 			if (seeNextChar() == '/') {
 				ch = nextChar();
@@ -93,16 +93,15 @@ public class Lexer {
 		}
 
 
-		//string literals
+		// string literals
 		Token stringToken = readLiteral('"', ch, TokenType.STRING);
 		if (stringToken != null) return stringToken;
 
-
-		//char literals
+		// char literals
 		Token charsToken = readLiteral('\'', ch, TokenType.CHARS);
 		if (charsToken != null) return charsToken;
 
-		//text/keywords
+		// identifiers
 		if (isValidNameChar(ch)) {
 			int startpos = pos - 1;
 			StringBuilder builder = new StringBuilder();
@@ -192,7 +191,10 @@ public class Lexer {
 	}
 
 	private char nextChar() {
-		if (pos >= source.length()) return '\0';
+		if (pos >= source.length()) {
+			pos++;
+			return '\0';
+		}
 		return source.charAt(pos++);
 	}
 
@@ -202,6 +204,6 @@ public class Lexer {
 	}
 
 	private boolean isValidNameChar(char ch) {
-		return !Character.isWhitespace(ch) && !BracketsType.isBracket(ch);
+		return ch != '\0' && !Character.isWhitespace(ch) && !BracketsType.isBracket(ch);
 	}
 }

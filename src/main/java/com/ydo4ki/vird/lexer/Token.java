@@ -21,11 +21,11 @@ public class Token {
 
 	@Override
 	public String toString() {
-		return "Token{" + type +
-			(text != null ?" = '" + text + '\'' : "")+
+		return type + "(" +
+			(text != null ?"'" + text + '\'' : "")+
 			", startpos=" + location.getStartPos() +
 			", endpos=" + location.getEndPos() +
 			", line=" + location.getStartLine() +
-			'}';
+			')';
 	}
 }
