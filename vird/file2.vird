@@ -1,4 +1,5 @@
-
+"Hello
+World"
 (: Type Blob4 (Blob (blob4 1)))
 (: Type Blob1 (Blob (blob4 1)))
 (: (fnt [Expr]Expr) baseTypeOf (macro[x] (baseType (typeOf x))))

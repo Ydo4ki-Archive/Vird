@@ -149,38 +149,12 @@ public class Lexer {
 			while (ch != separators) {
 				if (ch == '\\') {
 					ch = nextChar();
-					switch (ch) {
-						case '\\':
-							builder.append('\\');
-							break;
-						case '\'':
-							builder.append('\'');
-							break;
-						case '"':
-							builder.append('"');
-							break;
-						case 'n':
-							builder.append('\n');
-							break;
-						case 't':
-							builder.append('\t');
-							break;
-						case 'u': {
-							char character = (char) Integer.parseInt(String.valueOf(nextChar()) + nextChar() + nextChar() + nextChar());
-							builder.append(character);
-							break;
-						}
-						default: {
-//							if (numeric.contains(String.valueOf(ch))) {
-//								char character = (char) Integer.parseInt(String.valueOf(ch) + nextChar());
-//								builder.append(character);
-//								break;
-//							}
-						}
+					if (ch == separators) {
+						builder.append(separators);
+					} else {
+						builder.append("\\").append(ch);
 					}
 				} else {
-					if (ch == '\n')
-						throw new UnexpectedTokenException(new Token(type, builder.toString(), startpos - 1, pos, line, file), "Unexpected '\\n'");
 					builder.append(ch);
 				}
 				ch = nextChar();
