@@ -18,39 +18,53 @@ public class Lexer {
 
 	private Exception exception = null;
 
-	public synchronized Stack<Token> tokenize(String source, File file) throws UnexpectedTokenException {
+	public synchronized Iterable<Token> tokenize(String source, File file) throws UnexpectedTokenException {
 		this.source = source;
 		this.file = file;
 		pos = 0;
 		line = 1;
 		exception = null;
 
-		Stack<Token> tokens = new Stack<>();
-		Token token = nextToken();
-		try {
-			tokens.push(token);
-			while (token.type != TokenType.EOF) {
-				tokens.push(token = nextToken());
-				if (token.type == TokenType.ERROR)
-					throw new UnexpectedTokenException(token, "Invalid token", exception);
-			}
-		} catch (UnexpectedTokenException e) {
-			Token errorToken = e.getToken();
-			if (errorToken != null) {
-				if (errorToken.text != null) System.err.println(errorToken.text);
-				String str = source.substring(errorToken.location.getStartPos(), errorToken.location.getEndPos());
-				System.err.println("Invalid token at line: " + errorToken.location.getStartLine());
-				System.err.println(str);
-				for (int i = 0; i < str.length(); i++) System.err.print('~');
-				System.err.println();
-			}
-			throw e;
-		}
+//		Stack<Token> tokens = new Stack<>();
+//		Token token = nextToken();
+//		try {
+//			tokens.push(token);
+//			while (token.type != TokenType.EOF) {
+//				tokens.push(token = nextToken());
+//				if (token.type == TokenType.ERROR)
+//					throw new UnexpectedTokenException(token, "Invalid token", exception);
+//			}
+//		} catch (UnexpectedTokenException e) {
+//			Token errorToken = e.getToken();
+//			if (errorToken != null) {
+//				if (errorToken.text != null) System.err.println(errorToken.text);
+//				String str = source.substring(errorToken.location.getStartPos(), errorToken.location.getEndPos());
+//				System.err.println("Invalid token at line: " + errorToken.location.getStartLine());
+//				System.err.println(str);
+//				for (int i = 0; i < str.length(); i++) System.err.print('~');
+//				System.err.println();
+//			}
+//			throw e;
+//		}
 
-		return tokens;
+		return () -> new Iterator<Token>() {
+			Token next = nextToken();
+			
+			@Override
+			public boolean hasNext() {
+				return next.type != TokenType.EOF;
+			}
+			
+			@Override
+			public Token next() {
+				Token token = next;
+				next = nextToken();
+				return token;
+			}
+		};
 	}
 
-	private Token nextToken() throws UnexpectedTokenException {
+	private Token nextToken() {
 		char ch = nextChar();
 
 		// skip
@@ -141,7 +155,7 @@ public class Lexer {
 		return new Token(type, String.valueOf(ch), pos - 1, pos, line, file);
 	}
 
-	private Token readLiteral(char separators, char ch, TokenType type) throws UnexpectedTokenException {
+	private Token readLiteral(char separators, char ch, TokenType type) {
 		if (ch == separators) {
 			int startpos = pos;
 			ch = nextChar();
@@ -149,9 +163,8 @@ public class Lexer {
 			while (ch != separators) {
 				if (ch == '\\') {
 					ch = nextChar();
-					if (ch != separators) {
+					if (ch != separators)
 						builder.append("\\");
-					}
 				}
 				builder.append(ch);
 				ch = nextChar();

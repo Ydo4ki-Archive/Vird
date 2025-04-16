@@ -1,8 +1,5 @@
 package com.ydo4ki.vird;
 
-import java.io.IOException;
-import java.io.PrintStream;
-
 import lombok.Data;
 
 import java.io.File;
