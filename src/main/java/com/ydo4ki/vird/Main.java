@@ -15,19 +15,19 @@ public class Main {
 //		Val ret = interpreter.next("(typeOf (Blob4 5))");
 		Source fileSource = new Source.OfFile(new File("vird/file2.vird"));
 		Val ret = null;
-		try {
-			for (;;) {
-				System.out.println(ret = interpreter.next(fileSource));
-			}
-		} catch (IOException ignored) {
-		
-		}
+//		try {
+//			for (;;) {
+//				System.out.println(ret = interpreter.next(fileSource));
+//			}
+//		} catch (IOException ignored) {
+//
+//		}
 		System.exit(0);
 		
 //		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		for (;;) try {
-			System.out.println(ret = interpreter.next(in));
+//			System.out.println(ret = interpreter.next(in));
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}

@@ -1,4 +1,4 @@
-package com.ydo4ki.vird.lang;
+package com.ydo4ki.vird;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,5 +22,12 @@ public enum BracketsType {
 			case '{': return BRACES;
 		}
 		return null;
+	}
+	
+	public static boolean isBracket(char ch) {
+		for (BracketsType value : values()) {
+			if (ch == value.close || ch == value.open) return true;
+		}
+		return false;
 	}
 }

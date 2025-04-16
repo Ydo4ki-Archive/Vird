@@ -1,7 +1,7 @@
 package com.ydo4ki.vird.lang.expr;
 
 import com.ydo4ki.vird.Location;
-import com.ydo4ki.vird.lang.BracketsType;
+import com.ydo4ki.vird.BracketsType;
 import com.ydo4ki.vird.lang.TypeRef;
 import com.ydo4ki.vird.lang.Val;
 import com.ydo4ki.vird.lang.constraint.AndConstraint;
@@ -35,7 +35,7 @@ public final class ExprList implements Expr, Iterable<Expr> {
 	private final List<Expr> elements;
 	
 	public ExprList(BracketsType bracketsType, List<Expr> elements) {
-		this.location = new Location(null, 0, 0);
+		this.location = null;
 		this.bracketsType = bracketsType;
 		this.elements = elements;
 	}

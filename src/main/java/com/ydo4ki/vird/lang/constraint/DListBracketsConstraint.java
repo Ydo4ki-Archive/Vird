@@ -1,6 +1,6 @@
 package com.ydo4ki.vird.lang.constraint;
 
-import com.ydo4ki.vird.lang.BracketsType;
+import com.ydo4ki.vird.BracketsType;
 import com.ydo4ki.vird.lang.expr.ExprList;
 import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.lang.Val;

@@ -21,20 +21,20 @@ public class Interpreter {
 	private final Scope program = new Scope(Vird.GLOBAL);
 	
 	public Interpreter() {}
-	
-	public Val next(String in) throws IOException {
-		return evaluate(program, null, new Parser().read(new Source.OfString(in)));
-	}
-	
-	public Val next(BufferedReader in) throws IOException {
-		return evaluate(program, null, new Parser().read(new Source.Raw(in)));
-	}
-	
-	public Val next(Source in) throws IOException {
-		Expr parsed = new Parser().read(in);
-		if (parsed == null) throw new EOFException();
-		return evaluateFinale(program, null, parsed);
-	}
+//
+//	public Val next(String in) throws IOException {
+//		return evaluate(program, null, new Parser().read(new Source.OfString(in)));
+//	}
+//
+//	public Val next(BufferedReader in) throws IOException {
+//		return evaluate(program, null, new Parser().read(new Source.Raw(in)));
+//	}
+//
+//	public Val next(Source in) throws IOException {
+//		Expr parsed = new Parser().read(in);
+//		if (parsed == null) throw new EOFException();
+//		return evaluateFinale(program, null, parsed);
+//	}
 	
 	public static Val evaluateFinale(Scope scope, TypeRef expectedType, Expr val) {
 		Val ret = evaluate(scope, expectedType, val);
@@ -60,7 +60,7 @@ public class Interpreter {
 		Expr functionId = f.getElement(0);
 		Val function = evaluate(scope, null, functionId);
 		if (!(function instanceof Func)) {
-			f.getLocation().print(System.err);
+//			f.getLocation().print(System.err);
 			throw new IllegalArgumentException("Function not found: " + functionId);
 		}
 		Func func = ((Func) function);

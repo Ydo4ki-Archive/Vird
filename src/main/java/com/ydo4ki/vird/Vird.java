@@ -56,7 +56,7 @@ public class Vird {
 			.d("fn",
 					Func.intrinsic(null, new TypeRef[]{
 									ExprList.TYPE(BracketsType.SQUARE),
-									new Symbol(new Location(null, 0, 0), ":").getType(),
+									new Symbol(null, ":").getType(),
 									TypeRef.TYPE.ref(),
 									Expr.TYPE.ref(),
 							},
