@@ -7,16 +7,22 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import static com.ydo4ki.vird.Main.printPrjInfo;
+
 /**
  * @author Sulphuris
  * @since 4/16/2025 2:13 PM
  */
 public class LexerTest {
 	public static void main(String[] args) throws IOException {
+		printPrjInfo(System.out);
 		File src = new File("vird/file2.vird");
-		String source = String.join("\n", Files.readAllLines(src.toPath()));
 		
-		TokenOutput lexer = new TokenOutput(source, src);
+		TokenOutput lexer = new TokenOutput(src);
+		for (Token token : lexer) {
+			System.out.println(token);
+		}
+		System.out.println("--------------------");
 		for (Token token : lexer) {
 			System.out.println(token);
 		}

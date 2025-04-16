@@ -34,7 +34,7 @@ public class Main {
 		// in.close();
 	}
 	
-	private static void printPrjInfo(PrintStream out) throws IOException {
+	public static void printPrjInfo(PrintStream out) throws IOException {
 		File src = new File("src/main/java");
 		out.println("###########################");
 		out.println("Classes: " + countClasses(src));
