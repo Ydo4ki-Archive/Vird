@@ -5,49 +5,25 @@ import com.ydo4ki.vird.BracketsType;
 import java.io.File;
 import java.util.*;
 
-public class Lexer {
-
-	public Lexer() {
-	}
-
-	private File file;
-
-	private String source = null;
+public class TokenOutput implements Iterable<Token> {
+	
+	
+	private final String source;
+	private final File file;
+	
 	private int pos = 0;
 	private int line = 1;
-
+	
 	private Exception exception = null;
 
-	public synchronized Iterable<Token> tokenize(String source, File file) throws UnexpectedTokenException {
+	public TokenOutput(String source, File file) {
 		this.source = source;
 		this.file = file;
-		pos = 0;
-		line = 1;
-		exception = null;
-
-//		Stack<Token> tokens = new Stack<>();
-//		Token token = nextToken();
-//		try {
-//			tokens.push(token);
-//			while (token.type != TokenType.EOF) {
-//				tokens.push(token = nextToken());
-//				if (token.type == TokenType.ERROR)
-//					throw new UnexpectedTokenException(token, "Invalid token", exception);
-//			}
-//		} catch (UnexpectedTokenException e) {
-//			Token errorToken = e.getToken();
-//			if (errorToken != null) {
-//				if (errorToken.text != null) System.err.println(errorToken.text);
-//				String str = source.substring(errorToken.location.getStartPos(), errorToken.location.getEndPos());
-//				System.err.println("Invalid token at line: " + errorToken.location.getStartLine());
-//				System.err.println(str);
-//				for (int i = 0; i < str.length(); i++) System.err.print('~');
-//				System.err.println();
-//			}
-//			throw e;
-//		}
-
-		return () -> new Iterator<Token>() {
+	}
+	
+	@Override
+	public Iterator<Token> iterator() {
+		return new Iterator<Token>() {
 			Token next = nextToken();
 			
 			@Override
@@ -100,9 +76,6 @@ public class Lexer {
 				}
 				pos++;
 				return new Token(TokenType.COMMENT, builder.toString(), startpos, pos, line, file);
-			} else {
-				//exception = new Exception();
-				//return new Token(TokenType.ERROR,pos-1,pos,line);
 			}
 		}
 
