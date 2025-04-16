@@ -29,7 +29,7 @@ public final class FunctionType extends Type {
 	
 	@Override
 	public String toString() {
-		return "function$"+returnType+"("+Arrays.stream(params).map(TypeRef::toString).collect(Collectors.joining(" "))+")";
+		return "["+Arrays.stream(params).map(TypeRef::toString).collect(Collectors.joining(" "))+"]" + returnType;
 	}
 	
 	@Override

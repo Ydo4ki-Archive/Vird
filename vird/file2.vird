@@ -1,8 +1,9 @@
 
 (: Type Blob4 (Blob (blob4 1)))
 (: Type Blob1 (Blob (blob4 1)))
-(:: baseTypeOf (macro[x] (baseType (typeOf x))))
+(: (fnt [Expr]Expr) baseTypeOf (macro[x] (baseType (typeOf x))))
 
+(typeOf baseTypeOf)
 
 (baseTypeOf (baseTypeOf (baseTypeOf Blob1)))
 

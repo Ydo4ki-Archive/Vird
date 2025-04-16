@@ -60,9 +60,10 @@ public class Vird {
 									TypeRef.TYPE.ref(),
 									Expr.TYPE.ref(),
 							},
-							(caller, args) -> fn(caller, ((ExprList) args[0]), (TypeRef) args[2], (Expr) args[3])
-					)
-			)
+							(caller, args) -> fn(caller, ((ExprList) args[0]), (TypeRef) args[2], (Expr) args[3]))
+			).d("fnt",
+					Func.intrinsic(TypeRef.TYPE.ref(), new TypeRef[]{ExprList.TYPE(BracketsType.SQUARE), TypeRef.TYPE.ref()},
+							(caller, args) -> fnt(caller, (ExprList) args[0], (TypeRef) args[1]).ref()))
 			
 			.d("+",
 					Func.intrinsic(arithmeticFnType,
@@ -84,7 +85,7 @@ public class Vird {
 							(caller, args) -> typeOf(caller, (Expr) args[0]))
 			).d("charextract",
 					Func.intrinsic(null, new TypeRef[]{Symbol.TYPE},
-							(caller, args) -> charExtract((Symbol)args[0])
+							(caller, args) -> charExtract((Symbol) args[0])
 					)
 			).d("::",
 					Func.intrinsic(null, new TypeRef[]{Symbol.TYPE, Expr.TYPE.ref()},
@@ -94,8 +95,7 @@ public class Vird {
 					Func.intrinsic(null, new TypeRef[]{TypeRef.TYPE.ref(), Symbol.TYPE, Expr.TYPE.ref()},
 							(caller, args) ->
 									define(caller, ((Symbol) args[1]).getValue(), ((TypeRef) args[0]), (Expr) args[2]))
-			)
-			;
+			);
 	
 	public static Func macro(ExprList parameters, Expr body) {
 		TypeRef[] paramTypes = new TypeRef[parameters.elementsCount()];
@@ -134,7 +134,8 @@ public class Vird {
 	private static Blob arithReduce(Val[] args, IntBinaryOperator operator) {
 		int ret = ((Blob) args[0]).toInt();
 		for (int i = 1; i < args.length;
-			 ret = operator.applyAsInt(ret, ((Blob) args[i]).toInt()), ++i);
+			 ret = operator.applyAsInt(ret, ((Blob) args[i]).toInt()), ++i)
+			;
 		return Blob.ofInt(ret);
 	}
 	
@@ -183,17 +184,27 @@ public class Vird {
 		return new Func(functionType,
 				(c, a) -> {
 					for (int i = 0; i < a.length;
-						 c.define(paramNames[i], a[i]), ++i);
+						 c.define(paramNames[i], a[i]), ++i)
+						;
 					return Interpreter.evaluate(c, returnType, body);
 				}
 		);
+	}
+	
+	public static FunctionType fnt(Scope scope, ExprList parameters, TypeRef returnType) {
+		TypeRef[] paramTypes = new TypeRef[parameters.elementsCount()];
+		int i = 0;
+		for (Iterator<Expr> iterator = parameters.iterator(); iterator.hasNext(); ++i) {
+			paramTypes[i] = (TypeRef) Interpreter.evaluate(scope, TypeRef.TYPE.ref(), iterator.next());
+		}
+		return new FunctionType(returnType, paramTypes);
 	}
 	
 	public static Blob charExtract(Symbol arg) {
 		char[] v = arg.getValue().toCharArray();
 		int Len = v.length;
 		byte[] d = new byte[Len];
-		for (int i = 0; i < Len; d[i] = (byte)v[i], ++i);
+		for (int i = 0; i < Len; d[i] = (byte) v[i], ++i) ;
 		return new Blob(d);
 	}
 }

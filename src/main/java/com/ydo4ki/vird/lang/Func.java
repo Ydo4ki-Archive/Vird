@@ -1,7 +1,6 @@
 package com.ydo4ki.vird.lang;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
@@ -61,13 +60,14 @@ public final class Func implements Val {
 				transformer.apply(caller, args),
 				"Function just returned null. This is outrageous. It's unfair. How can you be a function, and not return a value?" + Arrays.toString(args)
 		);
-		if (type.getReturnType() != null && !type.getReturnType().matches(caller, ret))
+		if (type.getReturnType() != null && !type.getReturnType().matches(caller, ret)) {
 			throw new IllegalArgumentException("Invalid return value: " + ret + "( " + type.getReturnType() + " expected)");
+		}
 		return ret;
 	}
 	
 	@Override
 	public String toString() {
-		return "f!" + type;
+		return "fn " + type;
 	}
 }
