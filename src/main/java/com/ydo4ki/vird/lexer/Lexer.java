@@ -149,14 +149,11 @@ public class Lexer {
 			while (ch != separators) {
 				if (ch == '\\') {
 					ch = nextChar();
-					if (ch == separators) {
-						builder.append(separators);
-					} else {
-						builder.append("\\").append(ch);
+					if (ch != separators) {
+						builder.append("\\");
 					}
-				} else {
-					builder.append(ch);
 				}
+				builder.append(ch);
 				ch = nextChar();
 			}
 			return new Token(type, builder.toString(), startpos - 1, pos, line, file);
