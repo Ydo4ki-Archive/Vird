@@ -1,9 +1,9 @@
-package com.ydo4ki.vird.lang.expr;
+package com.ydo4ki.vird.lexer;
 
 import com.ydo4ki.vird.BracketsType;
-import com.ydo4ki.vird.lexer.Token;
-import com.ydo4ki.vird.lexer.TokenOutput;
-import com.ydo4ki.vird.lexer.TokenType;
+import com.ydo4ki.vird.lang.expr.Expr;
+import com.ydo4ki.vird.lang.expr.ExprList;
+import com.ydo4ki.vird.lang.expr.Symbol;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,10 +13,10 @@ import java.util.List;
  * @author Sulphuris
  * @since 4/16/2025 7:50 PM
  */
-public class Parser3 implements Iterable<Expr> {
+public class ExprOutput implements Iterable<Expr> {
 	private final TokenOutput tokenOutput;
 
-    public Parser3(TokenOutput tokenOutput) {
+    public ExprOutput(TokenOutput tokenOutput) {
         this.tokenOutput = tokenOutput;
     }
 	

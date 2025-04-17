@@ -1,37 +1,24 @@
 package com.ydo4ki.vird;
 
-import com.ydo4ki.vird.lang.*;
+import com.ydo4ki.vird.lang.Scope;
+import com.ydo4ki.vird.lang.Val;
+import com.ydo4ki.vird.lang.expr.Expr;
+import com.ydo4ki.vird.lexer.ExprOutput;
+import com.ydo4ki.vird.lexer.TokenOutput;
 
 import java.io.*;
 import java.nio.file.Files;
 
 public class Main {
-	@SuppressWarnings("InfiniteLoopStatement")
 	public static void main(String[] __args) throws IOException {
 		printPrjInfo(System.out);
-		Interpreter interpreter = new Interpreter();
-//		Val ret = interpreter.next("(include 'vird/source.vird')");
-//		Val ret = interpreter.next("(+ (evaluate (Blob4 5)) (Blob4 4))");
-//		Val ret = interpreter.next("(typeOf (Blob4 5))");
-		Source fileSource = new Source.OfFile(new File("vird/file2.vird"));
-		Val ret = null;
-//		try {
-//			for (;;) {
-//				System.out.println(ret = interpreter.next(fileSource));
-//			}
-//		} catch (IOException ignored) {
-//
-//		}
-		System.exit(0);
+		File src = new File("vird/file2.vird");
 		
-//		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		for (;;) try {
-//			System.out.println(ret = interpreter.next(in));
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
+		Scope scope = new Scope(Vird.GLOBAL);
+		for (Expr expr : new ExprOutput(new TokenOutput(src))) {
+			Val result = Interpreter.evaluateFinale(scope, null, expr);
+			System.out.println(result);
 		}
-		// in.close();
 	}
 	
 	public static void printPrjInfo(PrintStream out) throws IOException {

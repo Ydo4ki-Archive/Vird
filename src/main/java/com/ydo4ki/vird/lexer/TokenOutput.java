@@ -124,7 +124,7 @@ public class TokenOutput implements Iterable<Token> {
 		
 		private void readUntil(char end, StringBuilder builder) {
 			char ch;
-			while ((ch = nextChar()) != end) {
+			while ((ch = nextChar()) != end && ch != '\0') {
 				builder.append(ch);
 			}
 		}
