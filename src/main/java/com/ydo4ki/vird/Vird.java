@@ -143,7 +143,7 @@ public class Vird {
 		if (e instanceof ExprList) {
 			List<Expr> elements = ((ExprList) e).getElements();
 			elements.replaceAll(syntaxElement -> replaceDefined(syntaxElement, args, names));
-			return new ExprList(((ExprList) e).getBracketsType(), elements);
+			return new ExprList(e.getLocation(), ((ExprList) e).getBracketsType(), elements);
 		} else if (e instanceof Symbol) {
 			for (int i = 0; i < names.length; i++) {
 				if (((Symbol) e).getValue().equals(names[i])) return (Expr) args[i];

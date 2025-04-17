@@ -45,12 +45,11 @@ public class TokenOutput implements Iterable<Token> {
 			return token;
 		}
 		
-		
 		private Token nextToken() {
 			char ch = nextChar();
 			
-			// skip
-			while (ch == ' ' || ch == '\n' || ch == '\t') {
+			// skip whitespace
+			while (Character.isWhitespace(ch)) {
 				if (ch == '\n') line++;
 				ch = nextChar();
 			}
@@ -60,53 +59,21 @@ public class TokenOutput implements Iterable<Token> {
 			
 			// comments
 			if (ch == '/') {
-				if (seeNextChar() == '/') {
-					ch = nextChar();
-					int startpos = pos;
-					ch = nextChar();
-					StringBuilder builder = new StringBuilder();
-					while (ch != '\n') {
-						builder.append(ch);
-						ch = nextChar();
-					}
-					pos--;
-					return new Token(TokenType.COMMENT, builder.toString(), startpos, pos, line, file);
-				} else if (seeNextChar() == '*') {
-					int startpos = pos;
-					ch = nextChar();
-					StringBuilder builder = new StringBuilder();
-					while (!(ch == '*' && seeNextChar() == '/')) {
-						if (ch == '\n') line++;
-						builder.append(ch);
-						ch = nextChar();
-					}
-					pos++;
-					return new Token(TokenType.COMMENT, builder.toString(), startpos, pos, line, file);
-				}
+				Token comment = readComment(ch);
+				if (comment != null) return comment;
 			}
 			
-			
 			// string literals
-			Token stringToken = readLiteral('"', ch, TokenType.STRING);
-			if (stringToken != null) return stringToken;
-			
-			// char literals
-			Token charsToken = readLiteral('\'', ch, TokenType.CHARS);
-			if (charsToken != null) return charsToken;
+			if (ch == '"' || ch == '\'') {
+				return readLiteral(ch);
+			}
 			
 			// identifiers
 			if (isValidNameChar(ch)) {
-				int startpos = pos - 1;
-				StringBuilder builder = new StringBuilder();
-				while (isValidNameChar(ch)) {
-					builder.append(ch);
-					ch = nextChar();
-				}
-				pos--;
-				String value = builder.toString();
-				return new Token(TokenType.IDENTIFIER, value, startpos, pos, line, file);
+				return readIdentifier(ch);
 			}
 			
+			// brackets
 			TokenType type;
 			switch (ch) {
 				case '(':
@@ -133,24 +100,76 @@ public class TokenOutput implements Iterable<Token> {
 			}
 			return new Token(type, String.valueOf(ch), pos - 1, pos, line, file);
 		}
-		
-		private Token readLiteral(char separators, char ch, TokenType type) {
-			if (ch == separators) {
-				int startpos = pos;
-				ch = nextChar();
-				StringBuilder builder = new StringBuilder();
-				while (ch != separators) {
-					if (ch == '\\') {
-						ch = nextChar();
-						if (ch != separators)
-							builder.append("\\");
-					}
-					builder.append(ch);
-					ch = nextChar();
-				}
-				return new Token(type, builder.toString(), startpos - 1, pos, line, file);
+
+		private Token readComment(char ch) {
+			char next = seeNextChar();
+			if (next != '/' && next != '*') {
+				return null;
 			}
-			return null;
+			
+			int startpos = pos - 1;
+			StringBuilder builder = new StringBuilder();
+			boolean isLineComment = nextChar() == '/';
+			
+			if (isLineComment) {
+				readUntil('\n', builder);
+				pos--;
+			} else {
+				readMultilineComment(builder);
+				pos++;
+			}
+			
+			return new Token(TokenType.COMMENT, builder.toString(), startpos, pos, line, file);
+		}
+		
+		private void readUntil(char end, StringBuilder builder) {
+			char ch;
+			while ((ch = nextChar()) != end) {
+				builder.append(ch);
+			}
+		}
+		
+		private void readMultilineComment(StringBuilder builder) {
+			char ch;
+			while (true) {
+				ch = nextChar();
+				if (ch == '*' && seeNextChar() == '/') {
+					break;
+				}
+				if (ch == '\n') {
+					line++;
+				}
+				builder.append(ch);
+			}
+		}
+
+		private Token readLiteral(char ch) {
+			int startpos = pos - 1;
+			char separator = ch;
+			StringBuilder builder = new StringBuilder();
+			builder.append(separator);
+			while ((ch = nextChar()) != separator) {
+				if (ch == '\\') {
+					ch = nextChar();
+					builder.append('\\');
+					if (ch == separator) {
+						builder.setLength(builder.length() - 1);
+					}
+				}
+				builder.append(ch);
+			}
+			builder.append(separator);
+			return new Token(TokenType.STRING, builder.toString(), startpos, pos, line, file);
+		}
+		
+		private Token readIdentifier(char ch) {
+			int startpos = pos - 1;
+			StringBuilder builder = new StringBuilder().append(ch);
+			while (isValidNameChar(ch = nextChar())) {
+				builder.append(ch);
+			}
+			pos--;
+			return new Token(TokenType.IDENTIFIER, builder.toString(), startpos, pos, line, file);
 		}
 		
 		private char nextChar() {

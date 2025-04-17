@@ -6,7 +6,6 @@ public enum TokenType {
 	IDENTIFIER,
 	COMMENT,
 	STRING,
-	CHARS,
 	OPENROUND,
 	CLOSEROUND,
 	OPEN,

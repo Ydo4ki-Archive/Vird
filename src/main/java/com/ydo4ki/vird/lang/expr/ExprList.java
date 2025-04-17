@@ -29,12 +29,11 @@ public final class ExprList implements Expr, Iterable<Expr> {
 		);
 	}
 	
-	@Setter
-	private Location location;
+	private final Location location;
 	private final BracketsType bracketsType;
 	private final List<Expr> elements;
 	
-	public ExprList(BracketsType bracketsType, List<Expr> elements) {
+	public ExprList(Location location, BracketsType bracketsType, List<Expr> elements) {
 		this.location = null;
 		this.bracketsType = bracketsType;
 		this.elements = elements;
