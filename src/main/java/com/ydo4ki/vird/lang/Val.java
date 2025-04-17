@@ -1,7 +1,6 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
-import com.ydo4ki.vird.lang.expr.Expr;
 import com.ydo4ki.vird.lang.expr.ExprList;
 
 /**
@@ -16,6 +15,6 @@ public interface Val {
 	}
 	
 	default Val call(Scope scope, TypeRef expectedType, ExprList val) throws NoImplementationException {
-		throw new NoImplementationException(this);
+		throw new NoImplementationException(val.getLocation(), "No implementation found");
 	}
 }

@@ -61,6 +61,7 @@ public final class Func implements Val {
 				"Function just returned null. This is outrageous. It's unfair. How can you be a function, and not return a value?" + Arrays.toString(args)
 		);
 		if (type.getReturnType() != null && !type.getReturnType().matches(caller, ret)) {
+			System.err.println(type);
 			throw new IllegalArgumentException("Invalid return value: " + ret + "( " + type.getReturnType() + " expected)");
 		}
 		return ret;
