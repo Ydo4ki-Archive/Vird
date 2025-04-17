@@ -50,9 +50,6 @@ public final class Func implements Val {
 							args[i].getType() + " (" + (args[i]) + ") to " + param);
 				}
 				args[i] = rule.invoke(caller, args[i]);
-//
-//				throw new ThisIsNotTheBookClubException("Invalid input args: " +
-//						Arrays.toString(args) + " (" + Arrays.toString(params) + " types expected)");
 			}
 		}
 		// lmao

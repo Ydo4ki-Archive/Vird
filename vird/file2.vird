@@ -1,7 +1,9 @@
 
 (: Type Blob4 (Blob (blob4 4)))
 (: Type Blob1 (Blob (blob4 1)))
-(: (fnt [Expr]Expr) baseTypeOf (macro[x] (baseType (typeOf x))))
+// (: (fnt [Expr]Expr) baseTypeOf (macro[x] (baseType (typeOf x))))
+
+(:: baseTypeOf (fn[(Expr x)]WrappedExpr (exprwrap (baseType (typeOf x)))))
 
 (typeOf baseTypeOf)
 
@@ -22,3 +24,6 @@
 //
 // (is_string "hello world")
 // (is_string hello_world)
+//
+// (exprwrap (baseType (typeOf x)))
+//

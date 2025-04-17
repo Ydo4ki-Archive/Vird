@@ -27,7 +27,7 @@ public class VirdTest {
     @BeforeEach
     void setUp() throws IOException {
         scope = new Scope(Vird.GLOBAL);
-		for (Expr expr : new ExprOutput(new TokenOutput(new File("vird/testinit.vird")))) {
+		for (Expr expr : new ExprOutput(new TokenOutput(new File("vird/test/testinit.vird")))) {
 			Interpreter.evaluateFinale(scope, null, expr);
 		}
     }
@@ -80,7 +80,7 @@ public class VirdTest {
     @Test
     void testFunctionDefinition() throws IOException {
         Val result = evaluateVird(
-            "(:: add (fn [(Blob4 a) (Blob4 b)] : Blob4 (+ a b)))\n" +
+            "(:: add (fn [(Blob4 a) (Blob4 b)] Blob4 (+ a b)))\n" +
             "(add (blob4 5) (blob4 3))");
         assertEquals("b00000008", result.toString());
     }
