@@ -53,6 +53,8 @@ public class Vird {
             .d("fineval", evaluateFinale)
 			.d("exprwrap", Func.intrinsic(WrappedExpr.TYPE.ref(), new TypeRef[]{EXPR_REF},
 					(caller, args) -> new WrappedExpr((Expr) args[0])))
+			.d("repldef", Func.intrinsic(WrappedExpr.TYPE.ref(), new TypeRef[]{WrappedExpr.TYPE.ref()},
+					(caller, args) -> new WrappedExpr(replDef(caller, ((WrappedExpr) args[0]).getExpr()))))
             .d("fn", Func.intrinsic(null, new TypeRef[]{
                     ExprList.TYPE(BracketsType.SQUARE),
                     TYPE_REF,
@@ -137,6 +139,20 @@ public class Vird {
         }
         return e;
     }
+	private static Expr replDef(Scope scope, Expr e) {
+		if (e instanceof ExprList) {
+			List<Expr> elements = ((ExprList) e).getElements();
+			elements.replaceAll(syntaxElement -> replDef(scope, syntaxElement));
+			return new ExprList(e.getLocation(), ((ExprList) e).getBracketsType(), elements);
+		}
+		if (e instanceof Symbol) {
+			Val r = scope.resolve(((Symbol) e).getValue());
+			if (r instanceof Expr) {
+				return (Expr) r;
+			}
+		}
+		return e;
+	}
 
     public static Val define(Scope scope, String name, TypeRef expectedType, Expr expr) {
         Val value = Interpreter.evaluate(scope, expectedType, expr);

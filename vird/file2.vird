@@ -3,10 +3,11 @@
 (: Type Blob1 (Blob (blob4 1)))
 // (: (fnt [Expr]Expr) baseTypeOf (macro[x] (baseType (typeOf x))))
 
-(:: baseTypeOf (fn[(Expr x)]WrappedExpr (exprwrap (baseType (typeOf x)))))
+(:: baseTypeOf (fn[(Expr x)]WrappedExpr
+	(repldef (exprwrap (baseType (typeOf x))))))
 
 (typeOf baseTypeOf)
-
+(baseTypeOf Blob1)
 (baseTypeOf (baseTypeOf (baseTypeOf Blob1)))
 
 // (+ (blob4 5) (blob4 4))

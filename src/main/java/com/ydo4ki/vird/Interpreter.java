@@ -39,6 +39,7 @@ public class Interpreter {
 	public static Val evaluateFinale(Scope scope, TypeRef expectedType, Expr val) {
 		Val ret = evaluate(scope, expectedType, val);
 		if (ret instanceof Expr) ret = evaluateFinale(scope, expectedType, (Expr) ret);
+		if (ret instanceof WrappedExpr) return evaluate(scope, expectedType, ((WrappedExpr) ret).getExpr());
 		return ret;
 	}
 	
