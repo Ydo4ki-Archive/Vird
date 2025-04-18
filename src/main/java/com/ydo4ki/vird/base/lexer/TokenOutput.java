@@ -1,6 +1,6 @@
-package com.ydo4ki.vird.lexer;
+package com.ydo4ki.vird.base.lexer;
 
-import com.ydo4ki.vird.BracketsType;
+import com.ydo4ki.vird.base.BracketsType;
 
 import java.io.File;
 import java.io.IOException;

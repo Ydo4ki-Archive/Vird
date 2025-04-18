@@ -1,13 +1,14 @@
 package com.ydo4ki.vird.lang.constraint;
 
+import com.ydo4ki.vird.base.Constraint;
 import com.ydo4ki.vird.lang.Scope;
-import com.ydo4ki.vird.lang.Val;
+import com.ydo4ki.vird.base.Val;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public final class InstanceOfConstraint extends Constraint {
+public final class InstanceOfConstraint implements Constraint {
 	private final Class<? extends Val> targetClass;
 	
 	@Override

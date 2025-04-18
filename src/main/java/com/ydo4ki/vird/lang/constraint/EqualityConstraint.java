@@ -1,7 +1,8 @@
 package com.ydo4ki.vird.lang.constraint;
 
+import com.ydo4ki.vird.base.Constraint;
 import com.ydo4ki.vird.lang.Scope;
-import com.ydo4ki.vird.lang.Val;
+import com.ydo4ki.vird.base.Val;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Getter
-public final class EqualityConstraint extends Constraint {
+public final class EqualityConstraint implements Constraint {
 	private final Val expected;
 	
 	@Override

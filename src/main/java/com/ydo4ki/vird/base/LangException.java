@@ -1,4 +1,4 @@
-package com.ydo4ki.vird;
+package com.ydo4ki.vird.base;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,5 +43,4 @@ public class LangException extends Exception {
 		this.location = location;
 		this.rawMessage = rawMessage;
 	}
-	
 }

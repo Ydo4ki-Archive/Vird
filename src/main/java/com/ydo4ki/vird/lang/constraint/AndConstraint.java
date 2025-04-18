@@ -1,7 +1,8 @@
 package com.ydo4ki.vird.lang.constraint;
 
+import com.ydo4ki.vird.base.Constraint;
 import com.ydo4ki.vird.lang.Scope;
-import com.ydo4ki.vird.lang.Val;
+import com.ydo4ki.vird.base.Val;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public final class AndConstraint extends Constraint {
+public final class AndConstraint implements Constraint {
 	private final Set<Constraint> constraints;
 	
 	public static OrConstraint of(Constraint... constraints) {

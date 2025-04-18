@@ -1,15 +1,16 @@
 package com.ydo4ki.vird.lang.constraint;
 
-import com.ydo4ki.vird.BracketsType;
-import com.ydo4ki.vird.lang.expr.ExprList;
+import com.ydo4ki.vird.base.BracketsType;
+import com.ydo4ki.vird.base.Constraint;
+import com.ydo4ki.vird.base.expr.ExprList;
 import com.ydo4ki.vird.lang.Scope;
-import com.ydo4ki.vird.lang.Val;
+import com.ydo4ki.vird.base.Val;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public final class DListBracketsConstraint extends Constraint {
+public final class DListBracketsConstraint implements Constraint {
 	private final BracketsType expectedType;
 	
 	@Override

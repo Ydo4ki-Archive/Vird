@@ -1,4 +1,4 @@
-package com.ydo4ki.vird.lang;
+package com.ydo4ki.vird.base;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

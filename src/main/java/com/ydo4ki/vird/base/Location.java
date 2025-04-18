@@ -1,4 +1,4 @@
-package com.ydo4ki.vird;
+package com.ydo4ki.vird.base;
 
 import lombok.Data;
 

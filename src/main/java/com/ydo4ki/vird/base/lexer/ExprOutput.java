@@ -1,9 +1,9 @@
-package com.ydo4ki.vird.lexer;
+package com.ydo4ki.vird.base.lexer;
 
-import com.ydo4ki.vird.BracketsType;
-import com.ydo4ki.vird.lang.expr.Expr;
-import com.ydo4ki.vird.lang.expr.ExprList;
-import com.ydo4ki.vird.lang.expr.Symbol;
+import com.ydo4ki.vird.base.BracketsType;
+import com.ydo4ki.vird.base.expr.Expr;
+import com.ydo4ki.vird.base.expr.ExprList;
+import com.ydo4ki.vird.base.expr.Symbol;
 
 import java.util.ArrayList;
 import java.util.Iterator;

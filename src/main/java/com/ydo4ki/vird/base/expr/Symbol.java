@@ -1,10 +1,9 @@
-package com.ydo4ki.vird.lang.expr;
+package com.ydo4ki.vird.base.expr;
 
-import com.ydo4ki.vird.Location;
-import com.ydo4ki.vird.lang.TypeRef;
+import com.ydo4ki.vird.base.Location;
+import com.ydo4ki.vird.base.TypeRef;
 import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
 
@@ -13,12 +12,15 @@ import java.util.Objects;
  * @author Sulphuris
  */
 @Getter
-@RequiredArgsConstructor
-public final class Symbol implements Expr {
+public final class Symbol extends Expr {
 	public static final TypeRef TYPE = Expr.TYPE.ref(new InstanceOfConstraint(Symbol.class));
 	
-	private final Location location;
 	private final String value;
+	
+	public Symbol(Location location, String value) {
+		super(location);
+		this.value = value;
+	}
 	
 	@Override
 	public String toString() {
@@ -34,6 +36,6 @@ public final class Symbol implements Expr {
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(location, value);
+		return Objects.hash(value);
 	}
 }

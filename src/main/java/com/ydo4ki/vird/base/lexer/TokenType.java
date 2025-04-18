@@ -1,4 +1,4 @@
-package com.ydo4ki.vird.lexer;
+package com.ydo4ki.vird.base.lexer;
 
 public enum TokenType {
 	EOF,

@@ -1,5 +1,7 @@
 package com.ydo4ki.vird.lang;
 
+import com.ydo4ki.vird.base.TypeRef;
+import com.ydo4ki.vird.base.Val;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 

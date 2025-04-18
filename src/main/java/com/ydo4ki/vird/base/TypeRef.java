@@ -1,7 +1,7 @@
-package com.ydo4ki.vird.lang;
+package com.ydo4ki.vird.base;
 
+import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.lang.constraint.AndConstraint;
-import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

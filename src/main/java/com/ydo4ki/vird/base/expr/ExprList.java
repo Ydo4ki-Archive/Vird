@@ -1,14 +1,13 @@
-package com.ydo4ki.vird.lang.expr;
+package com.ydo4ki.vird.base.expr;
 
-import com.ydo4ki.vird.Location;
-import com.ydo4ki.vird.BracketsType;
-import com.ydo4ki.vird.lang.TypeRef;
-import com.ydo4ki.vird.lang.Val;
+import com.ydo4ki.vird.base.Location;
+import com.ydo4ki.vird.base.BracketsType;
+import com.ydo4ki.vird.base.TypeRef;
+import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.constraint.AndConstraint;
 import com.ydo4ki.vird.lang.constraint.DListBracketsConstraint;
 import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
  * @since 4/8/2025 8:24 PM
  */
 @Getter
-public final class ExprList implements Expr, Iterable<Expr> {
+public final class ExprList extends Expr implements Iterable<Expr> {
 	
 	public static TypeRef TYPE(BracketsType type) {
 		return Expr.TYPE.ref(
@@ -29,12 +28,11 @@ public final class ExprList implements Expr, Iterable<Expr> {
 		);
 	}
 	
-	private final Location location;
 	private final BracketsType bracketsType;
 	private final List<Expr> elements;
 	
 	public ExprList(Location location, BracketsType bracketsType, List<Expr> elements) {
-		this.location = null;
+		super(location);
 		this.bracketsType = bracketsType;
 		this.elements = elements;
 	}

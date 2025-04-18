@@ -1,14 +1,13 @@
 package com.ydo4ki.vird;
 
+import com.ydo4ki.vird.base.TypeRef;
+import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.*;
-import com.ydo4ki.vird.lang.expr.Expr;
-import com.ydo4ki.vird.lang.expr.ExprList;
-import com.ydo4ki.vird.lang.expr.Symbol;
+import com.ydo4ki.vird.base.expr.Expr;
+import com.ydo4ki.vird.base.expr.ExprList;
+import com.ydo4ki.vird.base.expr.Symbol;
 import lombok.Getter;
 
-import java.io.BufferedReader;
-import java.io.EOFException;
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 

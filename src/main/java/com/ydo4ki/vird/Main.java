@@ -1,10 +1,10 @@
 package com.ydo4ki.vird;
 
 import com.ydo4ki.vird.lang.Scope;
-import com.ydo4ki.vird.lang.Val;
-import com.ydo4ki.vird.lang.expr.Expr;
-import com.ydo4ki.vird.lexer.ExprOutput;
-import com.ydo4ki.vird.lexer.TokenOutput;
+import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.base.expr.Expr;
+import com.ydo4ki.vird.base.lexer.ExprOutput;
+import com.ydo4ki.vird.base.lexer.TokenOutput;
 
 import java.io.*;
 import java.nio.file.Files;

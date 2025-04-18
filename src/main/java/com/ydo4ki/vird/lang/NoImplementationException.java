@@ -1,7 +1,7 @@
 package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.vird.LangException;
-import com.ydo4ki.vird.Location;
+import com.ydo4ki.vird.base.LangException;
+import com.ydo4ki.vird.base.Location;
 
 /**
  * @author Sulphuris
