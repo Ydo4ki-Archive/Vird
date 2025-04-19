@@ -1,0 +1,25 @@
+(package std)
+
+(: (Template [TypeRef]) Option (template [T]) (struct { // use stdlib function from Layouts to make a structural type
+	(field T value -private)
+	(field Boolean present -private)
+
+	(ctor [T] (fn [val]
+		(fieldinit[value (. val value)] [preset true])) -implicit)
+
+	(ctor [] (fn []
+		(unchecked (fieldinit[value (UNDEFINED)] [preset = false]))))
+
+	(method []Boolean present (fn[this] (fieldget this present)))
+
+	(method []T get (fn[this] (fieldget this value)) -requires present)
+
+	(static {
+		(method [](Option T) empty (fn[]
+			((Option T)))) // call ctor with to arguments ( second one )
+	})
+}))
+
+(:conversion-rule (Option ?) Boolean isPresent)
+
+

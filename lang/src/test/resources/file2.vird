@@ -1,0 +1,30 @@
+
+(: Type Blob4 (Blob (blob4 4)))
+(: Type Blob1 (Blob (blob4 1)))
+// (: (fnt [Expr]Expr) baseTypeOf (macro[x] (baseType (typeOf x))))
+
+(:: baseTypeOf (fn[(Expr x)]WrappedExpr
+	(repldef (exprwrap (baseType (typeOf x))))))
+
+(typeOf baseTypeOf)
+(baseTypeOf Blob1)
+(baseTypeOf (baseTypeOf (baseTypeOf Blob1)))
+
+// (+ (blob4 5) (blob4 4))
+// (+ (blob4 19) (blob4 15))
+//
+// (:: is_string (fn
+// 	[(Symbol s)] : Blob1 (blob1 255)
+// ))
+// (:: plus (macro[a b]
+// 	(+ a b)
+// ))
+// (plus (blob4 1) (blob4 1))
+//
+// (charextract "hello world")
+//
+// (is_string "hello world")
+// (is_string hello_world)
+//
+// (exprwrap (baseType (typeOf x)))
+//
