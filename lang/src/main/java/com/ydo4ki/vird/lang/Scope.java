@@ -35,11 +35,11 @@ public final class Scope {
 		return parent == null ? null : parent.resolveConversionRule(types);
 	}
 	
-	public <T extends Val> T define(String name, T value) {
+	public Declaration define(String name, Val value) {
 		if (definedSymbols.containsKey(name))
 			throw new IllegalArgumentException(name + " is already defined");
 		definedSymbols.put(name, value);
-		return value;
+		return new Declaration(name, value);
 	}
 	
 	/** define val in scope, return it */
