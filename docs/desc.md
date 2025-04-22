@@ -22,6 +22,17 @@
     * [Macros](#macros)
     * [Compilation](#compilation)
   * [Constraints](#constraints)
+    * [Core Concepts](#core-concepts)
+    * [Creating Constrained Types](#creating-constrained-types)
+    * [Constraint Propagation](#constraint-propagation)
+    * [Function Arguments and Constraints](#function-arguments-and-constraints)
+    * [Constraint Inference with Function Calls](#constraint-inference-with-function-calls)
+    * [Complex Example: Multiple Constraints](#complex-example-multiple-constraints)
+    * [Constraints and Polymorphism](#constraints-and-polymorphism)
+    * [Practical Applications](#practical-applications)
+  * [Standard library functions description](#standard-library-functions-description)
+    * [fn](#fn)
+    * [fnt](#fnt)
   * [Commandments](#commandments)
 <!-- TOC -->
 
@@ -223,9 +234,9 @@ A TypeRef (type reference) is a Val that bundles:
 1. A reference to a base Type
 2. Zero or more constraints on values of that type
 
-TypeRefs can be created using the `tref` function:
+TypeRefs can be created using the `@` function:
 ```vird
-(tref <Type> <Constraints...>)
+(@ <Type> <Constraints...>)
 ```
 where each constraint is a function that:
 - Takes one argument of the specified type
@@ -285,12 +296,12 @@ Vird supports function polymorphism through function sets, allowing multiple imp
 **Example**:
 ```vird
 // Handler for any positive number
-(: (fnt [(tref Blob4 (fn [x] (> x 0)))] Blob4) 
+(: (fnt [(@ Blob4 (fn [x] (> x 0)))] Blob4) 
    handler 
    (fn [x] (body1)))
 
 // Handler for positive numbers less than 5
-(: (fnt [(tref Blob4 (fn [x] (&& (> x 0) (< x 5))))] Blob4) 
+(: (fnt [(@ Blob4 (fn [x] (&& (> x 0) (< x 5))))] Blob4) 
    handler 
    (fn [x] (body2)))
 ```
@@ -386,28 +397,182 @@ Vird supports compilation to C through the standard `compilec` function:
 
 ## Constraints
 
---- draft ---
+Constraints are a powerful feature of Vird's type system that enable fine-grained control over the values that can be assigned to a type.
+They provide compile-time validation, enhancing both safety and optimization opportunities.
 
-Ok constraints is something you should always use.<br>
-They provide a static checks for type values in compile time which is a great possibility for optimization (polymorphic functions for instance) and avoid<br>
-Every function you invoke can imply constraints for its arguments depending on return value<br>
-Example with if function:
+### Core Concepts
+
+**What Are Constraints?**
+- Predicates (boolean functions) attached to types
+- Define valid value ranges or properties
+- Verified at compile-time whenever possible
+- Propagated through control flow
+
+**Benefits of Constraints:**
+- Catch errors earlier (at compile time)
+- Enable more precise function overloading
+- Allow compiler optimizations
+- Make code self-documenting
+
+### Creating Constrained Types
+
+Constrained types are created using the `@` function:
+
 ```vird
-(: (Vec Int 5) ints {13 5 94 24 1}) 
-(: Int i (give_me_random_value))
+// Basic syntax
+(@ <BaseType> <Constraint1> <Constraint2> ...)
 
+// Examples
+(: TypeRef PositiveInt (@ Int (fn [x] (> x 0))))  // Positive integers
+(: TypeRef NonEmptyString (@ String (fn [s] (> (length s) 0))))  // Non-empty strings
+```
 
-(if (< i 5)
-    // in this scope, "i" is defined with TypeRef (Type is Int, Constraint is fn[i] (< i 5))
-    (println (get ints i)) // so its a valid argument for Vec.get
-    : // (else), "i" is defined with TypeRef (Type is Int, Constraint is fn[i] (>= i 5))
-    (println i "is not in range")
+Each constraint is a function that:
+1. Takes a value of the base type
+2. Has no side effects (pure)
+3. Returns a boolean result (true if constraint is satisfied)
+
+> **Important**<br>
+> *Constraints have nothing to do with runtime, if you have a function that consumes Int > 10 and function that consumes any Int
+> and you got a random integer without performing any value checks, the second function will be invoked regardless of the actual value*
+
+### Constraint Propagation
+
+One of the most powerful aspects of Vird's constraint system is how constraints are automatically propagated through control flow.
+When a condition is evaluated, Vird's type system analyzes the condition and applies appropriate constraints to variables in each branch.
+
+**Example: Basic Constraint Propagation**
+
+```vird
+(: Int x 10)
+
+(if (< x 5)
+    // In this scope, x has type (@ Int (fn [n] (< n 5)))
+    (println "x is less than 5")
+// * * * else scope * * *
+    // In this scope, x has type (@ Int (fn [n] (>= n 5)))
+    (println "x is at least 5")
 )
 ```
 
---- draft ---
+This propagation happens automatically without any explicit type annotations.
 
+> **Important**<br>
+> *Constraint propagation doesn't work with non-local mutable Vars, because evil other threads can change their state unexpectedly for us*
 
+### Function Arguments and Constraints
+
+Functions can declare constraints on their parameters, ensuring they only accept values that meet specific criteria:
+
+```vird
+// Function that only accepts positive integers
+(: (fnt [(@ Int (fn [n] (> n 0)))] Int) 
+   factorial 
+   (fn [n] 
+      (if (== n 1) 
+          1 
+          (* n (factorial (- n 1))))))
+
+// This will be a compile-time error
+(factorial 0)  // Constraint violation
+
+// This will compile and run correctly
+(factorial 5)  // Valid argument
+```
+
+### Constraint Inference with Function Calls
+
+When you call a function with a condition, Vird can infer constraints for subsequent code blocks:
+
+```vird
+// Define a function that checks if a value is in range
+(: (fnt [Int Int Int] Boolean) 
+   inRange 
+   (fn [value min max] 
+      (&& (>= value min) (< value max))))
+
+// Using the function in a condition
+(: Int index (getUserInput))
+(: (Vec Int) numbers {1 2 3 4 5})
+
+(if (inRange index 0 (length numbers))
+    // Here, index is automatically constrained to (@ Int (fn [i] (&& (>= i 0) (< i (length numbers)))))
+    // This makes the following safe at compile time:
+    (println (get numbers index))
+    // Error handling
+    (println "Index out of bounds")
+)
+```
+
+### Complex Example: Multiple Constraints
+
+This example demonstrates how multiple constraints can be combined and propagated:
+
+```vird
+// Define constrained types
+(: TypeRef PositiveInt (@ Int (fn [n] (> n 0))))
+(: TypeRef SmallInt (@ Int (fn [n] (< n 100))))
+
+// Function requiring both constraints
+(: (fnt [(@ Int (fn [n] (&& (> n 0) (< n 100))))] String)
+   percentageString
+   (fn [n] (concat (toString n) "%")))
+
+// Using constraints with control flow
+(: Int value (getUserInput))
+
+(cond
+    // Each branch adds different constraints
+    ((< value 0) 
+        (println "Negative values not allowed"))
+    ((>= value 100) 
+        (println "Value too large"))
+    (true 
+        // Here value has both constraints: positive and < 100
+        (println (percentageString value)))
+)
+```
+
+### Constraints and Polymorphism
+
+Constraints play a crucial role in function overloading resolution.
+When multiple function implementations match by name and basic parameter types, the one with the most specific (restrictive) constraints wins:
+
+```vird
+// General handler for any integer
+(: (fnt [Int] String) 
+   formatNumber 
+   (fn [n] (toString n)))
+
+// Handler for positive integers
+(: (fnt [(@ Int (fn [n] (> n 0)))] String) 
+   formatNumber 
+   (fn [n] (concat "+" (toString n))))
+
+// Handler for negative integers
+(: (fnt [(@ Int (fn [n] (< n 0)))] String) 
+   formatNumber 
+   (fn [n] (toString n)))  // No need for sign, it's already included
+
+// Usage examples
+(formatNumber 42)   // Calls the positive version: "+42"
+(formatNumber -13)  // Calls the negative version: "-13"
+(formatNumber 0)    // Calls the general version: "0"
+```
+
+If there is two or more functions to which the argument value is suitable, and they are not comparable, this is considered as an ambiguous call (compile-time error)
+
+### Practical Applications
+
+Constraints are particularly useful for:
+
+1. **Array Bounds Checking**: Ensuring indices are within valid ranges
+2. **Input Validation**: Verifying user inputs meet requirements
+3. **Resource Management**: Guaranteeing resources are properly initialized
+4. **State Machines**: Enforcing valid state transitions
+5. **Domain-Specific Rules**: Implementing business logic constraints
+
+***
 ## Standard library functions description
 
 ### fn
@@ -432,6 +597,7 @@ So the following declarations are equal:
 ```
 
 Further, function signatures will be described in a similar way
+
 
 ## Commandments
 
