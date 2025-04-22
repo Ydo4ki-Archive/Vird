@@ -1,6 +1,6 @@
 # Vird Programming Language
 
-<sup>Specification v1.0-prerelease-1</sup>
+<sup>Language description v1.0-prerelease-1</sup>
 
 <!-- TOC -->
 * [Vird Programming Language](#vird-programming-language)
@@ -21,15 +21,14 @@
     * [Templates](#templates)
     * [Macros](#macros)
     * [Compilation](#compilation)
+  * [Constraints](#constraints)
   * [Commandments](#commandments)
 <!-- TOC -->
 
 ## Introduction
 
-Vird is a modern programming language designed to combine the power of homoiconicity (code-as-data) with static typing and advanced metaprogramming capabilities.
+Vird is a programming language designed to combine the power of homoiconicity (code-as-data) with static typing and advanced metaprogramming capabilities.
 It serves as both an embedded interpretable language and a compilable language that can generate optimized C code.
-
-The language's name "Vird" reflects its core philosophy: versatility in representation and design.
 
 ### Key Features
 
@@ -380,7 +379,59 @@ Vird supports compilation to C through the standard `compilec` function:
 **Compilation Rules**:
 1. Only code that cannot be evaluated at compile-time is included in the output
 2. Functions requiring both compile-time and runtime features must be clearly separated
-3. Mixing metaprogramming (Expr/Type manipulation) with runtime effects (I/O) in the same function results in a compilation error
+3. Mixing metaprogramming (Expr/Type manipulation) with runtime effects (I/O) inside the same context results in a compilation error
+
+
+***
+
+## Constraints
+
+--- draft ---
+
+Ok constraints is something you should always use.<br>
+They provide a static checks for type values in compile time which is a great possibility for optimization (polymorphic functions for instance) and avoid<br>
+Every function you invoke can imply constraints for its arguments depending on return value<br>
+Example with if function:
+```vird
+(: (Vec Int 5) ints {13 5 94 24 1}) 
+(: Int i (give_me_random_value))
+
+
+(if (< i 5)
+    // in this scope, "i" is defined with TypeRef (Type is Int, Constraint is fn[i] (< i 5))
+    (println (get ints i)) // so its a valid argument for Vec.get
+    : // (else), "i" is defined with TypeRef (Type is Int, Constraint is fn[i] (>= i 5))
+    (println i "is not in range")
+)
+```
+
+--- draft ---
+
+
+## Standard library functions description
+
+### fn
+Returns a new function
+Syntax:
+
+`fn [%ParamTypes...%][%ParamNames...%]%ReturnType% %Body%`
+`fn [%ParamNames%] %Body%` - applicable only when expected function type in known
+> %ParamTypes...% is a list of TypeRefs<br>
+> %ParamNames...% is a list of Symbols<br>
+> %Body is an Expr
+
+### fnt
+Returns a function type
+Syntax:
+`fnt [%ParamTypes...%]%ReturnType%`
+
+So the following declarations are equal:
+```vird
+(: fnt[Blob2]Blob2 bar fn[x] x)
+(:: bar fn[Blob2][x]Blob2 x)
+```
+
+Further, function signatures will be described in a similar way
 
 ## Commandments
 
@@ -397,5 +448,5 @@ These fundamental rules govern the entire language and cannot be violated by any
 3. **Type Safety**: All operations must be type-safe and verified at compile-time
    - No implicit type conversions without explicit conversion functions
    - All template instantiations must be valid
-
+    
 //CLARIFY: Are there additional fundamental rules that should be included?

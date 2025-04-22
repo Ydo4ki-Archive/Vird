@@ -1,0 +1,30 @@
+
+// we probably just list every name we want to have there
+
+(:ns com.example (namespace {
+	// what kind of things can we put into namespace
+	// functions
+	// variables
+	// types... basically VALs
+	// so we can use something like
+	(val main (fn[] (println "Hello World"))
+	// but that has some drawbacks ( how do we specify function type? Is it ok to start EVERYTHING from same function call )
+	// we also need something like import which just put everything from target namespace to our namespace
+	(import std.layout) // so import returns a set of name bindings
+
+	// wait we can just say that function `:` does not return a value it declares
+	// it returns an object of type Declaration
+	// that can be implicitly casted to the value it declares so functions logic doesn't break
+	(: (fnt[]Unit) main (fn[] (println "Hello World")))
+	// and for :: by analogy
+	(:: main (fn[][]Unit (println "Hello World"))))
+
+	// I should think how can we simplify extra brackets btw
+	// like function args is also technically a separated entity but we don't separate them because ~~Lisp~~ too much
+	// so if we know for sure that this is our last argument we can invoke functions like this
+	(:: main fn[][]Unit (println "Hello World"))
+	// or even
+	(:: main fn[][]Unit println "Hello World") // ok this one is actually less readable but it should be up to programmer where to use brackets if you don't have to
+    // I'm not even sure I can implement this without breaking a lot of things XD
+}))
+

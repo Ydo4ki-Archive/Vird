@@ -1,0 +1,31 @@
+
+
+// type with byte size = 32 and aligning = 8 ( specifying alignment is not necessary )
+// has no constructors so it can't be created safely
+(: Type RawType (std.layout.reified 32 8))
+
+// you can get an instance through bitcast
+(: RawType myInstance
+(unchecked (bitcast RawType (Blob32 0x0))) // create 32 bytes of pure zeros and cast them to the RawType
+)
+
+// enumeration type, requires to list all its possible states in definition
+(: Type EnumType (std.layout.enum RED BLUE YELLOW))
+
+// similar to enum, but requires to list all possible flags that value can have set ( contains )
+(: Type Flags (std.layout.multienum READABLE WRITABLE EXECUTABLE))
+
+// structural type
+(: Type StructType (std.layout.struct {
+	// function field requires Layout as argument ( if Type is passed it implicitly casts to its layout, so you can't use non-reified types)
+	(field (Layout Int (alignas 8)) x) // cast to layout implicitly and a use modified version of it ( custom aligning, actually you would probably never need that XD )
+	(field (Layout Int) y)
+	(field Int z) // uses ( Layout Int ) via implicit cast
+}))
+
+
+(: StructType myLocation (StructType 4 4 4)) // structural types generate their constructors automatically
+
+
+
+

@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public final class TypeRef implements Val {
+public final class TypeRef implements ExternIdentityTypeVal {
 	private final Type baseType;
 	private final boolean vararg;
 	private final Constraint constraint;
@@ -46,12 +46,7 @@ public final class TypeRef implements Val {
 		return str;
 	}
 	
-	public static final Type TYPE = new Type() {
-		@Override
-		public String toString() {
-			return "TypeRef";
-		}
-	};
+	public static final Type TYPE = ExternIdentityType.of(TypeRef.class);
 	
 	@Override
 	public Type getRawType() {

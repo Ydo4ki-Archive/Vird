@@ -1,0 +1,2 @@
+(std.compilec (parseDir "/src") (-output "/out"))
+

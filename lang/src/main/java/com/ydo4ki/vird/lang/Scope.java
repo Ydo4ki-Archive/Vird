@@ -29,7 +29,7 @@ public final class Scope {
 	public ConversionRule resolveConversionRule(ConversionRule.ConversionTypes types) {
 		ConversionRule dereferenced = conversionRules.get(types);
 		if (dereferenced != null) return dereferenced;
-		if (types.getFrom().getBaseType().equals(Expr.TYPE)) {
+		if (types.getFrom().getBaseType().equals(Expr.TYPE_RAW)) {
 			return new ConversionRule(types, Vird.evaluate);
 		}
 		return parent == null ? null : parent.resolveConversionRule(types);

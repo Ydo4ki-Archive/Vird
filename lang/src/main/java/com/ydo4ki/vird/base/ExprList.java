@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public final class ExprList extends Expr implements Iterable<Expr> {
 	
 	public static TypeRef TYPE(BracketsType type) {
-		return TYPE.ref(
+		return TYPE_RAW.ref(
 				AndConstraint.of(
 						new InstanceOfConstraint(ExprList.class),
 						new DListBracketsConstraint(type)

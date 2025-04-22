@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 @Getter
 public final class Symbol extends Expr {
-	public static final TypeRef TYPE = Expr.TYPE.ref(new InstanceOfConstraint(Symbol.class));
+	public static final TypeRef TYPE = Expr.TYPE_RAW.ref(new InstanceOfConstraint(Symbol.class));
 	
 	private final String value;
 	

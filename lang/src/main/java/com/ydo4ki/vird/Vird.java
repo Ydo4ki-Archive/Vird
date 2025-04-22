@@ -29,7 +29,7 @@ public class Vird {
     );
 
     private static final TypeRef BLOB4_REF = BlobType.of(4).ref();
-    private static final TypeRef EXPR_REF = Expr.TYPE.ref();
+    private static final TypeRef EXPR_REF = Expr.TYPE_RAW.ref();
     private static final TypeRef TYPE_REF = TypeRef.TYPE.ref();
 
     public static final Func evaluateFinale = Func.intrinsic(null, new TypeRef[]{EXPR_REF},

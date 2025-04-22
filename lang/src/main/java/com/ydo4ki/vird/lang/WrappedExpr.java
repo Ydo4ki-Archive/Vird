@@ -1,8 +1,6 @@
 package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.vird.base.Type;
-import com.ydo4ki.vird.base.Val;
-import com.ydo4ki.vird.base.Expr;
+import com.ydo4ki.vird.base.*;
 import lombok.Getter;
 
 /**
@@ -10,7 +8,7 @@ import lombok.Getter;
  * @author Sulphuris
  */
 @Getter
-public final class WrappedExpr implements Val {
+public final class WrappedExpr implements ExternIdentityTypeVal {
 	
 	private final Expr expr;
 	
@@ -23,12 +21,7 @@ public final class WrappedExpr implements Val {
 		return "<" + expr + ">";
 	}
 	
-	public static final Type TYPE = new Type() {
-		@Override
-		public String toString() {
-			return "WrappedExpr";
-		}
-	};
+	public static final Type TYPE = ExternIdentityType.of(WrappedExpr.class);
 	
 	@Override
 	public Type getRawType() {
