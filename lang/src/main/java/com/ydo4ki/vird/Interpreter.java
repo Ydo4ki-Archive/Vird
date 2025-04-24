@@ -57,7 +57,7 @@ public class Interpreter {
 	}
 	
 	private static Val evaluate_function(Scope scope, TypeRef expectedType, ExprList f) {
-		Expr functionId = f.getElement(0);
+		Expr functionId = f.get(0);
 		Val function = evaluate(scope, null, functionId);
 		if (!(function instanceof Func)) {
 //			f.getLocation().print(System.err);

@@ -29,4 +29,5 @@ public final class EqualityConstraint implements Constraint {
 	public String toString() {
 		return "Equals(" + expected + ")";
 	}
+	
 }

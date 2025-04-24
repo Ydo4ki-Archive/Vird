@@ -8,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.OptionalInt;
+
 /**
  * @author Sulphuris
  * @since 4/9/2025 12:26 PM
@@ -36,6 +38,10 @@ public final class TypeRef implements ExternIdentityTypeVal {
 		if (other == null) return true;
 		if (!this.baseType.equals(other.baseType)) return false;
 		return this.constraint.implies(scope, other.constraint);
+	}
+	
+	boolean isSubtypeOf(TypeRef other) {
+		return this.constraint.isStricterThan(other.constraint) <= 0;
 	}
 	
 	@Override

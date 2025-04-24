@@ -173,15 +173,15 @@ public class Vird {
     }
 
     public static Func fn(Scope scope, ExprList parameters, TypeRef returnType, Expr body) {
-        TypeRef[] paramTypes = new TypeRef[parameters.elementsCount()];
-        String[] paramNames = new String[parameters.elementsCount()];
+        TypeRef[] paramTypes = new TypeRef[parameters.size()];
+        String[] paramNames = new String[parameters.size()];
         
         parameters.getElements().stream()
                 .map(p -> (ExprList) p)
                 .forEach(p -> {
                     int i = Arrays.asList(paramNames).indexOf(null);
-                    paramTypes[i] = (TypeRef) Interpreter.evaluate(scope, TYPE_REF, p.getElement(0));
-                    paramNames[i] = ((Symbol) p.getElement(1)).getValue();
+                    paramTypes[i] = (TypeRef) Interpreter.evaluate(scope, TYPE_REF, p.get(0));
+                    paramNames[i] = ((Symbol) p.get(1)).getValue();
                 });
 
         return new Func(

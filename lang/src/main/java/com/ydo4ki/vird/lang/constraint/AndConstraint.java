@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,8 +16,8 @@ import java.util.stream.Collectors;
 public final class AndConstraint implements Constraint {
 	private final Set<Constraint> constraints;
 	
-	public static OrConstraint of(Constraint... constraints) {
-		return new OrConstraint(Arrays.stream(constraints).collect(Collectors.toSet()));
+	public static AndConstraint of(Constraint... constraints) {
+		return new AndConstraint(Arrays.stream(constraints).collect(Collectors.toSet()));
 	}
 	
 	@Override
@@ -28,6 +29,22 @@ public final class AndConstraint implements Constraint {
 	public boolean implies(Scope scope, Constraint other) {
 		return constraints.stream().anyMatch(c -> c.implies(scope, other));
 	}
+	
+//	@Override
+//	public int isStricterThan(Constraint other) {
+//		if (other instanceof AndConstraint) {
+//			AndConstraint andOther = ((AndConstraint) other);
+//			boolean allStricter = true;
+//			for (Constraint c : andOther.constraints) {
+//				if (constraints.stream().noneMatch(p -> p.isStricterThan(c) <= 0)) {
+//					allStricter = false;
+//					break;
+//				}
+//			}
+//			return allStricter ? -1 : 0;
+//		}
+//		return 0;
+//	}
 	
 	@Override
 	public String toString() {

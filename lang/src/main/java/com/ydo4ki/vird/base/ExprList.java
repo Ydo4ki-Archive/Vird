@@ -37,11 +37,11 @@ public final class ExprList extends Expr implements Iterable<Expr> {
 		return new ArrayList<>(elements);
 	}
 	
-	public int elementsCount() {
+	public int size() {
 		return elements.size();
 	}
 	
-	public Expr getElement(int index) {
+	public Expr get(int index) {
 		return elements.get(index);
 	}
 	
