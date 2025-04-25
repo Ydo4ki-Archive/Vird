@@ -8,7 +8,7 @@ import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.base.Expr;
 import com.ydo4ki.vird.base.ExprList;
 import com.ydo4ki.vird.base.Symbol;
-import com.ydo4ki.vird.lang.layout.ByLayoutType;
+import com.ydo4ki.vird.lang.layout.LayoutedType;
 import com.ydo4ki.vird.lang.layout.EnumLayout;
 
 import java.util.Arrays;
@@ -42,7 +42,7 @@ public class Vird {
             (caller, args) -> Interpreter.evaluate(caller, null, (Expr) args[0])
     );
 	
-	public static final TypeRef BOOLEAN = new ByLayoutType(new EnumLayout("true", "false")).ref();
+	public static final TypeRef BOOLEAN = new LayoutedType(new EnumLayout("true", "false")).ref();
 
     public static final Scope GLOBAL = new Scope(null)
             .d("Expr", EXPR_REF)
