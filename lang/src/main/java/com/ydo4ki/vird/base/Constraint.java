@@ -49,12 +49,9 @@ public interface Constraint {
 	// but there is another problem that function can accept multiple arguments so we need to provide for this
 	// and still "implies" is not a collection, but a Predicate<Constraint> (a.k.a. func(func) -> True|False)
 	
-	
-	
-	
-	
-	
-	
-	
+	// implies for arg 0 if Return == X <Predicate>
+	//					 if Return == Y <Predicate>
+	// 		   for arg 1 if Return == X <Predicate>
+	//					 if Return == Y <Predicate>
 	
 }
