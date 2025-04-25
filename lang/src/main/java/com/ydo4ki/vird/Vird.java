@@ -8,6 +8,8 @@ import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.base.Expr;
 import com.ydo4ki.vird.base.ExprList;
 import com.ydo4ki.vird.base.Symbol;
+import com.ydo4ki.vird.lang.layout.ByLayoutType;
+import com.ydo4ki.vird.lang.layout.EnumLayout;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +41,8 @@ public class Vird {
     public static final Func evaluate = Func.intrinsic(null, new TypeRef[]{EXPR_REF},
             (caller, args) -> Interpreter.evaluate(caller, null, (Expr) args[0])
     );
+	
+	public static final TypeRef BOOLEAN = new ByLayoutType(new EnumLayout("true", "false")).ref();
 
     public static final Scope GLOBAL = new Scope(null)
             .d("Expr", EXPR_REF)
@@ -47,6 +51,7 @@ public class Vird {
 			.d("WrappedExpr", WrappedExpr.TYPE.ref())
             .d("Blob", Func.intrinsic(TYPE_REF, new TypeRef[]{BLOB4_REF},
                     (caller, args) -> BlobType.of(((Blob) args[0]).toInt()).ref()))
+			.d("Boolean", BOOLEAN)
             .d("blob4", Func.intrinsic(BLOB4_REF, new TypeRef[]{Symbol.TYPE},
                     (caller, args) -> Blob.ofInt(Integer.parseInt(((Symbol) args[0]).getValue()))))
             .d("blob1", Func.intrinsic(BlobType.of(1).ref(), new TypeRef[]{Symbol.TYPE},

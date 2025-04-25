@@ -1,7 +1,8 @@
 package com.ydo4ki.vird.lang.layout;
 
+import com.ydo4ki.vird.base.ExternIdentityType;
+import com.ydo4ki.vird.base.ExternIdentityTypeVal;
 import com.ydo4ki.vird.base.Type;
-import com.ydo4ki.vird.base.Val;
 import lombok.Getter;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Getter;
  * @author Sulphuris
  */
 @Getter
-public class Layout implements Val {
+public class Layout implements ExternIdentityTypeVal {
 	private final long size;
 	private final long alignment;
 	
@@ -23,10 +24,5 @@ public class Layout implements Val {
 		return TYPE;
 	}
 	
-	public static final Type TYPE = new Type() {
-		@Override
-		public String toString() {
-			return "Layout";
-		}
-	};
+	public static final Type TYPE = ExternIdentityType.of(Layout.class);
 }
