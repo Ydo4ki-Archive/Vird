@@ -23,6 +23,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.github.freva</groupId>
+                <artifactId>ascii-table</artifactId>
+                <version>1.8.0</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>

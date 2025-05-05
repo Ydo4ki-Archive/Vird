@@ -1,5 +1,6 @@
 package com.ydo4ki.vird;
 
+import com.github.freva.asciitable.AsciiTable;
 import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.base.lexer.ExprOutput;
 import com.ydo4ki.vird.base.lexer.TokenOutput;
@@ -9,6 +10,9 @@ import java.nio.file.Files;
 
 public class Main {
 	public static void main(String[] __args) throws IOException {
+		
+		
+		
 		printPrjInfo(System.out);
 		File src = new File("vird/file2.vird");
 		
@@ -21,12 +25,14 @@ public class Main {
 	}
 	
 	public static void printPrjInfo(PrintStream out) throws IOException {
-		File src = new File("src/main/java");
-		out.println("###########################");
-		out.println("Classes: " + countClasses(src));
-		out.println("Lines of code: " + countLines(src));
-		out.println("###########################");
-		out.println();
+		File src = new File("lang/src/main/java");
+		
+		String[][] data = {
+				{"Classes", String.valueOf(countClasses(src))},
+				{"Lines of code", String.valueOf(countLines(src))}
+		};
+		
+		System.out.println(AsciiTable.getTable(AsciiTable.BASIC_ASCII, new String[0], new String[0], data));
 	}
 	
 	private static int countLines(File file) throws IOException {

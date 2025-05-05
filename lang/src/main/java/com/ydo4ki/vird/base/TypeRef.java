@@ -40,10 +40,6 @@ public final class TypeRef implements ExternIdentityTypeVal {
 		return this.constraint.implies(scope, other.constraint);
 	}
 	
-	boolean isSubtypeOf(TypeRef other) {
-		return this.constraint.isStricterThan(other.constraint) <= 0;
-	}
-	
 	@Override
 	public String toString() {
 		String str = baseType.toString();

@@ -47,8 +47,8 @@ public class ComparisonConstraint implements Constraint {
 			if (!variable.equals(otherC.variable)) return false;
 			
 			// x > 5 -> x >= 5
-			return (this.operator == Operator.GT && otherC.operator == Operator.GTE && this.value.compareTo(otherC.value) >= 0)
-					|| (this.operator == Operator.LT && otherC.operator == Operator.LTE && this.value.compareTo(otherC.value) <= 0);
+//			return (this.operator == Operator.GT && otherC.operator == Operator.GTE && this.value.compareTo(otherC.value) >= 0)
+//					|| (this.operator == Operator.LT && otherC.operator == Operator.LTE && this.value.compareTo(otherC.value) <= 0);
 		}
 		return false;
 	}

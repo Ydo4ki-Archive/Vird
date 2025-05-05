@@ -32,10 +32,7 @@ public final class LayoutedVal implements Val {
 	
 	@Override
 	public String toString() {
-		return "LayoutedVal{" +
-				"type=" + type +
-				", payload=" + Arrays.toString(payload) +
-				'}';
+		return "LayoutedVal{type=" + type + ", payload=" + Arrays.toString(payload) + '}';
 	}
 	
 	@Override
