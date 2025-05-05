@@ -1,6 +1,5 @@
 package com.ydo4ki.vird.base;
 
-import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -11,8 +10,6 @@ import java.util.Objects;
  */
 @Getter
 public final class Symbol extends Expr {
-	public static final TypeRef TYPE = Expr.TYPE_RAW.ref(new InstanceOfConstraint(Symbol.class));
-	
 	private final String value;
 	
 	public Symbol(Location location, String value) {

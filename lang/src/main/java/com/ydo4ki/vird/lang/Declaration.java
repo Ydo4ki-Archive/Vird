@@ -1,7 +1,5 @@
 package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.vird.base.ExternIdentityTypeVal;
-import com.ydo4ki.vird.base.TypeRef;
 import com.ydo4ki.vird.base.Val;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class Declaration implements ExternIdentityTypeVal {
+public final class Declaration implements Val {
 	private final String name;
 	private final Val value;
 }

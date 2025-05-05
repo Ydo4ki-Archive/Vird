@@ -1,7 +1,5 @@
 package com.ydo4ki.vird.lang;
 
-
-import com.ydo4ki.vird.base.Type;
 import com.ydo4ki.vird.base.Val;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,11 +22,6 @@ public final class Blob implements Val {
 	@Override
 	public String toString() {
 		return "b" + bytesToHex(data);
-	}
-	
-	@Override
-	public Type getRawType() {
-		return BlobType.of(data.length);
 	}
 	
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();

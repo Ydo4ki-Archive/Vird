@@ -1,7 +1,5 @@
 package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.vird.Vird;
-import com.ydo4ki.vird.base.Expr;
 import com.ydo4ki.vird.base.Val;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,26 +12,10 @@ import java.util.Map;
  * @since 4/11/2025 12:16 PM
  */
 @RequiredArgsConstructor
-public final class Scope {
+public final class Scope implements Val {
 	@Getter
 	private final Scope parent;
 	private final Map<String, Val> definedSymbols = new HashMap<>();
-	private final Map<ConversionRule.ConversionTypes, ConversionRule> conversionRules = new HashMap<>();
-	
-	public void defineConversionRule(ConversionRule rule) {
-		if (conversionRules.containsKey(rule.getTypes()))
-			throw new IllegalArgumentException("Conversion rule " + rule.getTypes() + " is already defined");
-		conversionRules.put(rule.getTypes(), rule);
-	}
-	
-	public ConversionRule resolveConversionRule(ConversionRule.ConversionTypes types) {
-		ConversionRule dereferenced = conversionRules.get(types);
-		if (dereferenced != null) return dereferenced;
-		if (types.getFrom().getBaseType().equals(Expr.TYPE_RAW)) {
-			return new ConversionRule(types, Vird.evaluate);
-		}
-		return parent == null ? null : parent.resolveConversionRule(types);
-	}
 	
 	public Declaration define(String name, Val value) {
 		if (definedSymbols.containsKey(name))

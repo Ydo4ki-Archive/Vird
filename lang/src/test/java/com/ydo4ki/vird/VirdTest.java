@@ -28,7 +28,7 @@ public class VirdTest {
     void setUp() throws IOException {
         scope = new Scope(Vird.GLOBAL);
 		for (Expr expr : new ExprOutput(new TokenOutput(new File("vird/test/testinit.vird")))) {
-			Interpreter.evaluateFinale(scope, null, expr);
+			Interpreter.evaluateFinale(scope, expr);
 		}
     }
 
@@ -42,7 +42,7 @@ public class VirdTest {
 
         Val lastResult = null;
         for (Expr expr : new ExprOutput(new TokenOutput(tempFile))) {
-            lastResult = Interpreter.evaluateFinale(scope, null, expr);
+            lastResult = Interpreter.evaluateFinale(scope, expr);
         }
         return lastResult;
     }

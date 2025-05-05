@@ -10,17 +10,14 @@ import java.nio.file.Files;
 
 public class Main {
 	public static void main(String[] __args) throws IOException {
-		
-		
-		
 		printPrjInfo(System.out);
-		File src = new File("vird/file2.vird");
+		File src = new File("vird/file.vird");
 		
 		Scope scope = new Scope(Vird.GLOBAL);
 		
 		// Using the new Stream API instead of the for-each loop
 		new ExprOutput(new TokenOutput(src)).stream()
-			.map(expr -> Interpreter.evaluateFinale(scope, null, expr))
+			.map(expr -> Interpreter.evaluateFinale(scope, expr))
 			.forEach(System.out::println);
 	}
 	

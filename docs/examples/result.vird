@@ -1,6 +1,0 @@
-
-
-(:: try (template[TypeRef TypeRef][ResultType ErrorType] (
-	(fn[(std.Result ResultType ErrorType)][result]r )
-))
-

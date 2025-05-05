@@ -8,7 +8,7 @@ import lombok.Getter;
  * @author Sulphuris
  */
 @Getter
-public final class WrappedExpr implements ExternIdentityTypeVal {
+public final class WrappedExpr implements Val {
 	
 	private final Expr expr;
 	
@@ -19,12 +19,5 @@ public final class WrappedExpr implements ExternIdentityTypeVal {
 	@Override
 	public String toString() {
 		return "<" + expr + ">";
-	}
-	
-	public static final Type TYPE = ExternIdentityType.of(WrappedExpr.class);
-	
-	@Override
-	public Type getRawType() {
-		return TYPE;
 	}
 }

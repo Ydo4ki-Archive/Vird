@@ -1,8 +1,5 @@
 package com.ydo4ki.vird.base;
 
-import com.ydo4ki.vird.lang.constraint.AndConstraint;
-import com.ydo4ki.vird.lang.constraint.DListBracketsConstraint;
-import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 import lombok.Getter;
 
 import java.util.*;
@@ -14,15 +11,6 @@ import java.util.stream.Collectors;
  */
 @Getter
 public final class ExprList extends Expr implements Iterable<Expr> {
-	
-	public static TypeRef TYPE(BracketsType type) {
-		return TYPE_RAW.ref(
-				AndConstraint.of(
-						new InstanceOfConstraint(ExprList.class),
-						new DListBracketsConstraint(type)
-				)
-		);
-	}
 	
 	private final BracketsType bracketsType;
 	private final List<Expr> elements;
