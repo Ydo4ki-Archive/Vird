@@ -1,5 +1,7 @@
 package com.ydo4ki.vird.lang;
 
+import com.ydo4ki.vird.base.ExprList;
+import com.ydo4ki.vird.base.LangException;
 import com.ydo4ki.vird.base.Val;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 
 /**
  * @author Sulphuris
@@ -14,8 +17,17 @@ import java.util.function.BiFunction;
  */
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public final class Func implements Val {
+public final class Func extends Val {
+	private final BiPredicate<Scope, Val[]> tester;
 	private final BiFunction<Scope, Val[], Val> transformer;
+	
+	public boolean isApplicable(Scope caller, Val[] args) {
+		return tester.test(caller, args);
+	}
+	
+	public void validate(ExprList f, Scope caller, Val[] args) throws LangException {
+		if (!isApplicable(caller, args)) throw new LangException(f.getLocation(), "validation error");
+	}
 	
 	public Val invoke(Scope caller, Val[] args) {
 		// lmao

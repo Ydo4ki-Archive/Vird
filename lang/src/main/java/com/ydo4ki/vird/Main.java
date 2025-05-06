@@ -1,6 +1,9 @@
 package com.ydo4ki.vird;
 
 import com.github.freva.asciitable.AsciiTable;
+import com.ydo4ki.vird.base.Symbol;
+import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.lang.Func;
 import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.base.lexer.ExprOutput;
 import com.ydo4ki.vird.base.lexer.TokenOutput;
@@ -14,11 +17,25 @@ public class Main {
 		File src = new File("vird/file.vird");
 		
 		Scope scope = new Scope(Vird.GLOBAL);
+		scope.define("echo", new Func(
+				(env, args) -> {
+					if (args.length != 1) return false;
+					if (args[0] instanceof Symbol) {
+						String v = ((Symbol) args[0]).getValue();
+						if (v.length() < 2) return false;
+						return v.charAt(0) == '"' && v.charAt(v.length()-1) == '"';
+					}
+					return false;
+				},
+				(env, args) -> {
+					System.out.println(args[0].toString().substring(1, args[0].toString().length()-1));
+					return new Val();
+				}
+		));
 		
 		// Using the new Stream API instead of the for-each loop
 		new ExprOutput(new TokenOutput(src)).stream()
-			.map(expr -> Interpreter.evaluateFinale(scope, expr))
-			.forEach(System.out::println);
+			.forEach(expr -> Interpreter.evaluate(scope, expr));
 	}
 	
 	public static void printPrjInfo(PrintStream out) throws IOException {
@@ -29,7 +46,7 @@ public class Main {
 				{"Lines of code", String.valueOf(countLines(src))}
 		};
 		
-		System.out.println(AsciiTable.getTable(AsciiTable.BASIC_ASCII, new String[0], new String[0], data));
+		out.println(AsciiTable.getTable(AsciiTable.BASIC_ASCII, new String[0], new String[0], data));
 	}
 	
 	private static int countLines(File file) throws IOException {

@@ -12,7 +12,7 @@ import java.util.Map;
  * @since 4/11/2025 12:16 PM
  */
 @RequiredArgsConstructor
-public final class Scope implements Val {
+public final class Scope extends Val {
 	@Getter
 	private final Scope parent;
 	private final Map<String, Val> definedSymbols = new HashMap<>();

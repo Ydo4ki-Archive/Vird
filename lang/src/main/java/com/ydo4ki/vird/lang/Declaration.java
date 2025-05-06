@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class Declaration implements Val {
+public final class Declaration extends Val {
 	private final String name;
 	private final Val value;
 }

@@ -1,6 +1,5 @@
 package com.ydo4ki.vird;
 
-import com.ydo4ki.vird.base.BracketsType;
 import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.base.Expr;
@@ -11,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Vird {
 	

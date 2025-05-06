@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 @Getter
-public final class Blob implements Val {
+public final class Blob extends Val {
 	private final byte[] data;
 	
 	public static Blob ofInt(int value) {

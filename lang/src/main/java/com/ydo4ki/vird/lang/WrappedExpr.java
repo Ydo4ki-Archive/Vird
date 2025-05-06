@@ -8,7 +8,7 @@ import lombok.Getter;
  * @author Sulphuris
  */
 @Getter
-public final class WrappedExpr implements Val {
+public final class WrappedExpr extends Val {
 	
 	private final Expr expr;
 	
