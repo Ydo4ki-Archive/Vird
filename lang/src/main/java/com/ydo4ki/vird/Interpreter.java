@@ -29,6 +29,7 @@ public class Interpreter {
 //		return ret;
 //	}
 	
+	// how did it turn out that evaluate is unused lmao
 	public static Val evaluate(Scope scope, Expr val) throws LangException {
 		Objects.requireNonNull(val, "why null");
 		if (val instanceof ExprList) {
@@ -78,35 +79,33 @@ public class Interpreter {
 		return val;
 	}
 	
-	// todo: should return something like ValidatedValCall for cases where
-	//  its impossible to not run the actual code (metaprogramming) to not run it twice (at least)
-	public static Constraint evaluateNotEvaluateJustConstraintYouGiveMePls(Scope scope, Expr val) throws LangValidationException {
-		Objects.requireNonNull(val, "why null");
+	public static ValidatedValCall evaluateValCall(Scope scope, Expr val) throws LangValidationException {
 		if (val instanceof ExprList) {
-			return evaluateValCall(scope, (ExprList)val).getConstraint();
+			ExprList f = (ExprList) val;
+			if (f.getBracketsType() == BracketsType.BRACES) {
+				throw new UnsupportedOperationException(f.getBracketsType().name());
+			}
+			if (f.getBracketsType() == BracketsType.SQUARE) {
+				throw new UnsupportedOperationException(f.getBracketsType().name());
+			}
+			
+			Expr functionId = f.get(0);
+			Constraint function = evaluateValCall(scope, functionId).getConstraint();
+			
+			final Expr[] args;
+			{
+				List<Expr> args0 = f.getElements();
+				args0.remove(0);
+				args = args0.toArray(new Expr[0]);
+			}
+			return function.getInvocationConstraint(f.getLocation(), new Scope(scope), args);
 		}
-		if (val instanceof Symbol) return new EqualityConstraint(scope.resolve(((Symbol) val).getValue()));
-		return new EqualityConstraint(val);
-	}
-	
-	public static ValidatedValCall evaluateValCall(Scope scope, ExprList f) throws LangValidationException {
-		if (f.getBracketsType() == BracketsType.BRACES) {
-			throw new UnsupportedOperationException(f.getBracketsType().name());
+		if (val instanceof Symbol) {
+			ValidatedValCall call = scope.preresolve(((Symbol) val).getValue());
+			if (call == null) throw new LangValidationException(val.getLocation(), "Undefined symbol: " + val);
+			return call;
 		}
-		if (f.getBracketsType() == BracketsType.SQUARE) {
-			throw new UnsupportedOperationException(f.getBracketsType().name());
-		}
-		
-		Expr functionId = f.get(0);
-		Constraint function = evaluateNotEvaluateJustConstraintYouGiveMePls(scope, functionId);
-		
-		final Expr[] args;
-		{
-			List<Expr> args0 = f.getElements();
-			args0.remove(0);
-			args = args0.toArray(new Expr[0]);
-		}
-		return function.getInvocationConstraint(f.getLocation(), new Scope(scope), args);
+		throw new LangValidationException(val.getLocation(), "Unknown val: " + val);
 	}
 	
 	

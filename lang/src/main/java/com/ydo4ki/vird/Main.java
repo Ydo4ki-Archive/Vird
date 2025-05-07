@@ -44,24 +44,13 @@ public class Main {
 		
 		scope.define("+", plus);
 		
-		// Using the new Stream API instead of the for-each loop
+		System.out.println("\nValidation...");
+		long start = System.currentTimeMillis();
 		List<ValidatedValCall> calls;
 		try {
 			calls = new ArrayList<>();
 			for (Expr expr : new ExprOutput(new TokenOutput(src))) {
-				ValidatedValCall call;
-				if (expr instanceof ExprList) {
-					call = Interpreter.evaluateValCall(scope, (ExprList) expr);
-				} else {
-					// todo: resolve it instead of just returning a symbol
-					call = new ValidatedValCall(new EqualityConstraint(expr)) {
-						@Override
-						public Val invoke() {
-							return expr;
-						}
-					};
-				}
-				calls.add(call);
+				calls.add(Interpreter.evaluateValCall(scope, expr));
 			}
 		} catch (LangException e) {
 			try {
@@ -72,6 +61,9 @@ public class Main {
 				throw new RuntimeException(ex);
 			}
 		}
+		long end = System.currentTimeMillis();
+		long time = end - start;
+		System.out.println("Validated successfully (" + time + "ms)\n");
 		for (ValidatedValCall call : calls) {
 			call.invoke();
 		}
@@ -147,10 +139,23 @@ public class Main {
 				}
 			};
 		}
-	}, DO = new Val() {
+	}, define = new Val() {
 		@Override
 		public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
-			return super.invocation(location, caller, args);
+			if (args.length != 2) throw new LangValidationException(location, "2 arguments expected");
+			// todo: computed names
+			if (!(args[0] instanceof Symbol)) throw new LangValidationException(args[0].getLocation(), "Symbol expected (" + args[0] + ")");
+			String name = ((Symbol) args[0]).getValue();
+			ValidatedValCall value = Interpreter.evaluateValCall(caller, args[1]);
+			caller.predefine(name, value);
+			return new ValidatedValCall(value.getConstraint()) {
+				@Override
+				public Val invoke() {
+					Val val = value.invoke();
+					caller.define(name, val);
+					return val;
+				}
+			};
 		}
 	};
 	

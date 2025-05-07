@@ -1,4 +1,4 @@
 // ((get-echo) "hello world!")
-
+//(: x 5)
 (echo (+ 5 4))
 

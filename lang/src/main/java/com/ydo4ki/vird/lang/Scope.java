@@ -1,6 +1,8 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.lang.constraint.Constraint;
+import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -16,28 +18,34 @@ public final class Scope extends Val {
 	@Getter
 	private final Scope parent;
 	private final Map<String, Val> definedSymbols = new HashMap<>();
+	private final Map<String, ValidatedValCall> preDefinedSymbols = new HashMap<>();
 	
-	public Declaration define(String name, Val value) {
+	public void predefine(String name, ValidatedValCall constraint) {
+		if (preDefinedSymbols.containsKey(name))
+			throw new IllegalArgumentException(name + " is already predefined");
+		preDefinedSymbols.put(name, constraint);
+	}
+	public ValidatedValCall preresolve(String name) {
+		ValidatedValCall dereferenced = preDefinedSymbols.get(name);
+		return dereferenced != null || parent == null ? dereferenced : parent.preresolve(name);
+	}
+	
+	
+	public void define(String name, Val value) {
 		if (definedSymbols.containsKey(name))
 			throw new IllegalArgumentException(name + " is already defined");
 		definedSymbols.put(name, value);
-		return new Declaration(name, value);
+		preDefinedSymbols.put(name, new ValidatedValCall(new EqualityConstraint(value)) {
+			@Override
+			public Val invoke() {
+				return value;
+			}
+		});
 	}
 	
-	/** define val in this scope, return scope */
-	public Scope d(String name, Val value) {
-		define(name, value);
-		return this;
-	}
-	
+	@Deprecated
 	public Val resolve(String name) {
 		Val dereferenced = definedSymbols.get(name);
 		return dereferenced != null || parent == null ? dereferenced : parent.resolve(name);
-	}
-	public <T extends Val> T resolve(String name, Class<T> jtype) {
-		Val value = resolve(name);
-		if (jtype.isInstance(value)) //noinspection unchecked
-			return (T)value;
-		return null;
 	}
 }

@@ -8,12 +8,14 @@ import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.lang.ValidatedValCall;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Getter
 public final class EqualityConstraint implements Constraint {
+	@NonNull
 	private final Val expected;
 	
 	@Override
