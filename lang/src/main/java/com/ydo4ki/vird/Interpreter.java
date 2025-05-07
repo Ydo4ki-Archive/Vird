@@ -22,63 +22,8 @@ public class Interpreter {
 	private final Scope program = new Scope(Vird.GLOBAL);
 	
 	public Interpreter() {}
-//	public static Val evaluateFinale(Scope scope, Expr val) {
-//		Val ret = evaluate(scope, val);
-//		if (ret instanceof Expr) ret = evaluateFinale(scope, (Expr) ret);
-//		if (ret instanceof WrappedExpr) return evaluate(scope, ((WrappedExpr) ret).getExpr());
-//		return ret;
-//	}
 	
-	// how did it turn out that evaluate is unused lmao
-	public static Val evaluate(Scope scope, Expr val) throws LangException {
-		Objects.requireNonNull(val, "why null");
-		if (val instanceof ExprList) {
-			ExprList f = (ExprList)val;
-			
-			if (f.getBracketsType() == BracketsType.BRACES) {
-				throw new UnsupportedOperationException(f.getBracketsType().name());
-			}
-			if (f.getBracketsType() == BracketsType.SQUARE) {
-				throw new UnsupportedOperationException(f.getBracketsType().name());
-			}
-			
-			ValidatedValCall c = evaluateValCall(scope, f);
-			
-			final Expr[] args;
-			{
-				List<Expr> args0 = f.getElements();
-				args0.remove(0);
-				args = args0.toArray(new Expr[0]);
-			}
-			try {
-				return Objects.requireNonNull(
-						c.invoke(),
-						"Function just returned null. This is outrageous. " +
-								"It's unfair. How can you be a function, and not return a value?" +
-								val + " " + Arrays.toString(args)
-				);
-			} catch (Exception e) {
-				System.err.println("Unexpected error occurred: " + e);
-				if (e instanceof LangException) {
-					try {
-						throw handleLangException((LangException) e,
-								String.join("\n", Files.readAllLines(((LangException) e).getLocation().getSourceFile().toPath())),
-								((LangException) e).getLocation().getSourceFile(), 2);
-					} catch (IOException ex) {
-						System.err.println("# error reading source file");
-					}
-				}
-				e.printStackTrace(System.err);
-				System.exit(2);
-			}
-		}
-		if (val instanceof Symbol) return Objects.requireNonNull(
-					scope.resolve(((Symbol) val).getValue()),
-					"Cannot resolve symbol: " + val
-		);
-		return val;
-	}
-	
+	// honestly at this point I don't really feel understanding how does this work
 	public static ValidatedValCall evaluateValCall(Scope scope, Expr val) throws LangValidationException {
 		if (val instanceof ExprList) {
 			ExprList f = (ExprList) val;
@@ -101,8 +46,19 @@ public class Interpreter {
 			return function.getInvocationConstraint(f.getLocation(), new Scope(scope), args);
 		}
 		if (val instanceof Symbol) {
-			ValidatedValCall call = scope.preresolve(((Symbol) val).getValue());
-			if (call == null) throw new LangValidationException(val.getLocation(), "Undefined symbol: " + val);
+			// todo: make it flexible
+			String str = ((Symbol) val).getValue();
+			ValidatedValCall call = scope.preresolve(str);
+			if (call == null) {
+				try {
+					int v = Integer.parseInt(str);
+					Blob b = Blob.ofInt(v);
+					return ValidatedValCall.promiseVal(b);
+				} catch (NumberFormatException e) {
+					throw new LangValidationException(val.getLocation(), "Undefined symbol: " + val);
+					// ok nevermind
+				}
+			}
 			return call;
 		}
 		throw new LangValidationException(val.getLocation(), "Unknown val: " + val);

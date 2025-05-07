@@ -1,7 +1,6 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.base.Val;
-import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

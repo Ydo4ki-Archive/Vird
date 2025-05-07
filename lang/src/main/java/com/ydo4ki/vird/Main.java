@@ -43,6 +43,7 @@ public class Main {
 		});
 		
 		scope.define("+", plus);
+		scope.define(":", define);
 		
 		System.out.println("\nValidation...");
 		long start = System.currentTimeMillis();
@@ -113,14 +114,10 @@ public class Main {
 			
 			for (int i = 0; i < args.length; i++) {
 				Expr arg = args[i];
-				if (arg instanceof Symbol) {
-					try {
-						sumOfKnownValues += Integer.parseInt(((Symbol) arg).getValue());
-					} catch (NumberFormatException e) {
-						throw new LangValidationException(location, "Number expected (" + i + ")", e);
-					}
-				} else if (arg instanceof ExprList && ((ExprList) arg).getBracketsType() == BracketsType.ROUND) {
-					ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), (ExprList)arg);
+				ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), arg);
+				if (c.getConstraint() instanceof EqualityConstraint) {
+					sumOfKnownValues += ((Blob)c.invoke()).toInt();
+				} else {
 					if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))
 						ex.apply("Number expected (" + i + ")");
 					leftToEvaluate.add(c);
@@ -147,12 +144,13 @@ public class Main {
 			if (!(args[0] instanceof Symbol)) throw new LangValidationException(args[0].getLocation(), "Symbol expected (" + args[0] + ")");
 			String name = ((Symbol) args[0]).getValue();
 			ValidatedValCall value = Interpreter.evaluateValCall(caller, args[1]);
-			caller.predefine(name, value);
+			Scope scope = caller.getParent();
+			scope.predefine(name, value);
 			return new ValidatedValCall(value.getConstraint()) {
 				@Override
 				public Val invoke() {
 					Val val = value.invoke();
-					caller.define(name, val);
+					scope.define(name, val);
 					return val;
 				}
 			};
