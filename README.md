@@ -9,11 +9,14 @@
 Research project, programming language aimed at
 finding maximum flexibility (both syntactically and semantically)
 with the simplest possible language model
-
 So its development basically is
-"do multiple complex thing, then spend weeks simplifying them until
+"do multiple complex things, then spend weeks simplifying them until
 it starts to seem obvious ~~what took you so long~~"
 
 The language syntax is pretty similar to Lisp (but it's not its dialect)
+
+It also is the safest scripting language because it does not have runtime errors at all and all the code passes validation before running
+~~(surely you can add them in user code but why would you do that)~~
+
 ***
 Pre-releases are not backwards compatible (unlike releases)

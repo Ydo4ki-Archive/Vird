@@ -24,7 +24,7 @@ public final class Scope extends Val {
 		return new Declaration(name, value);
 	}
 	
-	/** define val in scope, return it */
+	/** define val in this scope, return scope */
 	public Scope d(String name, Val value) {
 		define(name, value);
 		return this;
