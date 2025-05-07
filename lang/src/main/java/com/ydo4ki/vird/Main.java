@@ -1,44 +1,28 @@
 package com.ydo4ki.vird;
 
 import com.github.freva.asciitable.AsciiTable;
-import com.ydo4ki.vird.base.Expr;
-import com.ydo4ki.vird.base.Location;
-import com.ydo4ki.vird.base.Symbol;
-import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.base.*;
 import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.base.lexer.ExprOutput;
 import com.ydo4ki.vird.base.lexer.TokenOutput;
 import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import com.ydo4ki.vird.lang.constraint.FreeConstraint;
+import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Main {
+	
 	public static void main(String[] __args) throws IOException {
 		printPrjInfo(System.out);
 		File src = new File("vird/file.vird");
 		
 		Scope scope = new Scope(Vird.GLOBAL);
 		
-		Val echo = new Val() {
-			@Override
-			public Constraint invokationConstraint(Location location, Scope caller, Expr[] args) throws LangValidationException {
-				if (args.length == 1 && args[0] instanceof Symbol) {
-					String v = ((Symbol) args[0]).getValue();
-					if (v.length() >= 2 && v.charAt(0) == '"' && v.charAt(v.length()-1) == '"')
-						return FreeConstraint.INSTANCE;
-				}
-				throw new LangValidationException(location, "Not applicable");
-			}
-			
-			@Override
-			public Val invoke(Scope caller, Expr[] args) {
-				System.out.println(args[0].toString().substring(1, args[0].toString().length()-1));
-				return new Val();
-			}
-		};
 		
 		scope.define("echo", echo);
 		scope.define("get-echo", new Val() {
@@ -57,10 +41,79 @@ public class Main {
 			}
 		});
 		
+		scope.define("+", plus);
+		
 		// Using the new Stream API instead of the for-each loop
 		new ExprOutput(new TokenOutput(src)).stream()
 			.forEach(expr -> Interpreter.evaluate(scope, expr));
 	}
+	
+	static Val echo = new Val() {
+		@Override
+		public Constraint invokationConstraint(Location location, Scope caller, Expr[] args) throws LangValidationException {
+			String error = "1 argument expected";
+			if (args.length == 1) {
+				if (args[0] instanceof Symbol) {
+					String v = ((Symbol) args[0]).getValue();
+					if (v.length() >= 2 && v.charAt(0) == '"' && v.charAt(v.length()-1) == '"')
+						return FreeConstraint.INSTANCE;
+					error = "String literal expected";
+				} else if (args[0] instanceof ExprList
+						&& ((ExprList) args[0]).getBracketsType() == BracketsType.ROUND) {
+					return Interpreter.evaluateNotEvaluateJustConstraintYouGiveMePls(new Scope(caller), args[0]);
+				}
+			}
+			throw new LangValidationException(location, error);
+		}
+		
+		@Override
+		public Val invoke(Scope caller, Expr[] args) {
+			if (args[0] instanceof Symbol) {
+				System.out.println(args[0].toString().substring(1, args[0].toString().length()-1));
+			} else if (args[0] instanceof ExprList && ((ExprList) args[0]).getBracketsType() == BracketsType.ROUND) {
+				System.out.println(Interpreter.evaluate(caller, args[0]));
+			}
+			return new Val();
+		}
+	}, plus = new Val() {
+		@Override
+		public Constraint invokationConstraint(Location location, Scope caller, Expr[] args) throws LangValidationException {
+			Function<String, LangValidationException> ex = (msg) -> new LangValidationException(location, msg);
+			if (args.length < 2) throw ex.apply("2 or more args expected");
+			for (int i = 0; i < args.length; i++) {
+				Expr arg = args[i];
+				if (arg instanceof Symbol) {
+					try {
+						Integer.parseInt(((Symbol) arg).getValue());
+					} catch (NumberFormatException e) {
+						throw new LangValidationException(location, "Number expected (" + i + ")", e);
+					}
+				} else if (arg instanceof ExprList && ((ExprList) arg).getBracketsType() == BracketsType.ROUND) {
+					Constraint c = Interpreter.evaluateNotEvaluateJustConstraintYouGiveMePls(new Scope(caller), arg);
+					if (!c.implies(caller, new InstanceOfConstraint(Blob.class))) ex.apply("Number expected (" + i + ")");
+				}
+			}
+			return new InstanceOfConstraint(Blob.class);
+		}
+		
+		@Override
+		public Val invoke(Scope caller, Expr[] args) {
+			int sum = 0;
+			for (Expr arg : args) {
+				if (arg instanceof Symbol) {
+					sum += Integer.parseInt(((Symbol) arg).getValue());
+				} else if (arg instanceof ExprList && ((ExprList) arg).getBracketsType() == BracketsType.ROUND) {
+					Blob c = (Blob) Interpreter.evaluate(new Scope(caller), arg);
+					sum += c.toInt();
+				}
+			}
+			return Blob.ofInt(sum);
+		}
+	};
+	
+	
+	
+	
 	
 	public static void printPrjInfo(PrintStream out) throws IOException {
 		File src = new File("lang/src/main/java");

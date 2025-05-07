@@ -92,7 +92,9 @@ public class Interpreter {
 		return val;
 	}
 	
-	private static Constraint evaluateNotEvaluateJustConstraintYouGiveMePls(Scope scope, Expr val) throws LangValidationException {
+	// todo: should return something like ValidatedValCall for cases where
+	//  its impossible to not run the actual code (metaprogramming) to not run it twice (at least)
+	public static Constraint evaluateNotEvaluateJustConstraintYouGiveMePls(Scope scope, Expr val) throws LangValidationException {
 		Objects.requireNonNull(val, "why null");
 		if (val instanceof ExprList) {
 			ExprList f = (ExprList)val;
