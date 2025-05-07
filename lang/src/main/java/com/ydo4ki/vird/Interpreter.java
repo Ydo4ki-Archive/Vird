@@ -41,9 +41,10 @@ public class Interpreter {
 				throw new UnsupportedOperationException(f.getBracketsType().name());
 			}
 			
+			ValidatedValCall c;
 			try {
 				// validation, constraint result is probably not needed at this state
-				Constraint c = evaluateNotEvaluateJustConstraintYouGiveMePls(scope, f);
+				c = evaluateValCall(scope, f);
 			} catch (LangException e) {
 				try {
 					throw handleLangException(e,
@@ -65,7 +66,7 @@ public class Interpreter {
 			}
 			try {
 				return Objects.requireNonNull(
-						func.invoke(new Scope(scope), args),
+						c.invoke(),
 						"Function just returned null. This is outrageous. " +
 								"It's unfair. How can you be a function, and not return a value?" +
 								val + " " + Arrays.toString(args)
@@ -97,28 +98,30 @@ public class Interpreter {
 	public static Constraint evaluateNotEvaluateJustConstraintYouGiveMePls(Scope scope, Expr val) throws LangValidationException {
 		Objects.requireNonNull(val, "why null");
 		if (val instanceof ExprList) {
-			ExprList f = (ExprList)val;
-			
-			if (f.getBracketsType() == BracketsType.BRACES) {
-				throw new UnsupportedOperationException(f.getBracketsType().name());
-			}
-			if (f.getBracketsType() == BracketsType.SQUARE) {
-				throw new UnsupportedOperationException(f.getBracketsType().name());
-			}
-			
-			Expr functionId = f.get(0);
-			Constraint function = evaluateNotEvaluateJustConstraintYouGiveMePls(scope, functionId);
-			
-			final Expr[] args;
-			{
-				List<Expr> args0 = f.getElements();
-				args0.remove(0);
-				args = args0.toArray(new Expr[0]);
-			}
-			return function.getInvokationConstraint(f.getLocation(), new Scope(scope), args);
+			return evaluateValCall(scope, (ExprList)val).getConstraint();
 		}
 		if (val instanceof Symbol) return new EqualityConstraint(scope.resolve(((Symbol) val).getValue()));
 		return new EqualityConstraint(val);
+	}
+	
+	public static ValidatedValCall evaluateValCall(Scope scope, ExprList f) throws LangValidationException {
+		if (f.getBracketsType() == BracketsType.BRACES) {
+			throw new UnsupportedOperationException(f.getBracketsType().name());
+		}
+		if (f.getBracketsType() == BracketsType.SQUARE) {
+			throw new UnsupportedOperationException(f.getBracketsType().name());
+		}
+		
+		Expr functionId = f.get(0);
+		Constraint function = evaluateNotEvaluateJustConstraintYouGiveMePls(scope, functionId);
+		
+		final Expr[] args;
+		{
+			List<Expr> args0 = f.getElements();
+			args0.remove(0);
+			args = args0.toArray(new Expr[0]);
+		}
+		return function.getInvocationConstraint(f.getLocation(), new Scope(scope), args);
 	}
 	
 	

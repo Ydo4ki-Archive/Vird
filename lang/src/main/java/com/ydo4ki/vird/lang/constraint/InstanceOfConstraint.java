@@ -5,6 +5,7 @@ import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
+import com.ydo4ki.vird.lang.ValidatedValCall;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,7 @@ public final class InstanceOfConstraint implements Constraint {
 	}
 	
 	@Override
-	public Constraint getInvokationConstraint(Location location, Scope scope, Expr[] args) throws LangValidationException {
+	public ValidatedValCall getInvocationConstraint(Location location, Scope scope, Expr[] args) throws LangValidationException {
 		throw new LangValidationException(location, "Not callable");
 	}
 	

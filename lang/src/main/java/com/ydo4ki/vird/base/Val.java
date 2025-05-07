@@ -1,6 +1,6 @@
 package com.ydo4ki.vird.base;
 
-import com.ydo4ki.vird.lang.constraint.Constraint;
+import com.ydo4ki.vird.lang.ValidatedValCall;
 import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
 
@@ -9,11 +9,9 @@ import com.ydo4ki.vird.lang.Scope;
  * @author Sulphuris
  */
 public class Val {
-	public Constraint invokationConstraint(Location location, Scope caller, Expr[] args) throws LangValidationException {
+	public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
 		throw new LangValidationException(location, "Not callable");
 	}
 	
-	public Val invoke(Scope caller, Expr[] args) {
-		throw new UnsupportedOperationException();
-	}
+	public static final Val unit = new Val();
 }
