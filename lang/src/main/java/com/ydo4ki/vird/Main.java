@@ -8,6 +8,9 @@ import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.base.lexer.ExprOutput;
 import com.ydo4ki.vird.base.lexer.TokenOutput;
+import com.ydo4ki.vird.lang.constraint.Constraint;
+import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
+import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 
 import java.io.*;
 import java.nio.file.Files;

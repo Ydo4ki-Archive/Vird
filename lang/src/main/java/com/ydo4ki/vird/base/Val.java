@@ -1,6 +1,6 @@
 package com.ydo4ki.vird.base;
 
-import com.ydo4ki.vird.lang.Constraint;
+import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
 

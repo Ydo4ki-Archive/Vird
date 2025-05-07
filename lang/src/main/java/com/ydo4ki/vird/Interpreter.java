@@ -2,6 +2,8 @@ package com.ydo4ki.vird;
 
 import com.ydo4ki.vird.base.*;
 import com.ydo4ki.vird.lang.*;
+import com.ydo4ki.vird.lang.constraint.Constraint;
+import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import lombok.Getter;
 
 import java.io.File;
