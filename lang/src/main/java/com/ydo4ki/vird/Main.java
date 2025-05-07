@@ -12,6 +12,8 @@ import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 public class Main {
@@ -28,7 +30,7 @@ public class Main {
 			@Override
 			public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
 				if (args.length != 0) throw new LangValidationException(location, "0 arguments expected");
-				return new ValidatedValCall(new EqualityConstraint(echo), caller, args) {
+				return new ValidatedValCall(new EqualityConstraint(echo)) {
 					@Override
 					public Val invoke() {
 						// debug, this is not a side effect, you don't understand this is different
@@ -54,21 +56,25 @@ public class Main {
 			if (args.length == 1) {
 				if (args[0] instanceof Symbol) {
 					String v = ((Symbol) args[0]).getValue();
-					if (v.length() >= 2 && v.charAt(0) == '"' && v.charAt(v.length() - 1) == '"')
-						return new ValidatedValCall(FreeConstraint.INSTANCE, caller, args) {
+					int lastChar = v.length() - 1;
+					if (v.length() >= 2 && v.charAt(0) == '"' && v.charAt(lastChar) == '"') {
+						String content = v.substring(1, lastChar);
+						return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
 							@Override
 							public Val invoke() {
-								System.out.println(args[0].toString().substring(1, args[0].toString().length() - 1));
+								System.out.println(content);
 								return Val.unit;
 							}
 						};
+					}
 					error = "String literal expected";
 				} else if (args[0] instanceof ExprList
 						&& ((ExprList) args[0]).getBracketsType() == BracketsType.ROUND) {
-					return new ValidatedValCall(FreeConstraint.INSTANCE, caller, args) {
+					ValidatedValCall call = Interpreter.evaluateValCall(caller, (ExprList) args[0]);
+					return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
 						@Override
 						public Val invoke() {
-							System.out.println(Interpreter.evaluate(scope, args[0]));
+							System.out.println(call.invoke());
 							return Val.unit;
 						}
 					};
@@ -82,31 +88,32 @@ public class Main {
 		public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
 			Function<String, LangValidationException> ex = (msg) -> new LangValidationException(location, msg);
 			if (args.length < 2) throw ex.apply("2 or more args expected");
+			int sumOfKnownValues = 0;
+			List<ValidatedValCall> leftToEvaluate = new ArrayList<>();
+			
 			for (int i = 0; i < args.length; i++) {
 				Expr arg = args[i];
 				if (arg instanceof Symbol) {
 					try {
-						Integer.parseInt(((Symbol) arg).getValue());
+						sumOfKnownValues += Integer.parseInt(((Symbol) arg).getValue());
 					} catch (NumberFormatException e) {
 						throw new LangValidationException(location, "Number expected (" + i + ")", e);
 					}
 				} else if (arg instanceof ExprList && ((ExprList) arg).getBracketsType() == BracketsType.ROUND) {
-					Constraint c = Interpreter.evaluateNotEvaluateJustConstraintYouGiveMePls(new Scope(caller), arg);
-					if (!c.implies(caller, new InstanceOfConstraint(Blob.class)))
+					ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), (ExprList)arg);
+					if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))
 						ex.apply("Number expected (" + i + ")");
+					leftToEvaluate.add(c);
 				}
 			}
-			return new ValidatedValCall(new InstanceOfConstraint(Blob.class), caller, args) {
+			final int sokv = sumOfKnownValues;
+			return new ValidatedValCall(new InstanceOfConstraint(Blob.class)) {
 				@Override
 				public Val invoke() {
-					int sum = 0;
-					for (Expr arg : args) {
-						if (arg instanceof Symbol) {
-							sum += Integer.parseInt(((Symbol) arg).getValue());
-						} else if (arg instanceof ExprList && ((ExprList) arg).getBracketsType() == BracketsType.ROUND) {
-							Blob c = (Blob) Interpreter.evaluate(new Scope(scope), arg);
-							sum += c.toInt();
-						}
+					int sum = sokv;
+					for (ValidatedValCall arg : leftToEvaluate) {
+						Blob c = (Blob) arg.invoke();
+						sum += c.toInt();
 					}
 					return Blob.ofInt(sum);
 				}

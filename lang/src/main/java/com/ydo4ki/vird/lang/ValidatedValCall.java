@@ -15,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 public abstract class ValidatedValCall {
 	@Getter
 	protected final Constraint constraint;
-	protected final Scope scope;
-	protected final Expr[] args;
 	
 	public abstract Val invoke();
 }

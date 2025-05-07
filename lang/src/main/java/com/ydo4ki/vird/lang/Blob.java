@@ -21,7 +21,7 @@ public final class Blob extends Val {
 	
 	@Override
 	public String toString() {
-		return "b" + bytesToHex(data);
+		return "0x" + bytesToHex(data);
 	}
 	
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
