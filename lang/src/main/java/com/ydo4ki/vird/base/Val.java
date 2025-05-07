@@ -9,7 +9,7 @@ import com.ydo4ki.vird.lang.Scope;
  * @author Sulphuris
  */
 public class Val {
-	public Constraint invokationConstraint(Location location, Scope caller, Val[] args) throws LangValidationException {
+	public Constraint invokationConstraint(Location location, Scope caller, Expr[] args) throws LangValidationException {
 		throw new LangValidationException(location, "Not callable");
 	}
 	

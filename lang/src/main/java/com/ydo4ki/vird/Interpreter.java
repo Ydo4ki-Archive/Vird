@@ -7,6 +7,7 @@ import lombok.Getter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,13 +40,13 @@ public class Interpreter {
 			}
 			
 			try {
-				// validate, constraint result is probably not needed at this state
+				// validation, constraint result is probably not needed at this state
 				Constraint c = evaluateNotEvaluateJustConstraintYouGiveMePls(scope, f);
 			} catch (LangException e) {
 				try {
 					throw handleLangException(e,
 							String.join("\n", Files.readAllLines(e.getLocation().getSourceFile().toPath())),
-							e.getLocation().getSourceFile());
+							e.getLocation().getSourceFile(), 1);
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}
@@ -60,10 +61,27 @@ public class Interpreter {
 				args0.remove(0);
 				args = args0.toArray(new Expr[0]);
 			}
-			return Objects.requireNonNull(
-					func.invoke(new Scope(scope), args),
-					"Cannot evaluate function: " + val
-			);
+			try {
+				return Objects.requireNonNull(
+						func.invoke(new Scope(scope), args),
+						"Function just returned null. This is outrageous. " +
+								"It's unfair. How can you be a function, and not return a value?" +
+								val + " " + Arrays.toString(args)
+				);
+			} catch (Exception e) {
+				System.err.println("Unexpected error occurred: " + e);
+				if (e instanceof LangException) {
+					try {
+						throw handleLangException((LangException) e,
+								String.join("\n", Files.readAllLines(((LangException) e).getLocation().getSourceFile().toPath())),
+								((LangException) e).getLocation().getSourceFile(), 2);
+					} catch (IOException ex) {
+						System.err.println("# error reading source file");
+					}
+				}
+				e.printStackTrace(System.err);
+				System.exit(2);
+			}
 		}
 		if (val instanceof Symbol) return Objects.requireNonNull(
 					scope.resolve(((Symbol) val).getValue()),
@@ -84,19 +102,8 @@ public class Interpreter {
 				throw new UnsupportedOperationException(f.getBracketsType().name());
 			}
 			
-			Constraint function;
-			try {
-				Expr functionId = f.get(0);
-				function = evaluateNotEvaluateJustConstraintYouGiveMePls(scope, functionId);
-			} catch (LangException e) {
-				try {
-					throw handleLangException(e,
-							String.join("\n", Files.readAllLines(e.getLocation().getSourceFile().toPath())),
-							e.getLocation().getSourceFile());
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
+			Expr functionId = f.get(0);
+			Constraint function = evaluateNotEvaluateJustConstraintYouGiveMePls(scope, functionId);
 			
 			final Expr[] args;
 			{
@@ -113,7 +120,7 @@ public class Interpreter {
 	
 	
 	
-	private static Error handleLangException(LangException e, String source, File file) {
+	private static Error handleLangException(LangException e, String source, File file, int code) {
 		String filename = file.getAbsolutePath();
 		filename = filename.substring(1).replaceAll("\\|/", ".");
 		System.err.println(getErrorDescription(e, filename, source));
@@ -122,7 +129,7 @@ public class Interpreter {
 			System.err.println(getErrorDescription((LangException) e.getCause(), filename, source));
 		}
 //		e.printStackTrace();
-		System.exit(30);
+		System.exit(code);
 		return new Error();
 	}
 	

@@ -1,6 +1,7 @@
 package com.ydo4ki.vird;
 
 import com.github.freva.asciitable.AsciiTable;
+import com.ydo4ki.vird.base.Expr;
 import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Symbol;
 import com.ydo4ki.vird.base.Val;
@@ -18,30 +19,40 @@ public class Main {
 		
 		Scope scope = new Scope(Vird.GLOBAL);
 		
-		Val echo = new Func(
-				(env, args) -> {
-					Constraint c = FreeConstraint.INSTANCE;
-					if (args.length != 1) return null;
-					if (args[0] instanceof Symbol) {
-						String v = ((Symbol) args[0]).getValue();
-						if (v.length() < 2) return null;
-						return v.charAt(0) == '"' && v.charAt(v.length()-1) == '"' ? c : null;
-					}
-					return null;
-				},
-				(env, args) -> {
-					System.out.println(args[0].toString().substring(1, args[0].toString().length()-1));
-					return new Val();
+		Val echo = new Val() {
+			@Override
+			public Constraint invokationConstraint(Location location, Scope caller, Expr[] args) throws LangValidationException {
+				if (args.length == 1 && args[0] instanceof Symbol) {
+					String v = ((Symbol) args[0]).getValue();
+					if (v.length() >= 2 && v.charAt(0) == '"' && v.charAt(v.length()-1) == '"')
+						return FreeConstraint.INSTANCE;
 				}
-		);
+				throw new LangValidationException(location, "Not applicable");
+			}
+			
+			@Override
+			public Val invoke(Scope caller, Expr[] args) {
+				System.out.println(args[0].toString().substring(1, args[0].toString().length()-1));
+				return new Val();
+			}
+		};
+		
 		scope.define("echo", echo);
-		scope.define("get-echo", new Func(
-				(env, args) -> args.length == 0 ? new EqualityConstraint(echo) : null,
-				(env, args) -> {
-					System.out.println("# get-echo is called!");
-					return echo;
-				}
-		));
+		scope.define("get-echo", new Val() {
+			@Override
+			public Constraint invokationConstraint(Location location, Scope caller, Expr[] args) throws LangValidationException {
+				if (args.length != 0) throw new LangValidationException(location, "0 arguments expected");
+				return new EqualityConstraint(echo);
+			}
+			
+			@Override
+			public Val invoke(Scope caller, Expr[] args) {
+				// debug, this is not a side effect, you don't understand this is different
+				System.out.println("# get-echo is called!");
+				
+				return echo;
+			}
+		});
 		
 		// Using the new Stream API instead of the for-each loop
 		new ExprOutput(new TokenOutput(src)).stream()
