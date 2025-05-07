@@ -45,8 +45,36 @@ public class Main {
 		scope.define("+", plus);
 		
 		// Using the new Stream API instead of the for-each loop
-		new ExprOutput(new TokenOutput(src)).stream()
-				.forEach(expr -> Interpreter.evaluate(scope, expr));
+		List<ValidatedValCall> calls;
+		try {
+			calls = new ArrayList<>();
+			for (Expr expr : new ExprOutput(new TokenOutput(src))) {
+				ValidatedValCall call;
+				if (expr instanceof ExprList) {
+					call = Interpreter.evaluateValCall(scope, (ExprList) expr);
+				} else {
+					// todo: resolve it instead of just returning a symbol
+					call = new ValidatedValCall(new EqualityConstraint(expr)) {
+						@Override
+						public Val invoke() {
+							return expr;
+						}
+					};
+				}
+				calls.add(call);
+			}
+		} catch (LangException e) {
+			try {
+				throw Interpreter.handleLangException(e,
+						String.join("\n", Files.readAllLines(e.getLocation().getSourceFile().toPath())),
+						e.getLocation().getSourceFile(), 1);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+		for (ValidatedValCall call : calls) {
+			call.invoke();
+		}
 	}
 	
 	static Val echo = new Val() {
@@ -118,6 +146,11 @@ public class Main {
 					return Blob.ofInt(sum);
 				}
 			};
+		}
+	}, DO = new Val() {
+		@Override
+		public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
+			return super.invocation(location, caller, args);
 		}
 	};
 	

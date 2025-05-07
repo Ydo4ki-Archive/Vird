@@ -29,7 +29,7 @@ public class Interpreter {
 //		return ret;
 //	}
 	
-	public static Val evaluate(Scope scope, Expr val) {
+	public static Val evaluate(Scope scope, Expr val) throws LangException {
 		Objects.requireNonNull(val, "why null");
 		if (val instanceof ExprList) {
 			ExprList f = (ExprList)val;
@@ -41,22 +41,7 @@ public class Interpreter {
 				throw new UnsupportedOperationException(f.getBracketsType().name());
 			}
 			
-			ValidatedValCall c;
-			try {
-				// validation, constraint result is probably not needed at this state
-				c = evaluateValCall(scope, f);
-			} catch (LangException e) {
-				try {
-					throw handleLangException(e,
-							String.join("\n", Files.readAllLines(e.getLocation().getSourceFile().toPath())),
-							e.getLocation().getSourceFile(), 1);
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-			Expr functionId = f.get(0);
-			
-			Val func = evaluate(scope, functionId);
+			ValidatedValCall c = evaluateValCall(scope, f);
 			
 			final Expr[] args;
 			{
@@ -127,7 +112,7 @@ public class Interpreter {
 	
 	
 	
-	private static Error handleLangException(LangException e, String source, File file, int code) {
+	public static Error handleLangException(LangException e, String source, File file, int code) {
 		String filename = file.getAbsolutePath();
 		filename = filename.substring(1).replaceAll("\\|/", ".");
 		System.err.println(getErrorDescription(e, filename, source));
