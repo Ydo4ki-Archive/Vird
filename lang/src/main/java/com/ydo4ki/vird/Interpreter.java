@@ -38,9 +38,9 @@ public class Interpreter {
 				throw new UnsupportedOperationException(f.getBracketsType().name());
 			}
 			
-			Func func;
 			try {
-				func = validate(scope, f);
+				// validate, constraint result is probably not needed at this state
+				Constraint c = evaluateNotEvaluateJustConstraintYouGiveMePls(scope, f);
 			} catch (LangException e) {
 				try {
 					throw handleLangException(e,
@@ -50,12 +50,15 @@ public class Interpreter {
 					throw new RuntimeException(ex);
 				}
 			}
+			Expr functionId = f.get(0);
 			
-			final Val[] args;
+			Val func = evaluate(scope, functionId);
+			
+			final Expr[] args;
 			{
 				List<Expr> args0 = f.getElements();
 				args0.remove(0);
-				args = args0.toArray(new Val[0]);
+				args = args0.toArray(new Expr[0]);
 			}
 			return Objects.requireNonNull(
 					func.invoke(new Scope(scope), args),
@@ -69,32 +72,42 @@ public class Interpreter {
 		return val;
 	}
 	
-	
-	
-	public static Func validate(Scope scope, ExprList f) throws LangException {
-		if (f.getBracketsType() == BracketsType.BRACES) {
-			throw new UnsupportedOperationException(f.getBracketsType().name());
+	private static Constraint evaluateNotEvaluateJustConstraintYouGiveMePls(Scope scope, Expr val) throws LangValidationException {
+		Objects.requireNonNull(val, "why null");
+		if (val instanceof ExprList) {
+			ExprList f = (ExprList)val;
+			
+			if (f.getBracketsType() == BracketsType.BRACES) {
+				throw new UnsupportedOperationException(f.getBracketsType().name());
+			}
+			if (f.getBracketsType() == BracketsType.SQUARE) {
+				throw new UnsupportedOperationException(f.getBracketsType().name());
+			}
+			
+			Constraint function;
+			try {
+				Expr functionId = f.get(0);
+				function = evaluateNotEvaluateJustConstraintYouGiveMePls(scope, functionId);
+			} catch (LangException e) {
+				try {
+					throw handleLangException(e,
+							String.join("\n", Files.readAllLines(e.getLocation().getSourceFile().toPath())),
+							e.getLocation().getSourceFile());
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+			
+			final Expr[] args;
+			{
+				List<Expr> args0 = f.getElements();
+				args0.remove(0);
+				args = args0.toArray(new Expr[0]);
+			}
+			return function.getInvokationConstraint(f.getLocation(), new Scope(scope), args);
 		}
-		if (f.getBracketsType() == BracketsType.SQUARE) {
-			throw new UnsupportedOperationException(f.getBracketsType().name());
-		}
-		
-		Expr functionId = f.get(0);
-		// todo: fix this nonsense
-		Val function = evaluate(scope, functionId);
-		if (!(function instanceof Func)) {
-			throw new IllegalArgumentException("Function not found: " + functionId);
-		}
-		Func func = ((Func) function);
-		
-		final Val[] args;
-		{
-			List<Expr> args0 = f.getElements();
-			args0.remove(0);
-			args = args0.toArray(new Val[0]);
-		}
-		func.validate(f, new Scope(scope), args);
-		return func;
+		if (val instanceof Symbol) return new EqualityConstraint(scope.resolve(((Symbol) val).getValue()));
+		return new EqualityConstraint(val);
 	}
 	
 	

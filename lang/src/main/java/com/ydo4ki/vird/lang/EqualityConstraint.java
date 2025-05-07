@@ -1,0 +1,39 @@
+package com.ydo4ki.vird.lang;
+
+import com.ydo4ki.vird.base.Expr;
+import com.ydo4ki.vird.base.Location;
+import com.ydo4ki.vird.base.Val;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+@Getter
+public final class EqualityConstraint implements Constraint {
+	private final Val expected;
+	
+	@Override
+	public boolean test(Scope scope, Val value) {
+		return value.equals(expected);
+	}
+	
+	@Override
+	public boolean implies(Scope scope, Constraint other) {
+		if (other instanceof EqualityConstraint) {
+			return this.expected.equals(((EqualityConstraint) other).expected);
+		}
+		return other.test(scope, expected);
+	}
+	
+	@Override
+	public Constraint getInvokationConstraint(Location location, Scope scope, Expr[] args) throws LangValidationException {
+		return expected.invokationConstraint(location, scope, args);
+	}
+	
+	@Override
+	public String toString() {
+		return "Equals(" + expected + ")";
+	}
+	
+}

@@ -1,7 +1,7 @@
 package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.vird.base.ExprList;
-import com.ydo4ki.vird.base.LangException;
+import com.ydo4ki.vird.base.Expr;
+import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -9,27 +9,27 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
 
 /**
  * @author Sulphuris
  * @since 4/9/2025 12:50 AM
  */
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
+@Deprecated
 public final class Func extends Val {
-	private final BiPredicate<Scope, Val[]> tester;
+	private final BiFunction<Scope, Val[], Constraint> tester;
 	private final BiFunction<Scope, Val[], Val> transformer;
 	
-	public boolean isApplicable(Scope caller, Val[] args) {
-		return tester.test(caller, args);
+	@Override
+	public Constraint invokationConstraint(Location location, Scope caller, Val[] args) throws LangValidationException {
+		Constraint c = tester.apply(caller, args);
+		if (c == null) throw new LangValidationException(location, "Not applicable");
+		return c;
 	}
 	
-	public void validate(ExprList f, Scope caller, Val[] args) throws LangException {
-		if (!isApplicable(caller, args)) throw new LangException(f.getLocation(), "validation error");
-	}
-	
-	public Val invoke(Scope caller, Val[] args) {
+	@Override
+	public Val invoke(Scope caller, Expr[] args) {
 		// lmao
 		return Objects.requireNonNull(
 				transformer.apply(caller, args),

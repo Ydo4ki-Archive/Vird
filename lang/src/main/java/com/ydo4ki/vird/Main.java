@@ -1,10 +1,10 @@
 package com.ydo4ki.vird;
 
 import com.github.freva.asciitable.AsciiTable;
+import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Symbol;
 import com.ydo4ki.vird.base.Val;
-import com.ydo4ki.vird.lang.Func;
-import com.ydo4ki.vird.lang.Scope;
+import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.base.lexer.ExprOutput;
 import com.ydo4ki.vird.base.lexer.TokenOutput;
 
@@ -17,19 +17,29 @@ public class Main {
 		File src = new File("vird/file.vird");
 		
 		Scope scope = new Scope(Vird.GLOBAL);
-		scope.define("echo", new Func(
+		
+		Val echo = new Func(
 				(env, args) -> {
-					if (args.length != 1) return false;
+					Constraint c = FreeConstraint.INSTANCE;
+					if (args.length != 1) return null;
 					if (args[0] instanceof Symbol) {
 						String v = ((Symbol) args[0]).getValue();
-						if (v.length() < 2) return false;
-						return v.charAt(0) == '"' && v.charAt(v.length()-1) == '"';
+						if (v.length() < 2) return null;
+						return v.charAt(0) == '"' && v.charAt(v.length()-1) == '"' ? c : null;
 					}
-					return false;
+					return null;
 				},
 				(env, args) -> {
 					System.out.println(args[0].toString().substring(1, args[0].toString().length()-1));
 					return new Val();
+				}
+		);
+		scope.define("echo", echo);
+		scope.define("get-echo", new Func(
+				(env, args) -> args.length == 0 ? new EqualityConstraint(echo) : null,
+				(env, args) -> {
+					System.out.println("# get-echo is called!");
+					return echo;
 				}
 		));
 		
