@@ -68,9 +68,7 @@ public class Interpreter {
 	public static ValidatedValCall evaluateValCall(Scope scope, Expr val) throws LangValidationException {
 		if (val instanceof ExprList.Round) {
 			ExprList.Round f = (ExprList.Round) val;
-			
-			Expr functionId = f.get(0);
-			return functionId.invocation(scope, f);
+			return f.get(0).invocation(scope, f);
 		}
 		if (val instanceof Symbol) {
 			// todo: make it flexible
@@ -90,7 +88,7 @@ public class Interpreter {
 					throw new LangValidationException(val.getLocation(), "Undefined symbol: " + val);
 				}
 			}
-			if (call.getConstraint() instanceof EqualityConstraint && call.isPure()) {
+			if (/*call.getConstraint() instanceof EqualityConstraint && I'm not sure if this is really unnecessary*/ call.isPure()) {
 				return call; // we already know the exact value
 			}
 			return new ValidatedValCall(call.getConstraint()) {

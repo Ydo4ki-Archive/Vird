@@ -25,20 +25,6 @@ public class ExprOutput implements Iterable<Expr> {
     public Iterator<Expr> iterator() {
         return new ExprIterator();
     }
-    
-    /**
-     * Returns a stream of expressions from this source
-     * @return a stream of expressions
-     */
-    public Stream<Expr> stream() {
-        return StreamSupport.stream(
-            Spliterators.spliteratorUnknownSize(
-                iterator(),
-                Spliterator.ORDERED | Spliterator.NONNULL
-            ),
-            false
-        );
-    }
 
     private class ExprIterator implements Iterator<Expr> {
 		private Expr next;
@@ -70,18 +56,17 @@ public class ExprOutput implements Iterable<Expr> {
 		}
 		
 		private boolean isMatchingCloseBracket(BracketsType type) {
-			if (isEOF()) return false;
-			if (type == BracketsType.ROUND) return currentToken.type == TokenType.CLOSEROUND;
-			if (type == BracketsType.SQUARE) return currentToken.type == TokenType.CLOSESQUARE;
-			if (type == BracketsType.BRACES) return currentToken.type == TokenType.CLOSE;
-			return false;
+			if (isEOF() || currentToken.text.isEmpty()) return false;
+			return currentToken.text.charAt(0) == type.close;
 		}
 		
 		private BracketsType getBracketType() {
-			if (currentToken.type == TokenType.OPENROUND) return BracketsType.ROUND;
-			if (currentToken.type == TokenType.OPENSQUARE) return BracketsType.SQUARE;
-			if (currentToken.type == TokenType.OPEN) return BracketsType.BRACES;
-			return null;
+			switch (currentToken.type) {
+				case OPENROUND: return BracketsType.ROUND;
+				case OPENSQUARE: return BracketsType.SQUARE;
+				case OPEN: return BracketsType.BRACES;
+				default: return null;
+			}
 		}
 		
 		private void nextToken() {

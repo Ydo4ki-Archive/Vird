@@ -11,6 +11,7 @@ import java.math.BigInteger;
 @Getter
 public final class Blob extends Val {
 	private final byte[] data;
+	// for optimization purposes due to frequent usage of blob as a number
 	private BigInteger bigInteger = null;
 	
 	public Blob(byte[] data) {
@@ -23,7 +24,8 @@ public final class Blob extends Val {
 	}
 	
 	public BigInteger bigInteger() {
-		if (bigInteger == null) bigInteger = new BigInteger(data);
+		if (bigInteger == null)
+			bigInteger = new BigInteger(data);
 		return bigInteger;
 	}
 	

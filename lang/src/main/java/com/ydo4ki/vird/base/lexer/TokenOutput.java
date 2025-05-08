@@ -31,20 +31,6 @@ public class TokenOutput implements Iterable<Token> {
 		return new TokenIterator();
 	}
 	
-	/**
-	 * Returns a stream of tokens from this source
-	 * @return a stream of tokens
-	 */
-	public Stream<Token> stream() {
-		return StreamSupport.stream(
-			Spliterators.spliteratorUnknownSize(
-				iterator(),
-				Spliterator.ORDERED | Spliterator.NONNULL
-			),
-			false
-		);
-	}
-	
 	private class TokenIterator implements Iterator<Token> {
 		
 		private int pos = 0;
