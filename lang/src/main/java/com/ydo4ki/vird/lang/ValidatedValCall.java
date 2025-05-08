@@ -20,9 +20,14 @@ public abstract class ValidatedValCall {
 	protected final Constraint constraint;
 	
 	public final Val invoke() {
-		Val ret = Objects.requireNonNull(invoke0());
-//		System.out.println(ret + " is " + constraint);
-		return ret;
+		try {
+			return Objects.requireNonNull(invoke0());
+		} catch (Throwable e) {
+			System.err.println("Unexpected error occurred");
+			e.printStackTrace(System.err);
+			System.exit(2);
+			throw e;
+		}
 	}
 	
 	protected abstract Val invoke0();

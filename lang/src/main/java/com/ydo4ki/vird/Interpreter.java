@@ -76,13 +76,17 @@ public class Interpreter {
 			ValidatedValCall call = scope.preresolve(str);
 			if (call == null) {
 				try {
-					String num = str;
-					int radix = 10;
-					if (num.startsWith("0x")) {
-						num = num.substring(2);
-						radix = 16;
+					Blob b;
+					if (str.startsWith("0x")) {
+						String num = str.substring(2);
+						if (num.length() % 2 == 1)
+							throw new LangValidationException(expr.getLocation(), "Amount of digits must be even: " + expr);
+						BigInteger integer = new BigInteger(num, 16);
+						int bytes = num.length() / 2;
+						b = new Blob(integer, bytes);
+					} else {
+						b = new Blob(new BigInteger(str));
 					}
-					Blob b = new Blob(new BigInteger(num, radix));
 					return ValidatedValCall.promiseVal(b);
 				} catch (NumberFormatException e) {
 					throw new LangValidationException(expr.getLocation(), "Undefined symbol: " + expr);

@@ -117,7 +117,7 @@ public class Main {
 			}
 		});
 		
-		scope.push("+", plus);
+		scope.push("sum", sum);
 		scope.push(":", define);
 		scope.push("UNIT", Val.unit);
 		try {
@@ -167,7 +167,7 @@ public class Main {
 		public String toString() {
 			return "echo";
 		}
-	}, plus = new Val() {
+	}, sum = new Val() {
 		@Override
 		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
 			Expr[] args = Interpreter.args(f);

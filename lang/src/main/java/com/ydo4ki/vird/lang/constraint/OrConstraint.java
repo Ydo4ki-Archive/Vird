@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = false)
@@ -24,7 +25,11 @@ public final class OrConstraint implements Constraint {
 	
 	public static Constraint of(Set<Constraint> constraints) {
 		if (constraints.size() == 1) return constraints.stream().findAny().orElse(null);
-		return new OrConstraint(constraints);
+		return new OrConstraint(constraints.stream()
+				.flatMap(c -> c instanceof OrConstraint
+						? ((OrConstraint) c).constraints.stream()
+						: Stream.of(c))
+				.collect(Collectors.toSet()));
 	}
 	
 	@Override
@@ -64,7 +69,7 @@ public final class OrConstraint implements Constraint {
 			protected Val invoke0() {
 				try {
 						  // (get-random-echo) 				 // ((get-random-echo) "You're lucky!")
-					return actual.invoke().invocation(scope, f).invoke();
+					return actual.invoke().invocation(scope, f).invoke(); // I really don't like this, but I've got no idea how t avoid double-check here
 				} catch (LangValidationException e) {
 					System.err.println("Incorrect constraints");
 					throw new RuntimeException(e);

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -21,6 +22,13 @@ public final class Blob extends Val {
 	public Blob(BigInteger bigInteger) {
 		this.data = bigInteger.toByteArray();
 		this.bigInteger = bigInteger;
+	}
+	
+	public Blob(BigInteger bigInteger, int byteSize) {
+		this.data = new byte[byteSize];
+		this.bigInteger = bigInteger;
+		byte[] bytes = bigInteger.toByteArray();
+		System.arraycopy(bytes, 0, data, data.length - bytes.length, bytes.length);
 	}
 	
 	public BigInteger bigInteger() {
