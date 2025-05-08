@@ -1,9 +1,6 @@
 package com.ydo4ki.vird.base.lexer;
 
-import com.ydo4ki.vird.base.BracketsType;
-import com.ydo4ki.vird.base.Expr;
-import com.ydo4ki.vird.base.ExprList;
-import com.ydo4ki.vird.base.Symbol;
+import com.ydo4ki.vird.base.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -109,13 +106,13 @@ public class ExprOutput implements Iterable<Expr> {
 			List<Expr> elements = new ArrayList<>();
 			nextToken(); // skip opening bracket
 			
-			ExprList exprList = new ExprList(startToken.location, bracketsType, elements);
-			
 			while (!isEOF() && !isMatchingCloseBracket(bracketsType)) {
 				Expr next = parseExpr(bracketsType);
 				if (next == null) break;
 				elements.add(next);
 			}
+			
+			ExprList exprList = new ExprList(Location.between(startToken.location, currentToken.location), bracketsType, elements);
 			
 			nextToken(); // skip closing bracket
 			return exprList;

@@ -12,7 +12,6 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class Main {
 	
@@ -107,7 +106,7 @@ public class Main {
 			BigInteger sumOfKnownValues = BigInteger.ZERO;
 			List<ValidatedValCall> leftToEvaluate = new ArrayList<>();
 			
-			for (int i = 0; i < args.length; i++) {
+			for (int i = 0, Len = args.length; i < Len; i++) {
 				Expr arg = args[i];
 				ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), arg);
 				if (c.getConstraint() instanceof EqualityConstraint /* ?? */ && c.isPure()) {
@@ -147,7 +146,7 @@ public class Main {
 			String name = ((Symbol) args[0]).getValue();
 			ValidatedValCall value = Interpreter.evaluateValCall(caller, args[1]);
 			Scope scope = caller.getParent();
-			scope.predefine(name, value);
+			scope.predefine(f.getLocation(), name, value);
 			return new ValidatedValCall(value.getConstraint()) {
 				@Override
 				public Val invoke() {

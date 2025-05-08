@@ -123,7 +123,7 @@ public class Interpreter {
 			System.err.println("for:");
 			System.err.println(getErrorDescription((LangException) e.getCause(), filename, source));
 		}
-		e.printStackTrace();
+//		e.printStackTrace();
 		System.exit(code);
 		return new Error();
 	}

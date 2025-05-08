@@ -1,5 +1,6 @@
 package com.ydo4ki.vird.lang;
 
+import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,9 @@ public final class Scope extends Val {
 	private final Map<String, Val> definedSymbols = new HashMap<>();
 	private final Map<String, ValidatedValCall> preDefinedSymbols = new HashMap<>();
 	
-	public void predefine(String name, ValidatedValCall constraint) {
+	public void predefine(Location errLocation, String name, ValidatedValCall constraint) throws LangValidationException {
 		if (preDefinedSymbols.containsKey(name))
-			throw new IllegalArgumentException(name + " is already predefined");
+			throw new LangValidationException(errLocation, name + " is already predefined");
 		preDefinedSymbols.put(name, constraint);
 	}
 	public ValidatedValCall preresolve(String name) {
