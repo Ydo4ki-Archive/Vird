@@ -42,10 +42,11 @@ public final class Scope extends Val {
 	}
 	
 	
-	public void push(String name, Val value) {
+	public Scope push(String name, Val value) {
 		if (definedSymbols.containsKey(name))
 			throw new IllegalArgumentException(name + " is already defined");
 		definedSymbols.put(name, value);
 		preDefinedSymbols.put(name, ValidatedValCall.promiseVal(value));
+		return this;
 	}
 }

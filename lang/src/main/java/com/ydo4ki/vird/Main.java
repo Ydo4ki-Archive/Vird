@@ -4,15 +4,12 @@ import com.github.freva.asciitable.AsciiTable;
 import com.ydo4ki.vird.base.*;
 import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
-import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 import com.ydo4ki.vird.lang.constraint.OrConstraint;
+import com.ydo4ki.vird.lib.Functional;
 import lombok.NonNull;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
@@ -21,9 +18,9 @@ public class Main {
 		printPrjInfo(System.out);
 		File src = new File("vird/file.vird");
 		
-		Scope scope = new Scope(null);
+		Scope scope = Functional.scope;
 		
-		scope.push("echo", echo);
+		Val echo = scope.resolve("echo");
 		scope.push("get-echo", new Val() {
 			@Override
 			public ValidatedValCall invocation(Scope caller, ExprList.Round me) throws LangValidationException {
@@ -117,8 +114,6 @@ public class Main {
 			}
 		});
 		
-		scope.push("sum", sum);
-		scope.push(":", define);
 		scope.push("UNIT", Val.unit);
 		try {
 			System.exit(Interpreter.run(src, scope, true));
@@ -133,103 +128,6 @@ public class Main {
 			}
 		}
 	}
-	
-	static Val echo = new Val() {
-		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
-			if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
-			Expr arg = f.get(1);
-			if (arg instanceof Symbol) {
-				String v = ((Symbol) arg).getValue();
-				int lastChar = v.length() - 1;
-				if (v.length() >= 2 && v.charAt(0) == '"' && v.charAt(lastChar) == '"') {
-					String content = v.substring(1, lastChar);
-					return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
-						@Override
-						public Val invoke0() {
-							System.out.println(content);
-							return Val.unit;
-						}
-					};
-				}
-			}
-			ValidatedValCall call = Interpreter.evaluateValCall(caller, arg);
-			return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
-				@Override
-				public @NonNull Val invoke0() {
-					System.out.println(call.invoke());
-					return Val.unit;
-				}
-			};
-		}
-		
-		@Override
-		public String toString() {
-			return "echo";
-		}
-	}, sum = new Val() {
-		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
-			Expr[] args = Interpreter.args(f);
-			
-			if (args.length < 2)
-				throw new LangValidationException(f.getLocation(), "2 or more args expected");
-			
-			
-			BigInteger sumOfKnownValues = BigInteger.ZERO;
-			List<ValidatedValCall> leftToEvaluate = new ArrayList<>();
-			
-			for (int i = 0, Len = args.length; i < Len; i++) {
-				Expr arg = args[i];
-				ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), arg);
-				if (/*c.getConstraint() instanceof EqualityConstraint /* ?? * && I'm not sure if this is really unnecessary*/ c.isPure()) {
-					sumOfKnownValues = sumOfKnownValues.add(((Blob)c.invoke()).bigInteger());
-				} else {
-					if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))
-						throw new LangValidationException(f.getLocation(), "Number expected (" + i + ")");
-					leftToEvaluate.add(c);
-				}
-			}
-			final BigInteger sokv = sumOfKnownValues;
-			if (leftToEvaluate.isEmpty()) return ValidatedValCall.promiseVal(new Blob(sokv));
-			return new ValidatedValCall(new InstanceOfConstraint(Blob.class)) {
-				@Override
-				public Val invoke0() {
-					BigInteger sum = sokv;
-//					System.out.println("Runtime evaluating: " + leftToEvaluate);
-					for (ValidatedValCall arg : leftToEvaluate) {
-						Blob c = (Blob) arg.invoke();
-						sum = sum.add(c.bigInteger());
-					}
-					return new Blob(sum.toByteArray());
-				}
-			};
-		}
-	}, define = new Val() {
-		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
-			Expr[] args = Interpreter.args(f);
-			
-			if (args.length != 2)
-				throw new LangValidationException(f.getLocation(), "2 arguments expected");
-			
-			
-			// todo: computed names
-			if (!(args[0] instanceof Symbol))
-				throw new LangValidationException(args[0].getLocation(), "Symbol expected (" + args[0] + ")");
-			
-			String name = ((Symbol) args[0]).getValue();
-			ValidatedValCall value = Interpreter.evaluateValCall(caller, args[1]);
-			Scope scope = caller.getParent();
-			scope.predefine(f.getLocation(), name, value);
-			return new ValidatedValCall(value.getConstraint()) {
-				@Override
-				public Val invoke0() {
-					return scope.define(name);
-				}
-			};
-		}
-	};
 	
 	
 	public static void printPrjInfo(PrintStream out) throws IOException {

@@ -74,24 +74,23 @@ public class Interpreter {
 			// todo: make it flexible
 			final String str = ((Symbol) expr).getValue();
 			ValidatedValCall call = scope.preresolve(str);
-			if (call == null) {
-				try {
-					Blob b;
-					if (str.startsWith("0x")) {
-						String num = str.substring(2);
-						if (num.length() % 2 == 1)
-							throw new LangValidationException(expr.getLocation(), "Amount of digits must be even: " + expr);
-						BigInteger integer = new BigInteger(num, 16);
-						int bytes = num.length() / 2;
-						b = new Blob(integer, bytes);
-					} else {
-						b = new Blob(new BigInteger(str));
-					}
-					return ValidatedValCall.promiseVal(b);
-				} catch (NumberFormatException e) {
-					throw new LangValidationException(expr.getLocation(), "Undefined symbol: " + expr);
+			if (call == null) try {
+				Blob b;
+				if (str.startsWith("0x")) {
+					String num = str.substring(2);
+					if (num.length() % 2 == 1)
+						throw new LangValidationException(expr.getLocation(), "Amount of digits must be even: " + expr);
+					BigInteger integer = new BigInteger(num, 16);
+					int bytes = num.length() / 2;
+					b = new Blob(integer, bytes);
+				} else {
+					b = new Blob(new BigInteger(str));
 				}
+				return ValidatedValCall.promiseVal(b);
+			} catch (NumberFormatException e) {
+				throw new LangValidationException(expr.getLocation(), "Undefined symbol: " + expr);
 			}
+			
 			if (call.getConstraint() instanceof EqualityConstraint && call.isPure()) {
 				return call; // we already know the exact value
 			}
@@ -104,8 +103,6 @@ public class Interpreter {
 		}
 		throw new LangValidationException(expr.getLocation(), "Unknown val: " + expr);
 	}
-	
-	
 	
 	
 	public static Error handleLangException(LangException e, String source, File file, int code) {
