@@ -2,8 +2,9 @@
 ((get-echo-sym) "hello dynamically resolved function!")
 ((get-random-echo) "You're lucky!")
 
-//(: x (sum 2 3))
-//(echo (sum x 4))
+(: x (sum 2 3))
+(echo (sum x 4))
 
-(echo 0x0f0a)
+(echo (xor 0x0f0a 0xf00a))
+(echo (byteSize 0x000f0a))
 

@@ -16,6 +16,8 @@ import lombok.NonNull;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * @since 5/8/2025 11:40 PM
@@ -89,7 +91,53 @@ public final class Functional {
 		}
 	};
 	
-	public static final Val sum = new Val() {
+	public static final Val byteSize = new Val() {
+		@Override
+		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
+			Expr[] args = Interpreter.args(f);
+			
+			if (args.length != 1)
+				throw new LangValidationException(f.getLocation(), "1 argument expected");
+			
+			ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), args[0]);
+			if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))
+				throw new LangValidationException(f.getLocation(), "Blob expected");
+			if (c.isPure()) {
+				Blob b = (Blob) c.invoke();
+				Blob sizeOfB = Blob.ofInt(b.getData().length);
+				return new ValidatedValCall(new InstanceOfConstraint(Blob.class)) {
+					@Override
+					public Val invoke0() {
+						return sizeOfB;
+					}
+				};
+			}
+			
+			return new ValidatedValCall(new InstanceOfConstraint(Blob.class)) {
+				@Override
+				public Val invoke0() {
+					Blob b = (Blob) c.invoke();
+					return Blob.ofInt(b.getData().length);
+				}
+			};
+		}
+		
+		
+		@Override
+		public String toString() {
+			return "byteSize";
+		}
+	};
+	
+	private static final class BigIntOpVal extends Val {
+		private final BiFunction<BigInteger, BigInteger, BigInteger> operation;
+		private final BigInteger initial;
+		
+		private BigIntOpVal(BiFunction<BigInteger, BigInteger, BigInteger> operation, BigInteger initial) {
+			this.operation = operation;
+			this.initial = initial;
+		}
+		
 		@Override
 		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
 			Expr[] args = Interpreter.args(f);
@@ -97,16 +145,16 @@ public final class Functional {
 			if (args.length < 2)
 				throw new LangValidationException(f.getLocation(), "2 or more args expected");
 			
-			BigInteger sumOfKnownValues = BigInteger.ZERO;
+			BigInteger sumOfKnownValues = initial;
 			List<ValidatedValCall> leftToEvaluate = new ArrayList<>();
 			
 			for (int i = 0, Len = args.length; i < Len; i++) {
 				ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), args[i]);
+				if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))
+					throw new LangValidationException(f.getLocation(), "Number expected (" + i + ")");
 				if (c.isPure()) {
-					sumOfKnownValues = sumOfKnownValues.add(((Blob)c.invoke()).bigInteger());
+					sumOfKnownValues = operation.apply(sumOfKnownValues, ((Blob)c.invoke()).bigInteger());
 				} else {
-					if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))
-						throw new LangValidationException(f.getLocation(), "Number expected (" + i + ")");
 					leftToEvaluate.add(c);
 				}
 			}
@@ -116,17 +164,31 @@ public final class Functional {
 				@Override
 				public Val invoke0() {
 					BigInteger sum = sokv;
-					for (ValidatedValCall arg : leftToEvaluate) sum = sum.add(((Blob) arg.invoke()).bigInteger());
+					for (ValidatedValCall arg : leftToEvaluate) sum = operation.apply(sum, ((Blob) arg.invoke()).bigInteger());
 					return new Blob(sum.toByteArray());
 				}
 			};
 		}
-	};
+	}
+	
+	public static final Val sum = new BigIntOpVal(BigInteger::add, BigInteger.ZERO);
+	
+	public static final Val and = new BigIntOpVal(BigInteger::and, BigInteger.valueOf(-1L));
+	
+	public static final Val or = new BigIntOpVal(BigInteger::or, BigInteger.ZERO);
+	
+	public static final Val xor = new BigIntOpVal(BigInteger::xor, BigInteger.ZERO);
 	
 	
 	
 	public static final Scope scope = new Scope(null)
 			.push("sum", sum)
+			.push("and", and)
+			.push("or", or)
+			.push("xor", xor)
+			
+			.push("byteSize", byteSize)
+			
 			.push(":", define)
 			.push("echo", echo);
 			;

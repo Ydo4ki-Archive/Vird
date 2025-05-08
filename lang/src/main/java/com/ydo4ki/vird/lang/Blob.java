@@ -20,7 +20,14 @@ public final class Blob extends Val {
 	}
 	
 	public Blob(BigInteger bigInteger) {
-		this.data = bigInteger.toByteArray();
+		byte[] data = bigInteger.toByteArray();
+		while (data.length > 1 && data[0] == 0) {
+			int len = data.length;
+			byte[] d = new byte[len-1];
+			System.arraycopy(data, 1, d, 0, len-1);
+			data = d;
+		}
+		this.data = data;
 		this.bigInteger = bigInteger;
 	}
 	
@@ -28,7 +35,10 @@ public final class Blob extends Val {
 		this.data = new byte[byteSize];
 		this.bigInteger = bigInteger;
 		byte[] bytes = bigInteger.toByteArray();
-		System.arraycopy(bytes, 0, data, data.length - bytes.length, bytes.length);
+		int bytesLen = Math.min(data.length, bytes.length);
+		System.out.println(byteSize);
+		System.out.println(Arrays.toString(bytes) + " = " + bigInteger);
+		System.arraycopy(bytes, 0, data, data.length - bytesLen, bytesLen);
 	}
 	
 	public BigInteger bigInteger() {
