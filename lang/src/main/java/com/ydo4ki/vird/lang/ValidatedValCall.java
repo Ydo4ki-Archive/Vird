@@ -29,6 +29,15 @@ public abstract class ValidatedValCall {
 			public Val invoke() {
 				return val;
 			}
+			
+			@Override
+			public boolean isPure() {
+				return true;
+			}
 		};
+	}
+	
+	public boolean isPure() {
+		return false;
 	}
 }

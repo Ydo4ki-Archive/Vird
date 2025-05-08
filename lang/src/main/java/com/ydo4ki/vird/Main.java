@@ -109,7 +109,7 @@ public class Main {
 			for (int i = 0; i < args.length; i++) {
 				Expr arg = args[i];
 				ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), arg);
-				if (c.getConstraint() instanceof EqualityConstraint) {
+				if (c.getConstraint() instanceof EqualityConstraint /* ?? */ && c.isPure()) {
 					sumOfKnownValues += ((Blob)c.invoke()).toInt();
 				} else {
 					if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))
