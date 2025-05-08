@@ -5,6 +5,7 @@ import com.ydo4ki.vird.base.*;
 import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
+import com.ydo4ki.vird.lang.constraint.OrConstraint;
 import lombok.NonNull;
 
 import java.io.*;
@@ -12,6 +13,7 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
 	
@@ -60,7 +62,58 @@ public class Main {
 			
 			@Override
 			public String toString() {
-				return "get-echo";
+				return "get-echo-sym";
+			}
+		});
+		Val fakeEcho = new Val() {
+			@Override
+			public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
+				if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
+				Expr arg = f.get(1);
+				if (arg instanceof Symbol) {
+					String v = ((Symbol) arg).getValue();
+					int lastChar = v.length() - 1;
+					if (v.length() >= 2 && v.charAt(0) == '"' && v.charAt(lastChar) == '"') {
+						String content = v.substring(1, lastChar);
+						return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
+							@Override
+							public Val invoke0() {
+								System.out.println("troll");
+								return Val.unit;
+							}
+						};
+					}
+				}
+				ValidatedValCall call = Interpreter.evaluateValCall(caller, arg);
+				return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
+					@Override
+					public @NonNull Val invoke0() {
+						System.out.println("troll");
+						return Val.unit;
+					}
+				};
+			}
+			
+			@Override
+			public String toString() {
+				return "fakeEcho";
+			}
+		};
+		scope.push("get-random-echo", new Val() {
+			@Override
+			public ValidatedValCall invocation(Scope caller, ExprList.Round me) throws LangValidationException {
+				if (me.size() != 1) throw new LangValidationException(me.getLocation(), "0 arguments expected");
+				return new ValidatedValCall(OrConstraint.of(new EqualityConstraint(echo), new EqualityConstraint(fakeEcho))) {
+					@Override
+					public Val invoke0() {
+						return ThreadLocalRandom.current().nextBoolean() ? echo : fakeEcho;
+					}
+				};
+			}
+			
+			@Override
+			public String toString() {
+				return "get-random-echo";
 			}
 		});
 		
@@ -129,7 +182,7 @@ public class Main {
 			for (int i = 0, Len = args.length; i < Len; i++) {
 				Expr arg = args[i];
 				ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), arg);
-				if (c.getConstraint() instanceof EqualityConstraint /* ?? */ && c.isPure()) {
+				if (/*c.getConstraint() instanceof EqualityConstraint /* ?? * && I'm not sure if this is really unnecessary*/ c.isPure()) {
 					sumOfKnownValues = sumOfKnownValues.add(((Blob)c.invoke()).bigInteger());
 				} else {
 					if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))

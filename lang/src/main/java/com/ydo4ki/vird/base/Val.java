@@ -13,5 +13,10 @@ public class Val {
 		throw new LangValidationException(me.getLocation(), "Not callable (" + this.getClass().getSimpleName() + " «" + this + "»)");
 	}
 	
-	public static final Val unit = new Val();
+	public static final Val unit = new Val() {
+		@Override
+		public String toString() {
+			return "UNIT";
+		}
+	};
 }

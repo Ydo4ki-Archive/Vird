@@ -65,14 +65,14 @@ public class Interpreter {
 	}
 	
 	// honestly at this point I don't really feel understanding how does this work
-	public static ValidatedValCall evaluateValCall(Scope scope, Expr val) throws LangValidationException {
-		if (val instanceof ExprList.Round) {
-			ExprList.Round f = (ExprList.Round) val;
+	public static ValidatedValCall evaluateValCall(Scope scope, Expr expr) throws LangValidationException {
+		if (expr instanceof ExprList.Round) {
+			ExprList.Round f = (ExprList.Round) expr;
 			return f.get(0).invocation(scope, f);
 		}
-		if (val instanceof Symbol) {
+		if (expr instanceof Symbol) {
 			// todo: make it flexible
-			final String str = ((Symbol) val).getValue();
+			final String str = ((Symbol) expr).getValue();
 			ValidatedValCall call = scope.preresolve(str);
 			if (call == null) {
 				try {
@@ -85,10 +85,10 @@ public class Interpreter {
 					Blob b = new Blob(new BigInteger(num, radix));
 					return ValidatedValCall.promiseVal(b);
 				} catch (NumberFormatException e) {
-					throw new LangValidationException(val.getLocation(), "Undefined symbol: " + val);
+					throw new LangValidationException(expr.getLocation(), "Undefined symbol: " + expr);
 				}
 			}
-			if (/*call.getConstraint() instanceof EqualityConstraint && I'm not sure if this is really unnecessary*/ call.isPure()) {
+			if (call.getConstraint() instanceof EqualityConstraint && call.isPure()) {
 				return call; // we already know the exact value
 			}
 			return new ValidatedValCall(call.getConstraint()) {
@@ -98,7 +98,7 @@ public class Interpreter {
 				}
 			};
 		}
-		throw new LangValidationException(val.getLocation(), "Unknown val: " + val);
+		throw new LangValidationException(expr.getLocation(), "Unknown val: " + expr);
 	}
 	
 	

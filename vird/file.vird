@@ -1,5 +1,10 @@
 ((get-echo) "hello world!")
 ((get-echo-sym) "hello dynamically resolved function!")
+(echo (get-random-echo))
+((get-random-echo) "You're lucky!")
+((get-random-echo) "You're lucky!")
+((get-random-echo) "You're lucky!")
+((get-random-echo) "You're lucky!")
 
 (: x (+ 2 3))
 (echo (+ x 4))

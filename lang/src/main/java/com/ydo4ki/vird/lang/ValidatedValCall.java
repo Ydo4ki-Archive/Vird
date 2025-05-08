@@ -20,7 +20,9 @@ public abstract class ValidatedValCall {
 	protected final Constraint constraint;
 	
 	public final Val invoke() {
-		return Objects.requireNonNull(invoke0());
+		Val ret = Objects.requireNonNull(invoke0());
+//		System.out.println(ret + " is " + constraint);
+		return ret;
 	}
 	
 	protected abstract Val invoke0();
@@ -61,7 +63,7 @@ public abstract class ValidatedValCall {
 	
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + "{" +
+		return this.getClass().getTypeName() + "{" +
 				"constraint=" + constraint +
 				'}';
 	}
