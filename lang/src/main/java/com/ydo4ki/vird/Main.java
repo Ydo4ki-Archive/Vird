@@ -43,6 +43,26 @@ public class Main {
 				return "get-echo";
 			}
 		});
+		scope.push("get-echo-sym", new Val() {
+			@Override
+			public ValidatedValCall invocation(Scope caller, ExprList me) throws LangValidationException {
+				if (me.size() != 1) throw new LangValidationException(me.getLocation(), "0 arguments expected");
+				Symbol echoSym = new Symbol(me.getLocation(), "echo");
+				return new ValidatedValCall(new EqualityConstraint(echoSym)) {
+					@Override
+					public Val invoke0() {
+						System.out.println("# get-echo-sym is called!");
+						
+						return echoSym;
+					}
+				};
+			}
+			
+			@Override
+			public String toString() {
+				return "get-echo";
+			}
+		});
 		
 		scope.push("+", plus);
 		scope.push(":", define);

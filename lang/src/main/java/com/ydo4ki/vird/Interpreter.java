@@ -76,9 +76,7 @@ public class Interpreter {
 			}
 			
 			Expr functionId = f.get(0);
-			ValidatedValCall function = evaluateValCall(scope, functionId);
-			
-			return function.getInvocationConstraint(new Scope(scope), f);
+			return functionId.invocation(scope, f);
 		}
 		if (val instanceof Symbol) {
 			// todo: make it flexible

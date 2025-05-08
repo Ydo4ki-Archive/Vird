@@ -1,4 +1,5 @@
 ((get-echo) "hello world!")
+((get-echo-sym) "hello dynamically resolved function!")
 
 (: x (+ 2 3))
 (echo (+ x 4))

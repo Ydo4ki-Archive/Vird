@@ -1,5 +1,9 @@
 package com.ydo4ki.vird.base;
 
+import com.ydo4ki.vird.Interpreter;
+import com.ydo4ki.vird.lang.LangValidationException;
+import com.ydo4ki.vird.lang.Scope;
+import com.ydo4ki.vird.lang.ValidatedValCall;
 import lombok.Getter;
 
 import java.util.*;
@@ -20,6 +24,7 @@ public final class ExprList extends Expr implements Iterable<Expr> {
 		this.bracketsType = bracketsType;
 		this.elements = elements;
 	}
+	
 	
 	public List<Expr> getElements() {
 		return new ArrayList<>(elements);

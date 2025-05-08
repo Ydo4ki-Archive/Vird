@@ -14,7 +14,6 @@ import java.util.Objects;
  * @since 5/7/2025 8:01 PM
  * @author Sulphuris
  */
-
 @RequiredArgsConstructor
 public abstract class ValidatedValCall {
 	@Getter
