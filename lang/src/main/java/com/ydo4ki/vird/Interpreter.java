@@ -4,7 +4,6 @@ import com.ydo4ki.vird.base.*;
 import com.ydo4ki.vird.base.lexer.ExprOutput;
 import com.ydo4ki.vird.base.lexer.TokenOutput;
 import com.ydo4ki.vird.lang.*;
-import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 
 import java.io.File;
@@ -104,7 +103,7 @@ public class Interpreter {
 			}
 			return new ValidatedValCall(call.getConstraint()) {
 				@Override
-				public Val invoke() {
+				public Val invoke0() {
 					return scope.resolve(str);
 				}
 			};

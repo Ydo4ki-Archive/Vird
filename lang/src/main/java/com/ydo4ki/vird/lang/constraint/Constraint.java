@@ -33,7 +33,7 @@ public interface Constraint {
 	
 	/** if this is a function (guaranteed), it returns constraint for result of function based on arguments
 	 (or throws LangValidationException if function is not a function or following arguments are inappropriate) */
-	ValidatedValCall getInvocationConstraint(Scope scope, ExprList args) throws LangValidationException;
+	ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException;
 	
 	static boolean areEqual(Scope scope, Constraint a, Constraint b) {
 		return a.implies(scope, b) && b.implies(scope, a);

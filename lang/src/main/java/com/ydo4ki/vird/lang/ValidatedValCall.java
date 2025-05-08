@@ -1,8 +1,6 @@
 package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.vird.base.Expr;
 import com.ydo4ki.vird.base.ExprList;
-import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
@@ -22,14 +20,17 @@ public abstract class ValidatedValCall {
 	@Getter
 	protected final Constraint constraint;
 	
-	@NonNull
-	public abstract Val invoke();
+	public final Val invoke() {
+		return Objects.requireNonNull(invoke0());
+	}
+	
+	protected abstract Val invoke0();
 	
 	public static ValidatedValCall promiseVal(Val val) {
 		Objects.requireNonNull(val);
 		return new ValidatedValCall(new EqualityConstraint(val)) {
 			@Override
-			public Val invoke() {
+			public Val invoke0() {
 				return val;
 			}
 			
@@ -44,15 +45,15 @@ public abstract class ValidatedValCall {
 		return false;
 	}
 	
-	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList args) throws LangValidationException {
-		ValidatedValCall cCall = constraint.getInvocationConstraint(scope, args);
+	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException {
+		ValidatedValCall cCall = constraint.getInvocationConstraint(scope, f);
 		if (cCall.isPure())
 			return cCall;
 		
 		// basically "apply side effects"
 		return new ValidatedValCall(cCall.getConstraint()) {
 			@Override
-			public @NonNull Val invoke() {
+			public @NonNull Val invoke0() {
 				ValidatedValCall.this.invoke(); // basically "apply side effects"
 				return cCall.invoke();
 			}

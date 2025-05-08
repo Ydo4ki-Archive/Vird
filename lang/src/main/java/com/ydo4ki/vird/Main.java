@@ -28,7 +28,7 @@ public class Main {
 				if (me.size() != 1) throw new LangValidationException(me.getLocation(), "0 arguments expected");
 				return new ValidatedValCall(new EqualityConstraint(echo)) {
 					@Override
-					public Val invoke() {
+					public Val invoke0() {
 						// !!! side effect !!!
 						// ! This is why this vvc is not marked as pure !
 						System.out.println("# get-echo is called!");
@@ -73,7 +73,7 @@ public class Main {
 					String content = v.substring(1, lastChar);
 					return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
 						@Override
-						public Val invoke() {
+						public Val invoke0() {
 							System.out.println(content);
 							return Val.unit;
 						}
@@ -83,7 +83,7 @@ public class Main {
 			ValidatedValCall call = Interpreter.evaluateValCall(caller, arg);
 			return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
 				@Override
-				public @NonNull Val invoke() {
+				public @NonNull Val invoke0() {
 					System.out.println(call.invoke());
 					return Val.unit;
 				}
@@ -121,7 +121,7 @@ public class Main {
 			if (leftToEvaluate.isEmpty()) return ValidatedValCall.promiseVal(new Blob(sokv));
 			return new ValidatedValCall(new InstanceOfConstraint(Blob.class)) {
 				@Override
-				public Val invoke() {
+				public Val invoke0() {
 					BigInteger sum = sokv;
 //					System.out.println("Runtime evaluating: " + leftToEvaluate);
 					for (ValidatedValCall arg : leftToEvaluate) {
@@ -142,14 +142,16 @@ public class Main {
 			
 			
 			// todo: computed names
-			if (!(args[0] instanceof Symbol)) throw new LangValidationException(args[0].getLocation(), "Symbol expected (" + args[0] + ")");
+			if (!(args[0] instanceof Symbol))
+				throw new LangValidationException(args[0].getLocation(), "Symbol expected (" + args[0] + ")");
+			
 			String name = ((Symbol) args[0]).getValue();
 			ValidatedValCall value = Interpreter.evaluateValCall(caller, args[1]);
 			Scope scope = caller.getParent();
 			scope.predefine(f.getLocation(), name, value);
 			return new ValidatedValCall(value.getConstraint()) {
 				@Override
-				public Val invoke() {
+				public Val invoke0() {
 					return scope.define(name);
 				}
 			};

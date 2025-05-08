@@ -22,12 +22,9 @@ public final class InstanceOfConstraint implements Constraint {
 	
 	@Override
 	public boolean implies(Scope scope, Constraint other) {
-		if (other instanceof EqualityConstraint) {
-			return targetClass.isInstance(((EqualityConstraint) other).getExpected());
-		}
-		if (other instanceof InstanceOfConstraint) {
+		if (other instanceof InstanceOfConstraint)
 			return ((InstanceOfConstraint) other).targetClass.isAssignableFrom(this.targetClass);
-		}
+		
 		return false;
 	}
 	
