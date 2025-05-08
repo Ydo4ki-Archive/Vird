@@ -21,8 +21,8 @@ public class Main {
 		
 		Scope scope = new Scope(null);
 		
-		scope.define("echo", echo);
-		scope.define("get-echo", new Val() {
+		scope.push("echo", echo);
+		scope.push("get-echo", new Val() {
 			@Override
 			public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
 				if (args.length != 0) throw new LangValidationException(location, "0 arguments expected");
@@ -38,9 +38,9 @@ public class Main {
 			}
 		});
 		
-		scope.define("+", plus);
-		scope.define(":", define);
-		scope.define("UNIT", Val.unit);
+		scope.push("+", plus);
+		scope.push(":", define);
+		scope.push("UNIT", Val.unit);
 		try {
 			System.exit(Interpreter.run(src, scope, true));
 		} catch (LangException e) {
@@ -143,9 +143,7 @@ public class Main {
 			return new ValidatedValCall(value.getConstraint()) {
 				@Override
 				public Val invoke() {
-					Val val = value.invoke();
-					scope.define(name, val);
-					return val;
+					return scope.define(name);
 				}
 			};
 		}

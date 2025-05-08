@@ -1,7 +1,6 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.base.Val;
-import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -29,16 +28,23 @@ public final class Scope extends Val {
 		return dereferenced != null || parent == null ? dereferenced : parent.preresolve(name);
 	}
 	
-	
-	public void define(String name, Val value) {
-		if (definedSymbols.containsKey(name))
-			throw new IllegalArgumentException(name + " is already defined");
-		definedSymbols.put(name, value);
-		preDefinedSymbols.put(name, ValidatedValCall.promiseVal(value));
+	public Val define(String name) {
+		ValidatedValCall call = preDefinedSymbols.get(name);
+		Val v = call.invoke();
+		definedSymbols.put(name, v);
+		return v;
 	}
 	
 	public Val resolve(String name) {
 		Val dereferenced = definedSymbols.get(name);
 		return dereferenced != null || parent == null ? dereferenced : parent.resolve(name);
+	}
+	
+	
+	public void push(String name, Val value) {
+		if (definedSymbols.containsKey(name))
+			throw new IllegalArgumentException(name + " is already defined");
+		definedSymbols.put(name, value);
+		preDefinedSymbols.put(name, ValidatedValCall.promiseVal(value));
 	}
 }
