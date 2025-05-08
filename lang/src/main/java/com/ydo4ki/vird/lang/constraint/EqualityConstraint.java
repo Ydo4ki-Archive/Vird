@@ -33,7 +33,7 @@ public final class EqualityConstraint implements Constraint {
 	}
 	
 	@Override
-	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException {
+	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList.Round f) throws LangValidationException {
 		return expected.invocation(scope, f);
 	}
 	

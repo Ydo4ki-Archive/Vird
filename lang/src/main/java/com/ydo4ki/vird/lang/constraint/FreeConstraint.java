@@ -27,7 +27,7 @@ public final class FreeConstraint implements Constraint {
 	}
 	
 	@Override
-	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException {
+	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList.Round f) throws LangValidationException {
 		throw new LangValidationException(f.getLocation(), "Not callable");
 	}
 	

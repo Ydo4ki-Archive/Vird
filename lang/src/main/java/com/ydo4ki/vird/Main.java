@@ -24,7 +24,7 @@ public class Main {
 		scope.push("echo", echo);
 		scope.push("get-echo", new Val() {
 			@Override
-			public ValidatedValCall invocation(Scope caller, ExprList me) throws LangValidationException {
+			public ValidatedValCall invocation(Scope caller, ExprList.Round me) throws LangValidationException {
 				if (me.size() != 1) throw new LangValidationException(me.getLocation(), "0 arguments expected");
 				return new ValidatedValCall(new EqualityConstraint(echo)) {
 					@Override
@@ -45,7 +45,7 @@ public class Main {
 		});
 		scope.push("get-echo-sym", new Val() {
 			@Override
-			public ValidatedValCall invocation(Scope caller, ExprList me) throws LangValidationException {
+			public ValidatedValCall invocation(Scope caller, ExprList.Round me) throws LangValidationException {
 				if (me.size() != 1) throw new LangValidationException(me.getLocation(), "0 arguments expected");
 				Symbol echoSym = new Symbol(me.getLocation(), "echo");
 				return new ValidatedValCall(new EqualityConstraint(echoSym)) {
@@ -83,7 +83,7 @@ public class Main {
 	
 	static Val echo = new Val() {
 		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
 			if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
 			Expr arg = f.get(1);
 			if (arg instanceof Symbol) {
@@ -116,7 +116,7 @@ public class Main {
 		}
 	}, plus = new Val() {
 		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
 			Expr[] args = Interpreter.args(f);
 			
 			if (args.length < 2)
@@ -154,7 +154,7 @@ public class Main {
 		}
 	}, define = new Val() {
 		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
 			Expr[] args = Interpreter.args(f);
 			
 			if (args.length != 2)

@@ -66,14 +66,8 @@ public class Interpreter {
 	
 	// honestly at this point I don't really feel understanding how does this work
 	public static ValidatedValCall evaluateValCall(Scope scope, Expr val) throws LangValidationException {
-		if (val instanceof ExprList) {
-			ExprList f = (ExprList) val;
-			if (f.getBracketsType() == BracketsType.BRACES) {
-				throw new UnsupportedOperationException(f.getBracketsType().name());
-			}
-			if (f.getBracketsType() == BracketsType.SQUARE) {
-				throw new UnsupportedOperationException(f.getBracketsType().name());
-			}
+		if (val instanceof ExprList.Round) {
+			ExprList.Round f = (ExprList.Round) val;
 			
 			Expr functionId = f.get(0);
 			return functionId.invocation(scope, f);

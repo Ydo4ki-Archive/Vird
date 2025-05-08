@@ -112,7 +112,7 @@ public class ExprOutput implements Iterable<Expr> {
 				elements.add(next);
 			}
 			
-			ExprList exprList = new ExprList(Location.between(startToken.location, currentToken.location), bracketsType, elements);
+			ExprList exprList = ExprList.of(Location.between(startToken.location, currentToken.location), bracketsType, elements);
 			
 			nextToken(); // skip closing bracket
 			return exprList;
