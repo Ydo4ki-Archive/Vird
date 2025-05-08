@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lang.constraint;
 
 import com.ydo4ki.vird.base.Expr;
+import com.ydo4ki.vird.base.ExprList;
 import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.LangValidationException;
@@ -32,8 +33,8 @@ public final class EqualityConstraint implements Constraint {
 	}
 	
 	@Override
-	public ValidatedValCall getInvocationConstraint(Location location, Scope scope, Expr[] args) throws LangValidationException {
-		return expected.invocation(location, scope, args);
+	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList args) throws LangValidationException {
+		return expected.invocation(scope, args);
 	}
 	
 	@Override

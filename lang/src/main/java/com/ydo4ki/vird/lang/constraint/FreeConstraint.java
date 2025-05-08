@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lang.constraint;
 
 import com.ydo4ki.vird.base.Expr;
+import com.ydo4ki.vird.base.ExprList;
 import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
@@ -23,8 +24,8 @@ public final class FreeConstraint implements Constraint {
 	}
 	
 	@Override
-	public ValidatedValCall getInvocationConstraint(Location location, Scope scope, Expr[] args) throws LangValidationException {
-		throw new LangValidationException(location, "Not callable");
+	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException {
+		throw new LangValidationException(f.getLocation(), "Not callable");
 	}
 	
 	@Override

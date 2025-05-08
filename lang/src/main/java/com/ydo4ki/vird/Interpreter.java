@@ -55,6 +55,15 @@ public class Interpreter {
 		return 0;
 	}
 	
+	public static Expr[] args(ExprList f) {
+		final Expr[] args;
+		{
+			List<Expr> args0 = f.getElements();
+			args0.remove(0);
+			args = args0.toArray(new Expr[0]);
+		}
+		return args;
+	}
 	
 	// honestly at this point I don't really feel understanding how does this work
 	public static ValidatedValCall evaluateValCall(Scope scope, Expr val) throws LangValidationException {
@@ -70,13 +79,7 @@ public class Interpreter {
 			Expr functionId = f.get(0);
 			ValidatedValCall function = evaluateValCall(scope, functionId);
 			
-			final Expr[] args;
-			{
-				List<Expr> args0 = f.getElements();
-				args0.remove(0);
-				args = args0.toArray(new Expr[0]);
-			}
-			return function.getInvocationConstraint(f.getLocation(), new Scope(scope), args);
+			return function.getInvocationConstraint(new Scope(scope), f);
 		}
 		if (val instanceof Symbol) {
 			// todo: make it flexible

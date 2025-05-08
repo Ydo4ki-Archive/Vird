@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.base.Expr;
+import com.ydo4ki.vird.base.ExprList;
 import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.constraint.Constraint;
@@ -43,8 +44,8 @@ public abstract class ValidatedValCall {
 		return false;
 	}
 	
-	public ValidatedValCall getInvocationConstraint(Location location, Scope scope, Expr[] args) throws LangValidationException {
-		ValidatedValCall cCall = constraint.getInvocationConstraint(location, scope, args);
+	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList args) throws LangValidationException {
+		ValidatedValCall cCall = constraint.getInvocationConstraint(scope, args);
 		if (cCall.isPure())
 			return cCall;
 		

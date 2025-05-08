@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lang.constraint;
 
 import com.ydo4ki.vird.base.Expr;
+import com.ydo4ki.vird.base.ExprList;
 import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.LangValidationException;
@@ -32,7 +33,7 @@ public interface Constraint {
 	
 	/** if this is a function (guaranteed), it returns constraint for result of function based on arguments
 	 (or throws LangValidationException if function is not a function or following arguments are inappropriate) */
-	ValidatedValCall getInvocationConstraint(Location location, Scope scope, Expr[] args) throws LangValidationException;
+	ValidatedValCall getInvocationConstraint(Scope scope, ExprList args) throws LangValidationException;
 	
 	static boolean areEqual(Scope scope, Constraint a, Constraint b) {
 		return a.implies(scope, b) && b.implies(scope, a);

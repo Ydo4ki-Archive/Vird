@@ -25,8 +25,8 @@ public class Main {
 		scope.push("echo", echo);
 		scope.push("get-echo", new Val() {
 			@Override
-			public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
-				if (args.length != 0) throw new LangValidationException(location, "0 arguments expected");
+			public ValidatedValCall invocation(Scope caller, ExprList me) throws LangValidationException {
+				if (me.size() != 1) throw new LangValidationException(me.getLocation(), "0 arguments expected");
 				return new ValidatedValCall(new EqualityConstraint(echo)) {
 					@Override
 					public Val invoke() {
@@ -64,9 +64,9 @@ public class Main {
 	
 	static Val echo = new Val() {
 		@Override
-		public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
-			if (args.length != 1) throw new LangValidationException(location, "1 argument expected");
-			Expr arg = args[0];
+		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+			if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
+			Expr arg = f.get(1);
 			if (arg instanceof Symbol) {
 				String v = ((Symbol) arg).getValue();
 				int lastChar = v.length() - 1;
@@ -97,9 +97,13 @@ public class Main {
 		}
 	}, plus = new Val() {
 		@Override
-		public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
-			Function<String, LangValidationException> ex = (msg) -> new LangValidationException(location, msg);
-			if (args.length < 2) throw ex.apply("2 or more args expected");
+		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+			Expr[] args = Interpreter.args(f);
+			
+			if (args.length < 2)
+				throw new LangValidationException(f.getLocation(), "2 or more args expected");
+			
+			
 			BigInteger sumOfKnownValues = BigInteger.ZERO;
 			List<ValidatedValCall> leftToEvaluate = new ArrayList<>();
 			
@@ -110,7 +114,7 @@ public class Main {
 					sumOfKnownValues = sumOfKnownValues.add(((Blob)c.invoke()).bigInteger());
 				} else {
 					if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))
-						throw new LangValidationException(location, "Number expected (" + i + ")");
+						throw new LangValidationException(f.getLocation(), "Number expected (" + i + ")");
 					leftToEvaluate.add(c);
 				}
 			}
@@ -131,8 +135,13 @@ public class Main {
 		}
 	}, define = new Val() {
 		@Override
-		public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
-			if (args.length != 2) throw new LangValidationException(location, "2 arguments expected");
+		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+			Expr[] args = Interpreter.args(f);
+			
+			if (args.length != 2)
+				throw new LangValidationException(f.getLocation(), "2 arguments expected");
+			
+			
 			// todo: computed names
 			if (!(args[0] instanceof Symbol)) throw new LangValidationException(args[0].getLocation(), "Symbol expected (" + args[0] + ")");
 			String name = ((Symbol) args[0]).getValue();
