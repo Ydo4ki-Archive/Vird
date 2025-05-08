@@ -9,6 +9,7 @@ import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,12 +80,17 @@ public class Interpreter {
 		}
 		if (val instanceof Symbol) {
 			// todo: make it flexible
-			String str = ((Symbol) val).getValue();
+			final String str = ((Symbol) val).getValue();
 			ValidatedValCall call = scope.preresolve(str);
 			if (call == null) {
 				try {
-					int v = Integer.parseInt(str);
-					Blob b = Blob.ofInt(v);
+					String num = str;
+					int radix = 10;
+					if (num.startsWith("0x")) {
+						num = num.substring(2);
+						radix = 16;
+					}
+					Blob b = new Blob(new BigInteger(num, radix));
 					return ValidatedValCall.promiseVal(b);
 				} catch (NumberFormatException e) {
 					throw new LangValidationException(val.getLocation(), "Undefined symbol: " + val);

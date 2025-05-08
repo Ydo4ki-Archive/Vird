@@ -5,22 +5,31 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigInteger;
+
 @EqualsAndHashCode(callSuper = false)
-@RequiredArgsConstructor
 @Getter
 public final class Blob extends Val {
 	private final byte[] data;
+	private BigInteger bigInteger = null;
 	
-	public static Blob ofInt(int value) {
-		return new Blob(new byte[]{
-				(byte) (value >>> 24),
-				(byte) (value >>> 16),
-				(byte) (value >>> 8),
-				(byte) value});
+	public Blob(byte[] data) {
+		this.data = data;
+	}
+	
+	public Blob(BigInteger bigInteger) {
+		this.data = bigInteger.toByteArray();
+		this.bigInteger = bigInteger;
+	}
+	
+	public BigInteger bigInteger() {
+		if (bigInteger == null) bigInteger = new BigInteger(data);
+		return bigInteger;
 	}
 	
 	@Override
 	public String toString() {
+		System.err.println(new BigInteger(data));
 		return "0x" + bytesToHex(data);
 	}
 	
@@ -33,6 +42,15 @@ public final class Blob extends Val {
 			hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
 		}
 		return new String(hexChars);
+	}
+	
+	
+	public static Blob ofInt(int value) {
+		return new Blob(new byte[]{
+				(byte) (value >>> 24),
+				(byte) (value >>> 16),
+				(byte) (value >>> 8),
+				(byte) value});
 	}
 	
 	public int toInt() {

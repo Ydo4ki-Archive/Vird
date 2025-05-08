@@ -8,6 +8,7 @@ import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 import lombok.NonNull;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,6 @@ public class Main {
 			public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
 				if (args.length != 0) throw new LangValidationException(location, "0 arguments expected");
 				return new ValidatedValCall(new EqualityConstraint(echo)) {
-					// todo: this is not called despite function being marked as non-pure
 					@Override
 					public Val invoke() {
 						// !!! side effect !!!
@@ -65,44 +65,30 @@ public class Main {
 	static Val echo = new Val() {
 		@Override
 		public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
-			String error = "1 argument expected";
-			if (args.length == 1) {
-				Expr arg = args[0];
-				if (arg instanceof Symbol) {
-					String v = ((Symbol) arg).getValue();
-					int lastChar = v.length() - 1;
-					if (v.length() >= 2 && v.charAt(0) == '"' && v.charAt(lastChar) == '"') {
-						String content = v.substring(1, lastChar);
-						return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
-							@Override
-							public Val invoke() {
-								System.out.println(content);
-								return Val.unit;
-							}
-						};
-					} else {
-						ValidatedValCall call = Interpreter.evaluateValCall(caller, arg);
-						return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
-							@Override
-							public @NonNull Val invoke() {
-								System.out.println(call.invoke());
-								return Val.unit;
-							}
-						};
-					}
-				} else if (arg instanceof ExprList
-						&& ((ExprList) arg).getBracketsType() == BracketsType.ROUND) {
-					ValidatedValCall call = Interpreter.evaluateValCall(caller, arg);
+			if (args.length != 1) throw new LangValidationException(location, "1 argument expected");
+			Expr arg = args[0];
+			if (arg instanceof Symbol) {
+				String v = ((Symbol) arg).getValue();
+				int lastChar = v.length() - 1;
+				if (v.length() >= 2 && v.charAt(0) == '"' && v.charAt(lastChar) == '"') {
+					String content = v.substring(1, lastChar);
 					return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
 						@Override
 						public Val invoke() {
-							System.out.println(call.invoke());
+							System.out.println(content);
 							return Val.unit;
 						}
 					};
 				}
 			}
-			throw new LangValidationException(location, error);
+			ValidatedValCall call = Interpreter.evaluateValCall(caller, arg);
+			return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
+				@Override
+				public @NonNull Val invoke() {
+					System.out.println(call.invoke());
+					return Val.unit;
+				}
+			};
 		}
 		
 		@Override
@@ -114,30 +100,30 @@ public class Main {
 		public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
 			Function<String, LangValidationException> ex = (msg) -> new LangValidationException(location, msg);
 			if (args.length < 2) throw ex.apply("2 or more args expected");
-			int sumOfKnownValues = 0;
+			BigInteger sumOfKnownValues = BigInteger.ZERO;
 			List<ValidatedValCall> leftToEvaluate = new ArrayList<>();
 			
 			for (int i = 0; i < args.length; i++) {
 				Expr arg = args[i];
 				ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), arg);
 				if (c.getConstraint() instanceof EqualityConstraint /* ?? */ && c.isPure()) {
-					sumOfKnownValues += ((Blob)c.invoke()).toInt();
+					sumOfKnownValues = sumOfKnownValues.add(((Blob)c.invoke()).bigInteger());
 				} else {
 					if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))
-						ex.apply("Number expected (" + i + ")");
+						throw new LangValidationException(location, "Number expected (" + i + ")");
 					leftToEvaluate.add(c);
 				}
 			}
-			final int sokv = sumOfKnownValues;
+			final BigInteger sokv = sumOfKnownValues;
 			return new ValidatedValCall(new InstanceOfConstraint(Blob.class)) {
 				@Override
 				public Val invoke() {
-					int sum = sokv;
+					BigInteger sum = sokv;
 					for (ValidatedValCall arg : leftToEvaluate) {
 						Blob c = (Blob) arg.invoke();
-						sum += c.toInt();
+						sum = sum.add(c.bigInteger());
 					}
-					return Blob.ofInt(sum);
+					return new Blob(sum.toByteArray());
 				}
 			};
 		}

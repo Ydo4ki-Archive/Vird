@@ -26,8 +26,8 @@ Pre-releases are not backwards compatible (unlike releases)
 
 Floors of abstraction (contingently, just notes for me)
 
-| Floor      | Stable | Constructions                                                 |
-|------------|--------|---------------------------------------------------------------|
-| Syntax     | +      | `Symbol` \| `ExprList(() \| {} \| [])`                        |
-| Core       | ~      | `Val` \| `Constraint` (All the syntax constructions are Vals) |
-| Functional | -      | Pre-defined extern functions                                  |
+| Floor             | Stable | Constructions                                                 |
+|-------------------|--------|---------------------------------------------------------------|
+| Syntax (.base)    | +      | `Symbol` \| `ExprList(() \| {} \| [])`                        |
+| Core (.lang)      | ~      | `Val` \| `Constraint` (All the syntax constructions are Vals) |
+| Functional (.lib) | -      | Pre-defined extern functions                                  |
