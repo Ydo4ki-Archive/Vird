@@ -20,11 +20,8 @@ public class LangException extends Exception {
 	}
 	
 	public LangException(Location location, String message, Throwable cause) {
-		super(message, cause);
-		this.location = location;
-		this.rawMessage = message;
+		this(location, message, cause, message);
 	}
-	
 	
 	public LangException(Location location, String message, String rawMessage) {
 		super(message);

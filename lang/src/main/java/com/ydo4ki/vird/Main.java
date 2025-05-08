@@ -3,12 +3,9 @@ package com.ydo4ki.vird;
 import com.github.freva.asciitable.AsciiTable;
 import com.ydo4ki.vird.base.*;
 import com.ydo4ki.vird.lang.*;
-import com.ydo4ki.vird.base.lexer.ExprOutput;
-import com.ydo4ki.vird.base.lexer.TokenOutput;
-import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
-import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
+import lombok.NonNull;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -22,8 +19,7 @@ public class Main {
 		printPrjInfo(System.out);
 		File src = new File("vird/file.vird");
 		
-		Scope scope = new Scope(Vird.GLOBAL);
-		
+		Scope scope = new Scope(null);
 		
 		scope.define("echo", echo);
 		scope.define("get-echo", new Val() {
@@ -44,29 +40,18 @@ public class Main {
 		
 		scope.define("+", plus);
 		scope.define(":", define);
-		
-		System.out.println("\nValidation...");
-		long start = System.currentTimeMillis();
-		List<ValidatedValCall> calls;
+		scope.define("UNIT", Val.unit);
 		try {
-			calls = new ArrayList<>();
-			for (Expr expr : new ExprOutput(new TokenOutput(src))) {
-				calls.add(Interpreter.evaluateValCall(scope, expr));
-			}
+			System.exit(Interpreter.run(src, scope, true));
 		} catch (LangException e) {
 			try {
 				throw Interpreter.handleLangException(e,
 						String.join("\n", Files.readAllLines(e.getLocation().getSourceFile().toPath())),
 						e.getLocation().getSourceFile(), 1);
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				e.printStackTrace(System.err);
+				System.exit(1);
 			}
-		}
-		long end = System.currentTimeMillis();
-		long time = end - start;
-		System.out.println("Validated successfully (" + time + "ms)\n");
-		for (ValidatedValCall call : calls) {
-			call.invoke();
 		}
 	}
 	
@@ -75,8 +60,9 @@ public class Main {
 		public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
 			String error = "1 argument expected";
 			if (args.length == 1) {
-				if (args[0] instanceof Symbol) {
-					String v = ((Symbol) args[0]).getValue();
+				Expr arg = args[0];
+				if (arg instanceof Symbol) {
+					String v = ((Symbol) arg).getValue();
 					int lastChar = v.length() - 1;
 					if (v.length() >= 2 && v.charAt(0) == '"' && v.charAt(lastChar) == '"') {
 						String content = v.substring(1, lastChar);
@@ -87,11 +73,19 @@ public class Main {
 								return Val.unit;
 							}
 						};
+					} else {
+						ValidatedValCall call = Interpreter.evaluateValCall(caller, arg);
+						return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
+							@Override
+							public @NonNull Val invoke() {
+								System.out.println(call.invoke());
+								return Val.unit;
+							}
+						};
 					}
-					error = "String literal expected";
-				} else if (args[0] instanceof ExprList
-						&& ((ExprList) args[0]).getBracketsType() == BracketsType.ROUND) {
-					ValidatedValCall call = Interpreter.evaluateValCall(caller, (ExprList) args[0]);
+				} else if (arg instanceof ExprList
+						&& ((ExprList) arg).getBracketsType() == BracketsType.ROUND) {
+					ValidatedValCall call = Interpreter.evaluateValCall(caller, arg);
 					return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
 						@Override
 						public Val invoke() {

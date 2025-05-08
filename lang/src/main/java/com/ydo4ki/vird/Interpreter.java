@@ -1,27 +1,59 @@
 package com.ydo4ki.vird;
 
 import com.ydo4ki.vird.base.*;
+import com.ydo4ki.vird.base.lexer.ExprOutput;
+import com.ydo4ki.vird.base.lexer.TokenOutput;
 import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
-import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Sulphuris
  * @since 4/10/2025 4:04 PM
  */
-@Getter
 public class Interpreter {
-	private final Scope program = new Scope(Vird.GLOBAL);
 	
-	public Interpreter() {}
+	public static int run(File src, Scope scope, boolean measure) throws IOException, LangException {
+		long start = 0;
+		long end;
+		long time;
+		
+		if (measure) {
+			System.out.println("\nValidation...");
+			start = System.currentTimeMillis();
+		}
+		
+		
+		List<ValidatedValCall> calls = new ArrayList<>();
+		for (Expr expr : new ExprOutput(new TokenOutput(src))) {
+			calls.add(Interpreter.evaluateValCall(scope, expr));
+		}
+		
+		
+		if (measure) {
+			end = System.currentTimeMillis();
+			time = end - start;
+			System.out.println("Validated successfully (" + time + "ms)\n");
+			
+			start = System.currentTimeMillis();
+		}
+		
+		for (ValidatedValCall call : calls) {
+			call.invoke();
+		}
+		if (measure) {
+			end = System.currentTimeMillis();
+			time = end - start;
+			System.out.println("\nFinished in " + time + "ms");
+		}
+		return 0;
+	}
+	
 	
 	// honestly at this point I don't really feel understanding how does this work
 	public static ValidatedValCall evaluateValCall(Scope scope, Expr val) throws LangValidationException {
