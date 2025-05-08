@@ -34,15 +34,9 @@ public final class Scope extends Val {
 		if (definedSymbols.containsKey(name))
 			throw new IllegalArgumentException(name + " is already defined");
 		definedSymbols.put(name, value);
-		preDefinedSymbols.put(name, new ValidatedValCall(new EqualityConstraint(value)) {
-			@Override
-			public Val invoke() {
-				return value;
-			}
-		});
+		preDefinedSymbols.put(name, ValidatedValCall.promiseVal(value));
 	}
 	
-	@Deprecated
 	public Val resolve(String name) {
 		Val dereferenced = definedSymbols.get(name);
 		return dereferenced != null || parent == null ? dereferenced : parent.resolve(name);

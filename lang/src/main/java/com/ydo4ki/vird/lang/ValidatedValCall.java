@@ -4,7 +4,10 @@ import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Objects;
 
 /**
  * @since 5/7/2025 8:01 PM
@@ -16,9 +19,11 @@ public abstract class ValidatedValCall {
 	@Getter
 	protected final Constraint constraint;
 	
+	@NonNull
 	public abstract Val invoke();
 	
 	public static ValidatedValCall promiseVal(Val val) {
+		Objects.requireNonNull(val);
 		return new ValidatedValCall(new EqualityConstraint(val)) {
 			@Override
 			public Val invoke() {

@@ -56,10 +56,17 @@ public class Interpreter {
 					return ValidatedValCall.promiseVal(b);
 				} catch (NumberFormatException e) {
 					throw new LangValidationException(val.getLocation(), "Undefined symbol: " + val);
-					// ok nevermind
 				}
 			}
-			return call;
+			if (call.getConstraint() instanceof EqualityConstraint) {
+				return call; // we already know the exact value
+			}
+			return new ValidatedValCall(call.getConstraint()) {
+				@Override
+				public Val invoke() {
+					return scope.resolve(str);
+				}
+			};
 		}
 		throw new LangValidationException(val.getLocation(), "Unknown val: " + val);
 	}
