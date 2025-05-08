@@ -67,7 +67,7 @@ public class Interpreter {
 			}
 			
 			Expr functionId = f.get(0);
-			Constraint function = evaluateValCall(scope, functionId).getConstraint();
+			ValidatedValCall function = evaluateValCall(scope, functionId);
 			
 			final Expr[] args;
 			{
@@ -90,7 +90,7 @@ public class Interpreter {
 					throw new LangValidationException(val.getLocation(), "Undefined symbol: " + val);
 				}
 			}
-			if (call.getConstraint() instanceof EqualityConstraint) {
+			if (call.getConstraint() instanceof EqualityConstraint && call.isPure()) {
 				return call; // we already know the exact value
 			}
 			return new ValidatedValCall(call.getConstraint()) {
@@ -114,7 +114,7 @@ public class Interpreter {
 			System.err.println("for:");
 			System.err.println(getErrorDescription((LangException) e.getCause(), filename, source));
 		}
-//		e.printStackTrace();
+		e.printStackTrace();
 		System.exit(code);
 		return new Error();
 	}

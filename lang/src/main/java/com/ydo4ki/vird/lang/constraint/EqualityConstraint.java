@@ -33,7 +33,14 @@ public final class EqualityConstraint implements Constraint {
 	
 	@Override
 	public ValidatedValCall getInvocationConstraint(Location location, Scope scope, Expr[] args) throws LangValidationException {
-		return expected.invocation(location, scope, args);
+		ValidatedValCall call = expected.invocation(location, scope, args);
+		return call;
+		/*return new ValidatedValCall(this) {
+			@Override
+			public @NonNull Val invoke() {
+				return call.invoke();
+			}
+		};*/
 	}
 	
 	@Override

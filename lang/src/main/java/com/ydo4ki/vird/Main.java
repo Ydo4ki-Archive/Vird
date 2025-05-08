@@ -27,14 +27,21 @@ public class Main {
 			public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {
 				if (args.length != 0) throw new LangValidationException(location, "0 arguments expected");
 				return new ValidatedValCall(new EqualityConstraint(echo)) {
+					// todo: this is not called despite function being marked as non-pure
 					@Override
 					public Val invoke() {
-						// debug, this is not a side effect, you don't understand this is different
+						// !!! side effect !!!
+						// ! This is why this vvc is not marked as pure !
 						System.out.println("# get-echo is called!");
 						
 						return echo;
 					}
 				};
+			}
+			
+			@Override
+			public String toString() {
+				return "get-echo";
 			}
 		});
 		
@@ -98,6 +105,10 @@ public class Main {
 			throw new LangValidationException(location, error);
 		}
 		
+		@Override
+		public String toString() {
+			return "echo";
+		}
 	}, plus = new Val() {
 		@Override
 		public ValidatedValCall invocation(Location location, Scope caller, Expr[] args) throws LangValidationException {

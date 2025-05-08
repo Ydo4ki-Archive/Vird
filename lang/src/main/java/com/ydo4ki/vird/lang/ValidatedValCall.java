@@ -1,5 +1,7 @@
 package com.ydo4ki.vird.lang;
 
+import com.ydo4ki.vird.base.Expr;
+import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
@@ -39,5 +41,27 @@ public abstract class ValidatedValCall {
 	
 	public boolean isPure() {
 		return false;
+	}
+	
+	public ValidatedValCall getInvocationConstraint(Location location, Scope scope, Expr[] args) throws LangValidationException {
+		ValidatedValCall cCall = constraint.getInvocationConstraint(location, scope, args);
+		if (cCall.isPure())
+			return cCall;
+		
+		// basically "apply side effects"
+		return new ValidatedValCall(cCall.getConstraint()) {
+			@Override
+			public @NonNull Val invoke() {
+				ValidatedValCall.this.invoke(); // basically "apply side effects"
+				return cCall.invoke();
+			}
+		};
+	}
+	
+	@Override
+	public String toString() {
+		return this.getClass().getSimpleName() + "{" +
+				"constraint=" + constraint +
+				'}';
 	}
 }
