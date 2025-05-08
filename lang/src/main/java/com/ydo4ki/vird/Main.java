@@ -115,10 +115,12 @@ public class Main {
 				}
 			}
 			final BigInteger sokv = sumOfKnownValues;
+			if (leftToEvaluate.isEmpty()) return ValidatedValCall.promiseVal(new Blob(sokv));
 			return new ValidatedValCall(new InstanceOfConstraint(Blob.class)) {
 				@Override
 				public Val invoke() {
 					BigInteger sum = sokv;
+//					System.out.println("Runtime evaluating: " + leftToEvaluate);
 					for (ValidatedValCall arg : leftToEvaluate) {
 						Blob c = (Blob) arg.invoke();
 						sum = sum.add(c.bigInteger());

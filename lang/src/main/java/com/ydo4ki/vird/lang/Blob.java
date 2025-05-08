@@ -29,7 +29,6 @@ public final class Blob extends Val {
 	
 	@Override
 	public String toString() {
-		System.err.println(new BigInteger(data));
 		return "0x" + bytesToHex(data);
 	}
 	
