@@ -8,10 +8,12 @@ import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.lang.ValidatedValCall;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
+@Getter
 public final class InstanceOfConstraint implements Constraint {
 	private final Class<? extends Val> targetClass;
 	
@@ -26,11 +28,6 @@ public final class InstanceOfConstraint implements Constraint {
 			return ((InstanceOfConstraint) other).targetClass.isAssignableFrom(this.targetClass);
 		
 		return false;
-	}
-	
-	@Override
-	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList.Round f) throws LangValidationException {
-		throw new LangValidationException(f.getLocation(), "Not callable");
 	}
 	
 	@Override

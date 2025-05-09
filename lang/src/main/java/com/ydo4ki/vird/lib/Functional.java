@@ -104,7 +104,7 @@ public final class Functional {
 				throw new LangValidationException(f.getLocation(), "Blob expected");
 			if (c.isPure()) {
 				Blob b = (Blob) c.invoke();
-				Blob sizeOfB = Blob.ofInt(b.getData().length);
+				Blob sizeOfB = new Blob(BigInteger.valueOf(b.getData().length));
 				return new ValidatedValCall(new InstanceOfConstraint(Blob.class)) {
 					@Override
 					public Val invoke0() {
@@ -117,7 +117,7 @@ public final class Functional {
 				@Override
 				public Val invoke0() {
 					Blob b = (Blob) c.invoke();
-					return Blob.ofInt(b.getData().length);
+					return new Blob(BigInteger.valueOf(b.getData().length));
 				}
 			};
 		}
