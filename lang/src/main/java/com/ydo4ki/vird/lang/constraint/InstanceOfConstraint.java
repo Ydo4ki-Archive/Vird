@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(staticName = "of")
 @EqualsAndHashCode(callSuper = false)
 @Getter
 public final class InstanceOfConstraint implements Constraint {

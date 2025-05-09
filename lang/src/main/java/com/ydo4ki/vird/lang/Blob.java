@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 @EqualsAndHashCode(callSuper = false)
 @Getter
-public final class Blob extends Val {
+public final class Blob extends Val implements Comparable<Blob> {
 	private final byte[] data;
 	// for optimization purposes due to frequent usage of blob as a number
 	private BigInteger bigInteger = null;
@@ -32,13 +32,18 @@ public final class Blob extends Val {
 	}
 	
 	public Blob(BigInteger bigInteger, int byteSize) {
+		System.out.println("## " + bigInteger);
 		this.data = new byte[byteSize];
 		this.bigInteger = bigInteger;
-		byte[] bytes = bigInteger.toByteArray();
-		int bytesLen = Math.min(data.length, bytes.length);
-		System.out.println(byteSize);
-		System.out.println(Arrays.toString(bytes) + " = " + bigInteger);
-		System.arraycopy(bytes, 0, data, data.length - bytesLen, bytesLen);
+		byte[] data = bigInteger.toByteArray();
+		while (data.length > 1 && data[0] == 0) {
+			int len = data.length;
+			byte[] d = new byte[len-1];
+			System.arraycopy(data, 1, d, 0, len-1);
+			data = d;
+		}
+		int bytesLen = Math.min(this.data.length, data.length);
+		System.arraycopy(data, 0, this.data, this.data.length - bytesLen, bytesLen);
 	}
 	
 	public BigInteger bigInteger() {
@@ -73,6 +78,13 @@ public final class Blob extends Val {
 	}
 	
 	public int toInt() {
-		return data[0] << 24 | (data[1] & 0xFF) << 16 | (data[2] & 0xFF) << 8 | (data[3] & 0xFF);
+		if (data.length == 4)
+			return data[0] << 24 | (data[1] & 0xFF) << 16 | (data[2] & 0xFF) << 8 | (data[3] & 0xFF);
+		return bigInteger().intValue();
+	}
+	
+	@Override
+	public int compareTo(Blob o) {
+		return this.bigInteger().compareTo(o.bigInteger());
 	}
 }

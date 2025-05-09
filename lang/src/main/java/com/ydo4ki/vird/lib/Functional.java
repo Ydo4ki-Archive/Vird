@@ -9,15 +9,16 @@ import com.ydo4ki.vird.lang.Blob;
 import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.lang.ValidatedValCall;
+import com.ydo4ki.vird.lang.constraint.ComparisonConstraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 import lombok.NonNull;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * @since 5/8/2025 11:40 PM
@@ -100,12 +101,12 @@ public final class Functional {
 				throw new LangValidationException(f.getLocation(), "1 argument expected");
 			
 			ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), args[0]);
-			if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))
+			if (!c.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class)))
 				throw new LangValidationException(f.getLocation(), "Blob expected");
 			if (c.isPure()) {
 				Blob b = (Blob) c.invoke();
 				Blob sizeOfB = new Blob(BigInteger.valueOf(b.getData().length));
-				return new ValidatedValCall(new InstanceOfConstraint(Blob.class)) {
+				return new ValidatedValCall(InstanceOfConstraint.of(Blob.class)) {
 					@Override
 					public Val invoke0() {
 						return sizeOfB;
@@ -113,7 +114,7 @@ public final class Functional {
 				};
 			}
 			
-			return new ValidatedValCall(new InstanceOfConstraint(Blob.class)) {
+			return new ValidatedValCall(InstanceOfConstraint.of(Blob.class)) {
 				@Override
 				public Val invoke0() {
 					Blob b = (Blob) c.invoke();
@@ -122,12 +123,63 @@ public final class Functional {
 			};
 		}
 		
-		
 		@Override
 		public String toString() {
 			return "byteSize";
 		}
 	};
+	
+	public static final Val sub = new Val() {
+		@Override
+		public ValidatedValCall invocation(Scope caller, ExprList.Round me) throws LangValidationException {
+			Expr[] args = Interpreter.args(me);
+			if (args.length != 3)
+				throw new LangValidationException(me.getLocation(), "3 arguments expected");
+			
+			ValidatedValCall argBlob = Interpreter.evaluateValCall(new Scope(caller), args[0]);
+			ValidatedValCall argStart = Interpreter.evaluateValCall(new Scope(caller), args[1]);
+			ValidatedValCall argEnd = Interpreter.evaluateValCall(new Scope(caller), args[2]);
+			if (!argBlob.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class))) {
+				throw new LangValidationException(args[0].getLocation(), "Blob expected");
+			}
+			if (!argStart.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class))) {
+				throw new LangValidationException(args[1].getLocation(), "Blob expected");
+			}
+			if (!argEnd.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class))) {
+				throw new LangValidationException(args[2].getLocation(), "Blob expected");
+			}
+			
+			if (argBlob.isPure()) {
+				Blob b = (Blob) argBlob.invoke();
+				int size = b.getData().length;
+				System.out.println("# size: " + size);
+				System.out.println("# c: " + argEnd.getConstraint());
+				if (!argEnd.getConstraint().implies(caller,
+						ComparisonConstraint.of(Blob.ofInt(size + 1/*OR equal*/), ComparisonConstraint.Op.SMALLER)))
+					throw new LangValidationException(args[2].getLocation(), "_EndPos must be smaller or equal to blob size (" + size + ")");
+				return new ValidatedValCall(InstanceOfConstraint.of(Blob.class)) {
+					@Override
+					protected Val invoke0() {
+						return new Blob(Arrays.copyOfRange(b.getData(), ((Blob)argStart.invoke()).toInt(), ((Blob)argEnd.invoke()).toInt()));
+					}
+				};
+			} else {
+				// todo: make it working with unpure
+				throw new LangValidationException(args[0].getLocation(), "Blob is not pure");
+			}
+			
+		}
+		
+		@Override
+		public String toString() {
+			return "split";
+		}
+	};
+	
+	
+	
+	
+	/* math / numeric operations */
 	
 	private static final class BigIntOpVal extends Val {
 		private final BiFunction<BigInteger, BigInteger, BigInteger> operation;
@@ -150,7 +202,7 @@ public final class Functional {
 			
 			for (int i = 0, Len = args.length; i < Len; i++) {
 				ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), args[i]);
-				if (!c.getConstraint().implies(caller, new InstanceOfConstraint(Blob.class)))
+				if (!c.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class)))
 					throw new LangValidationException(f.getLocation(), "Number expected (" + i + ")");
 				if (c.isPure()) {
 					sumOfKnownValues = operation.apply(sumOfKnownValues, ((Blob)c.invoke()).bigInteger());
@@ -160,7 +212,7 @@ public final class Functional {
 			}
 			final BigInteger sokv = sumOfKnownValues;
 			if (leftToEvaluate.isEmpty()) return ValidatedValCall.promiseVal(new Blob(sokv));
-			return new ValidatedValCall(new InstanceOfConstraint(Blob.class)) {
+			return new ValidatedValCall(InstanceOfConstraint.of(Blob.class)) {
 				@Override
 				public Val invoke0() {
 					BigInteger sum = sokv;
@@ -188,6 +240,7 @@ public final class Functional {
 			.push("xor", xor)
 			
 			.push("byteSize", byteSize)
+			.push("sub", sub)
 			
 			.push(":", define)
 			.push("echo", echo);
