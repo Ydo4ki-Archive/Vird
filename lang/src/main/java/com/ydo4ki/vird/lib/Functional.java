@@ -152,8 +152,6 @@ public final class Functional {
 			if (argBlob.isPure()) {
 				Blob b = (Blob) argBlob.invoke();
 				int size = b.getData().length;
-				System.out.println("# size: " + size);
-				System.out.println("# c: " + argEnd.getConstraint());
 				if (!argEnd.getConstraint().implies(caller,
 						ComparisonConstraint.of(Blob.ofInt(size + 1/*OR equal*/), ComparisonConstraint.Op.SMALLER)))
 					throw new LangValidationException(args[2].getLocation(), "_EndPos must be smaller or equal to blob size (" + size + ")");
@@ -167,7 +165,6 @@ public final class Functional {
 				// todo: make it working with unpure
 				throw new LangValidationException(args[0].getLocation(), "Blob is not pure");
 			}
-			
 		}
 		
 		@Override

@@ -32,7 +32,6 @@ public final class Blob extends Val implements Comparable<Blob> {
 	}
 	
 	public Blob(BigInteger bigInteger, int byteSize) {
-		System.out.println("## " + bigInteger);
 		this.data = new byte[byteSize];
 		this.bigInteger = bigInteger;
 		byte[] data = bigInteger.toByteArray();
