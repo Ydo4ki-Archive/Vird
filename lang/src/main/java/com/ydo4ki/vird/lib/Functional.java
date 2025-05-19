@@ -169,7 +169,7 @@ public final class Functional {
 		
 		@Override
 		public String toString() {
-			return "split";
+			return "sub";
 		}
 	};
 	

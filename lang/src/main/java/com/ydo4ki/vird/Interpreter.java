@@ -119,7 +119,7 @@ public class Interpreter {
 	}
 	
 	private static String getErrorDescription(LangException e, String filename, String source) {
-		StringBuilder msg = new StringBuilder(e.getClass().getSimpleName()).append(": ").append(e.getRawMessage()).append(" (")
+		StringBuilder msg = new StringBuilder(e.errName()).append(": ").append(e.getRawMessage()).append(" (")
 				.append(filename);
 		if (e.getLocation() != null) {
 			msg.append(':').append(e.getLocation().getStartLine());

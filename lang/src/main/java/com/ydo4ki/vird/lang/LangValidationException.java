@@ -28,4 +28,9 @@ public class LangValidationException extends LangException {
 	public LangValidationException(Location location, Throwable cause, String rawMessage) {
 		super(location, cause, rawMessage);
 	}
+	
+	@Override
+	public String errName() {
+		return "Validation Error";
+	}
 }

@@ -40,4 +40,8 @@ public class LangException extends Exception {
 		this.location = location;
 		this.rawMessage = rawMessage;
 	}
+	
+	public String errName() {
+		return "Error";
+	}
 }
