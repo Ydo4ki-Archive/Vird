@@ -5,6 +5,8 @@ import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.lang.ValidatedValCall;
 
+import java.util.Collection;
+
 /**
  * @author Sulphuris
  * @since 4/11/2025 4:36 PM
@@ -28,5 +30,7 @@ public abstract class Expr extends Val {
 		
 		return function.getInvocationConstraint(new Scope(caller), f);
 	}
+	
+	public abstract Collection<? extends Expr> split(String... separateLines);
 }
 

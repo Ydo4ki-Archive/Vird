@@ -40,6 +40,15 @@ public abstract class ExprList extends Expr implements Iterable<Expr> {
 		public BracketsType getBracketsType() {
 			return BracketsType.ROUND;
 		}
+		
+		@Override
+		public Round splitList(String... separateLines) {
+			return new Round(getLocation(),
+					getElements().stream()
+							.flatMap(e -> e.split(separateLines).stream())
+							.collect(Collectors.toList())
+			);
+		}
 	}
 	public static final class Square extends ExprList {
 		Square(Location location, List<Expr> elements) {
@@ -49,6 +58,15 @@ public abstract class ExprList extends Expr implements Iterable<Expr> {
 		@Override
 		public BracketsType getBracketsType() {
 			return BracketsType.SQUARE;
+		}
+		
+		@Override
+		public Square splitList(String... separateLines) {
+			return new Square(getLocation(),
+					getElements().stream()
+							.flatMap(e -> e.split(separateLines).stream())
+							.collect(Collectors.toList())
+			);
 		}
 	}
 	public static final class Braces extends ExprList {
@@ -60,9 +78,25 @@ public abstract class ExprList extends Expr implements Iterable<Expr> {
 		public BracketsType getBracketsType() {
 			return BracketsType.BRACES;
 		}
+		
+		@Override
+		public Braces splitList(String... separateLines) {
+			return new Braces(getLocation(),
+					getElements().stream()
+							.flatMap(e -> e.split(separateLines).stream())
+							.collect(Collectors.toList())
+			);
+		}
 	}
 	
 	public abstract BracketsType getBracketsType();
+	
+	@Override
+	public final Collection<? extends Expr> split(String... separateLines) {
+		return Collections.singleton(splitList(separateLines));
+	}
+	
+	public abstract ExprList splitList(String... separateLines);
 	
 	public List<Expr> getElements() {
 		return new ArrayList<>(elements);

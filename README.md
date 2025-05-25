@@ -14,7 +14,7 @@ So its development basically is
 "do multiple complex things, then spend weeks simplifying them until
 it starts to seem obvious ~~what took you so long~~"
 
-The language syntax is pretty similar to Lisp (but it's not its dialect)
+The pure language syntax is pretty similar to Lisp (but it's not its dialect)
 
 It also is the safest scripting language because it does not have runtime errors at all and all the code passes
 validation before running
@@ -26,8 +26,10 @@ Pre-releases are not backwards compatible (unlike releases)
 
 Floors of abstraction (contingently, just notes for me)
 
-| Floor             | Stable | Constructions                                                 |
-|-------------------|--------|---------------------------------------------------------------|
-| Syntax (.base)    | +      | `Symbol` \| `ExprList(() \| {} \| [])`                        |
-| Core (.lang)      | ~      | `Val` \| `Constraint` (All the syntax constructions are Vals) |
-| Functional (.lib) | -      | Pre-defined extern functions                                  |
+| Floor              | Stable | Constructions                                                               | Drawbacks                        |
+|--------------------|--------|-----------------------------------------------------------------------------|----------------------------------|
+| Structural (.base) | +      | `Symbol` \| `ExprList(() \| {} \| [])`                                      | `;` and `,` as exceptional cases |
+| Core (.lang)       | ~      | `Val` \| `Constraint` (All the syntax constructions are Vals)               | `Contraint` might be `Val`       |
+| Functional (.lib)  | -      | Raw invocation syntax, pre-defined extern functions                         |                                  |
+| Syntactic          |        | More convenient syntax (fixes code ugliness from the pure functional floor) |                                  |
+
