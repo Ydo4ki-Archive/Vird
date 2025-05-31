@@ -1,6 +1,8 @@
 package com.ydo4ki.vird.base.lexer;
 
 import com.ydo4ki.vird.base.BracketsType;
+import com.ydo4ki.vird.base.BracketsTypes;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,16 +16,19 @@ public class TokenOutput implements Iterable<Token> {
 	
 	private final String source;
 	private final File file;
+	@Getter
+	private final BracketsTypes bracketsTypes;
 	
-	public TokenOutput(String source, File file) {
+	public TokenOutput(String source, File file, BracketsTypes bracketsTypes) {
 		this.source = source;
 		this.file = file;
+		this.bracketsTypes = bracketsTypes;
 	}
-	public TokenOutput(Path file) throws IOException {
-		this(String.join("\n", Files.readAllLines(file)), file.toFile());
+	public TokenOutput(Path file, BracketsTypes bracketsTypes) throws IOException {
+		this(String.join("\n", Files.readAllLines(file)), file.toFile(), bracketsTypes);
 	}
-	public TokenOutput(File file) throws IOException {
-		this(String.join("\n", Files.readAllLines(file.toPath())), file);
+	public TokenOutput(File file, BracketsTypes bracketsTypes) throws IOException {
+		this(String.join("\n", Files.readAllLines(file.toPath())), file, bracketsTypes);
 	}
 	
 	@Override
@@ -64,6 +69,18 @@ public class TokenOutput implements Iterable<Token> {
 			if (ch == '\0')
 				return new Token(TokenType.EOF, pos - 1, pos, line, file);
 			
+			
+			// brackets
+			{
+				TokenType type;
+				BracketsType bracketsType = bracketsTypes.byOpen(ch);
+				if (bracketsType == null) {
+					bracketsType = bracketsTypes.byClose(ch);
+					type = TokenType.CLOSE;
+				} else type = TokenType.OPEN;
+				if (bracketsType != null) return new Token(type, String.valueOf(ch), pos - 1, pos, line, file);
+			}
+			
 			// comments
 			if (ch == '/') {
 				Token comment = readComment(ch);
@@ -76,36 +93,12 @@ public class TokenOutput implements Iterable<Token> {
 			}
 			
 			// identifiers
-			if (isValidNameChar(ch)) {
+			if (isValidNameChar(bracketsTypes, ch)) {
 				return readIdentifier(ch);
 			}
 			
-			// brackets
-			TokenType type;
-			switch (ch) {
-				case '(':
-					type = TokenType.OPENROUND;
-					break;
-				case ')':
-					type = TokenType.CLOSEROUND;
-					break;
-				case '[':
-					type = TokenType.OPENSQUARE;
-					break;
-				case ']':
-					type = TokenType.CLOSESQUARE;
-					break;
-				case '{':
-					type = TokenType.OPEN;
-					break;
-				case '}':
-					type = TokenType.CLOSE;
-					break;
-				default:
-					type = TokenType.ERROR;
-					exception = new Exception();
-			}
-			return new Token(type, String.valueOf(ch), pos - 1, pos, line, file);
+			exception = new Exception("I have no idea what this is: " + ch);
+			return new Token(TokenType.ERROR, String.valueOf(ch), pos - 1, pos, line, file);
 		}
 
 		private Token readComment(char ch) {
@@ -172,7 +165,7 @@ public class TokenOutput implements Iterable<Token> {
 		private Token readIdentifier(char ch) {
 			int startpos = pos - 1;
 			StringBuilder builder = new StringBuilder().append(ch);
-			while (isValidNameChar(ch = nextChar())) {
+			while (isValidNameChar(bracketsTypes, ch = nextChar())) {
 				builder.append(ch);
 			}
 			pos--;
@@ -193,7 +186,7 @@ public class TokenOutput implements Iterable<Token> {
 		}
 	}
 
-	private static boolean isValidNameChar(char ch) {
-		return ch != '\0' && !Character.isWhitespace(ch) && !BracketsType.isBracket(ch);
+	private static boolean isValidNameChar(BracketsTypes bracketsTypes, char ch) {
+		return ch != '\0' && !Character.isWhitespace(ch) && !bracketsTypes.isBracket(ch);
 	}
 }

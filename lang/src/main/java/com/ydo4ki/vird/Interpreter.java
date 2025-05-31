@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class Interpreter {
 	
-	public static int run(File src, Scope scope, boolean measure) throws IOException, LangException {
+	public static int run(File src, Scope scope, BracketsTypes bracketsTypes, boolean measure) throws IOException, LangException {
 		long start = 0;
 		long end;
 		long time;
@@ -30,7 +30,7 @@ public class Interpreter {
 		
 		
 		List<ValidatedValCall> calls = new ArrayList<>();
-		for (Expr expr : new ExprOutput(new TokenOutput(src))) {
+		for (Expr expr : new ExprOutput(new TokenOutput(src, bracketsTypes))) {
 			calls.add(Interpreter.evaluateValCall(scope, expr));
 		}
 		

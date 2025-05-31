@@ -23,13 +23,16 @@ import java.util.function.BiFunction;
  */
 public final class Functional {
 	
+	public static final BracketsType round = new BracketsType('(',')');
+	public static final BracketsType square = new BracketsType('[',']');
+	public static final BracketsType braces = new BracketsType('{','}');
 	/* meta */
 	
 	
 	public static final Val define = new Val() {
 		@Override
 		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-			if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
 			Expr[] args = Interpreter.args(f);
 			
 			if (args.length != 2)
@@ -58,7 +61,7 @@ public final class Functional {
 	public static final Val echo = new Val() {
 		@Override
 		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-			if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
 			if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
 			Expr arg = f.get(1);
 			if (arg instanceof Symbol) {
@@ -94,7 +97,7 @@ public final class Functional {
 	public static final Val byteSize = new Val() {
 		@Override
 		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-			if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
 			Expr[] args = Interpreter.args(f);
 			
 			if (args.length != 1)
@@ -132,7 +135,7 @@ public final class Functional {
 	public static final Val sub = new Val() {
 		@Override
 		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-			if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
 			Expr[] args = Interpreter.args(f);
 			if (args.length != 3)
 				throw new LangValidationException(f.getLocation(), "3 arguments expected");
@@ -190,7 +193,7 @@ public final class Functional {
 		
 		@Override
 		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-			if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
 			Expr[] args = Interpreter.args(f);
 			
 			if (args.length < 2)

@@ -61,12 +61,10 @@ public class ExprOutput implements Iterable<Expr> {
 		}
 		
 		private BracketsType getBracketType() {
-			switch (currentToken.type) {
-				case OPENROUND: return BracketsType.ROUND;
-				case OPENSQUARE: return BracketsType.SQUARE;
-				case OPEN: return BracketsType.BRACES;
-				default: return null;
+			if (currentToken.type == TokenType.OPEN) {
+				return tokenOutput.getBracketsTypes().byOpen(currentToken.text.charAt(0));
 			}
+			return null;
 		}
 		
 		private void nextToken() {
@@ -114,9 +112,7 @@ public class ExprOutput implements Iterable<Expr> {
 			
 			// Handle closing brackets in wrong context
 			assert currentToken != null;
-			if (currentToken.type == TokenType.CLOSEROUND ||
-					currentToken.type == TokenType.CLOSESQUARE ||
-					currentToken.type == TokenType.CLOSE) {
+			if (currentToken.type == TokenType.CLOSE) {
 				throw new IllegalArgumentException("Unexpected bracket: " + currentToken.text);
 			}
 			

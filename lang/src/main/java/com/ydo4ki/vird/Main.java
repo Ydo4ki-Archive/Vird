@@ -12,9 +12,17 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.ydo4ki.vird.lib.Functional.*;
+
 public class Main {
 	
 	public static void main(String[] __args) throws IOException {
+		BracketsTypes bracketsTypes = new BracketsTypes();
+		bracketsTypes.add(round);
+		bracketsTypes.add(square);
+		bracketsTypes.add(braces);
+		
+		
 		printPrjInfo(System.out);
 		File src = new File("vird/file.vird");
 		
@@ -24,7 +32,7 @@ public class Main {
 		scope.push("get-echo", new Val() {
 			@Override
 			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-				if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+				if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
 				
 				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
 				return new ValidatedValCall(new EqualityConstraint(echo)) {
@@ -47,7 +55,7 @@ public class Main {
 		scope.push("get-echo-sym", new Val() {
 			@Override
 			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-				if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+				if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
 				
 				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
 				Symbol echoSym = new Symbol(f.getLocation(), "echo");
@@ -69,7 +77,7 @@ public class Main {
 		Val fakeEcho = new Val() {
 			@Override
 			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-				if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+				if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
 				
 				if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
 				Expr arg = f.get(1);
@@ -105,7 +113,7 @@ public class Main {
 		scope.push("get-random-echo", new Val() {
 			@Override
 			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-				if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+				if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
 				
 				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
 				return new ValidatedValCall(OrConstraint.of(new EqualityConstraint(echo), new EqualityConstraint(fakeEcho))) {
@@ -124,7 +132,7 @@ public class Main {
 		
 		scope.push("UNIT", Val.unit);
 		try {
-			System.exit(Interpreter.run(src, scope, true));
+			System.exit(Interpreter.run(src, scope, bracketsTypes, true));
 		} catch (LangException e) {
 			try {
 				throw Interpreter.handleLangException(e,

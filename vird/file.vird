@@ -8,4 +8,4 @@
 (echo (xor 0x0f0a 0xf00a))
 (echo (byteSize 0x000f0a))
 
-(echo (sub 0x0123456789ABCDEF 1 9))
+(echo (sub 0x0123456789ABCDEF 1 8))
