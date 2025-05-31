@@ -51,7 +51,7 @@ public abstract class ValidatedValCall {
 		return false;
 	}
 	
-	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList.Round f) throws LangValidationException {
+	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException {
 		ValidatedValCall cCall = constraint.getInvocationConstraint(scope, f);
 		if (cCall.isPure())
 			return cCall;

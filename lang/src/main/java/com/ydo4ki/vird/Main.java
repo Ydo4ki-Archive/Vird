@@ -23,8 +23,10 @@ public class Main {
 		Val echo = scope.resolve("echo");
 		scope.push("get-echo", new Val() {
 			@Override
-			public ValidatedValCall invocation(Scope caller, ExprList.Round me) throws LangValidationException {
-				if (me.size() != 1) throw new LangValidationException(me.getLocation(), "0 arguments expected");
+			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+				if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+				
+				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
 				return new ValidatedValCall(new EqualityConstraint(echo)) {
 					@Override
 					public Val invoke0() {
@@ -44,9 +46,11 @@ public class Main {
 		});
 		scope.push("get-echo-sym", new Val() {
 			@Override
-			public ValidatedValCall invocation(Scope caller, ExprList.Round me) throws LangValidationException {
-				if (me.size() != 1) throw new LangValidationException(me.getLocation(), "0 arguments expected");
-				Symbol echoSym = new Symbol(me.getLocation(), "echo");
+			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+				if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+				
+				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
+				Symbol echoSym = new Symbol(f.getLocation(), "echo");
 				return new ValidatedValCall(new EqualityConstraint(echoSym)) {
 					@Override
 					public Val invoke0() {
@@ -64,7 +68,9 @@ public class Main {
 		});
 		Val fakeEcho = new Val() {
 			@Override
-			public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
+			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+				if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+				
 				if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
 				Expr arg = f.get(1);
 				if (arg instanceof Symbol) {
@@ -98,8 +104,10 @@ public class Main {
 		};
 		scope.push("get-random-echo", new Val() {
 			@Override
-			public ValidatedValCall invocation(Scope caller, ExprList.Round me) throws LangValidationException {
-				if (me.size() != 1) throw new LangValidationException(me.getLocation(), "0 arguments expected");
+			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+				if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+				
+				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
 				return new ValidatedValCall(OrConstraint.of(new EqualityConstraint(echo), new EqualityConstraint(fakeEcho))) {
 					@Override
 					public Val invoke0() {

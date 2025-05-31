@@ -43,7 +43,7 @@ public final class OrConstraint implements Constraint {
 	}
 	
 	@Override
-	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList.Round f) throws LangValidationException {
+	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException {
 		List<Constraint> constraints = new ArrayList<>();
 		for (Constraint c : this.constraints) {
 			// if even one value is not callable, so the whole thing is. Validation error passed

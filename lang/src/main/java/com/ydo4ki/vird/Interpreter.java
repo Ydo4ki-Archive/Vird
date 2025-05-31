@@ -66,8 +66,8 @@ public class Interpreter {
 	
 	// honestly at this point I don't really feel understanding how does this work
 	public static ValidatedValCall evaluateValCall(Scope scope, Expr expr) throws LangValidationException {
-		if (expr instanceof ExprList.Round) {
-			ExprList.Round f = (ExprList.Round) expr;
+		if (expr instanceof ExprList) {
+			ExprList f = (ExprList) expr;
 			return f.get(0).invocation(scope, f);
 		}
 		if (expr instanceof Symbol) {

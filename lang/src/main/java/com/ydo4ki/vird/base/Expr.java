@@ -25,7 +25,7 @@ public abstract class Expr extends Val {
 	}
 	
 	@Override
-	public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
+	public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
 		ValidatedValCall function = Interpreter.evaluateValCall(caller, this);
 		
 		return function.getInvocationConstraint(new Scope(caller), f);

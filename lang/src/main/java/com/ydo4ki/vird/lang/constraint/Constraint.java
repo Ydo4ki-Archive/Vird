@@ -24,7 +24,7 @@ public interface Constraint {
 	
 	/** if this is a function (guaranteed), it returns constraint for result of function based on arguments
 	 (or throws LangValidationException if function is not a function or following arguments are inappropriate) */
-	default ValidatedValCall getInvocationConstraint(Scope scope, ExprList.Round f) throws LangValidationException {
+	default ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException {
 		throw new LangValidationException(f.getLocation(), "Not callable");
 	}
 	

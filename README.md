@@ -26,10 +26,10 @@ Pre-releases are not backwards compatible (unlike releases)
 
 Floors of abstraction (contingently, just notes for me)
 
-| Floor              | Stable | Constructions                                                               | Drawbacks                        |
-|--------------------|--------|-----------------------------------------------------------------------------|----------------------------------|
-| Structural (.base) | +      | `Symbol` \| `ExprList(() \| {} \| [])`                                      | `;` and `,` as exceptional cases |
-| Core (.lang)       | ~      | `Val` \| `Constraint` (All the syntax constructions are Vals)               | `Contraint` might be `Val`       |
-| Functional (.lib)  | -      | Raw invocation syntax, pre-defined extern functions                         |                                  |
-| Syntactic          |        | More convenient syntax (fixes code ugliness from the pure functional floor) |                                  |
+| Floor              | Stable | Constructions                                                               | Drawbacks                                                      |
+|--------------------|--------|-----------------------------------------------------------------------------|----------------------------------------------------------------|
+| Structural (.base) | +      | `Symbol` \| `ExprList(() \| {} \| [])`                                      | `;` and `,` as exceptional cases                               |
+| Core (.lang)       | ~      | `Val` \| `Constraint` (All the syntax constructions are Vals)               | `Contraint` might be `Val`; `Scope` is probably too high-level |
+| Functional (.lib)  | -      | Raw invocation syntax, pre-defined extern functions                         |                                                                |
+| Syntactic          |        | More convenient syntax (fixes code ugliness from the pure functional floor) |                                                                |
 

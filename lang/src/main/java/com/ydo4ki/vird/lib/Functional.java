@@ -1,10 +1,7 @@
 package com.ydo4ki.vird.lib;
 
 import com.ydo4ki.vird.Interpreter;
-import com.ydo4ki.vird.base.Expr;
-import com.ydo4ki.vird.base.ExprList;
-import com.ydo4ki.vird.base.Symbol;
-import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.base.*;
 import com.ydo4ki.vird.lang.Blob;
 import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
@@ -31,7 +28,8 @@ public final class Functional {
 	
 	public static final Val define = new Val() {
 		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
+		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+			if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
 			Expr[] args = Interpreter.args(f);
 			
 			if (args.length != 2)
@@ -59,7 +57,8 @@ public final class Functional {
 	
 	public static final Val echo = new Val() {
 		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
+		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+			if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
 			if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
 			Expr arg = f.get(1);
 			if (arg instanceof Symbol) {
@@ -94,7 +93,8 @@ public final class Functional {
 	
 	public static final Val byteSize = new Val() {
 		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
+		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+			if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
 			Expr[] args = Interpreter.args(f);
 			
 			if (args.length != 1)
@@ -131,10 +131,11 @@ public final class Functional {
 	
 	public static final Val sub = new Val() {
 		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList.Round me) throws LangValidationException {
-			Expr[] args = Interpreter.args(me);
+		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+			if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
+			Expr[] args = Interpreter.args(f);
 			if (args.length != 3)
-				throw new LangValidationException(me.getLocation(), "3 arguments expected");
+				throw new LangValidationException(f.getLocation(), "3 arguments expected");
 			
 			ValidatedValCall argBlob = Interpreter.evaluateValCall(new Scope(caller), args[0]);
 			ValidatedValCall argStart = Interpreter.evaluateValCall(new Scope(caller), args[1]);
@@ -188,7 +189,8 @@ public final class Functional {
 		}
 		
 		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList.Round f) throws LangValidationException {
+		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+			if (f.getBracketsType() != BracketsType.ROUND) return super.invocation(caller, f);
 			Expr[] args = Interpreter.args(f);
 			
 			if (args.length < 2)

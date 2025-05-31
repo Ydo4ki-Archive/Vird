@@ -1,0 +1,35 @@
+Object o = new Object(); 	-> (: Object o (new (Object)))
+Integer i = new Integer(5);	-> (: Integer i (new (Integer 5)))
+
+
+
+String input = "I am going to end this, once, and for all";
+Collection<String> result = split(input, ",", "for");
+System.out.println(result);
+
+->
+
+(: String input (String "I am going to end this, once, and for all"))
+(: (Collection String) result (split input (String ",") (String "for")))
+((. System out println) result)
+
+
+
+public static Location between(Location start, Location end) {
+	if (!end.getSourceFile().equals(start.getSourceFile()))
+		return start;
+	return new Location(start.startPos,end.endPos,start.startLine,end.endLine, end.getSourceFile());
+}
+
+->
+
+
+
+(: (fnt Location Location Location) between (fn [start end]
+	(if (not (equals ((. end getSourceFile)) ((. start getSourceFile)))) start
+		(new (Location (. start startPos) (. end endPos) (. start startLine) (. end endLine) ((. end getSourceFile)))))))
+
+
+
+
+

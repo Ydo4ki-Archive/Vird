@@ -9,8 +9,8 @@ import com.ydo4ki.vird.lang.Scope;
  * @author Sulphuris
  */
 public class Val {
-	public ValidatedValCall invocation(Scope caller, ExprList.Round me) throws LangValidationException {
-		throw new LangValidationException(me.getLocation(), "Not callable (" + this.getClass().getSimpleName() + " «" + this + "»)");
+	public ValidatedValCall invocation(Scope caller, ExprList me) throws LangValidationException {
+		throw new LangValidationException(me.getLocation(), "Not callable (" + this.getClass().getSimpleName() + " «" + this + "») with " + me.getBracketsType());
 	}
 	
 	public static final Val unit = new Val() {
