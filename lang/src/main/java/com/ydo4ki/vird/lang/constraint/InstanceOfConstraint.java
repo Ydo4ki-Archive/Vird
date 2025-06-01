@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(staticName = "of")
 @EqualsAndHashCode(callSuper = false)
 @Getter
-public final class InstanceOfConstraint implements Constraint {
+public final class InstanceOfConstraint extends Constraint {
 	private final Class<? extends Val> targetClass;
 	
 	@Override

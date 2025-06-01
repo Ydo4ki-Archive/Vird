@@ -11,7 +11,7 @@ import com.ydo4ki.vird.lang.ValidatedValCall;
 // darts
 // denmark
 // ._?
-public final class FreeConstraint implements Constraint {
+public final class FreeConstraint extends Constraint {
 	public static final FreeConstraint INSTANCE = new FreeConstraint();
 	
 	private FreeConstraint() {}

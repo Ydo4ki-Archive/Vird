@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.project.Stability;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+@Stability(Stability.PROB)
 @EqualsAndHashCode(callSuper = false)
 @Getter
 public final class Blob extends Val implements Comparable<Blob> {

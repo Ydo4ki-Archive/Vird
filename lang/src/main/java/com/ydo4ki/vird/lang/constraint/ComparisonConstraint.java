@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor(staticName = "of")
 @Getter
-public class ComparisonConstraint implements Constraint {
+public class ComparisonConstraint extends Constraint {
 	private final Blob than;
 	private final Op op;
 	

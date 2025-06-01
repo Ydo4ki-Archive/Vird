@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = false)
-public final class OrConstraint implements Constraint {
+public final class OrConstraint extends Constraint {
 	private final Set<Constraint> constraints;
 	
 	public static Constraint of(Constraint... constraints) {

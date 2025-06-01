@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Getter
-public final class EqualityConstraint implements Constraint {
+public final class EqualityConstraint extends Constraint {
 	@NonNull
 	private final Val expected;
 	

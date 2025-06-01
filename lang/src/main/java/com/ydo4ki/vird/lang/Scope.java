@@ -2,6 +2,7 @@ package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.project.Stability;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.Map;
  * @author Sulphuris
  * @since 4/11/2025 12:16 PM
  */
+@Stability(Stability.DESIRE_REP)
 @RequiredArgsConstructor
 public final class Scope extends Val {
 	@Getter

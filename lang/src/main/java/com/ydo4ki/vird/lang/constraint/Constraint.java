@@ -10,11 +10,12 @@ import com.ydo4ki.vird.lang.ValidatedValCall;
  * @since 4/18/2025 12:21 AM
  * @author Sulphuris
  */
-public interface Constraint {
-	boolean test(Scope scope, Val value);
+// todo: extend Val interface
+public abstract class Constraint {
+	public abstract boolean test(Scope scope, Val value);
 	
 	// checks if the current constraint implies other (f.e., x > 0 => x >= 0)
-	boolean implies(Scope scope, Constraint other);
+	public abstract boolean implies(Scope scope, Constraint other);
 	
 	// by the way
 	// if constraint A implies constraint B
@@ -24,11 +25,11 @@ public interface Constraint {
 	
 	/** if this is a function (guaranteed), it returns constraint for result of function based on arguments
 	 (or throws LangValidationException if function is not a function or following arguments are inappropriate) */
-	default ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException {
+	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException {
 		throw new LangValidationException(f.getLocation(), "Not callable");
 	}
 	
-	static boolean areEqual(Scope scope, Constraint a, Constraint b) {
+	public static boolean areEqual(Scope scope, Constraint a, Constraint b) {
 		return a.implies(scope, b) && b.implies(scope, a);
 	}
 }
