@@ -24,23 +24,6 @@ class Do extends Val {
 		if (f.getBracketsType().open != '(') return super.invocation(caller, f);
 		Expr[] expressions = VirdUtil.args(f);
 		
-		Constraint retc = new EqualityConstraint(Val.unit);
-		List<ValidatedValCall> calls = new ArrayList<>();
-		for (Expr expr : expressions) {
-			ValidatedValCall call = FileInterpreter.evaluateValCall(caller, expr);
-			calls.add(call);
-			retc = call.getConstraint();
-		}
-		
-		return new ValidatedValCall(retc) {
-			@Override
-			protected Val invoke0() {
-				Val ret = Val.unit;
-				for (ValidatedValCall call : calls) {
-					ret = call.invoke();
-				}
-				return ret;
-			}
-		};
+		return Execute.execution(caller, expressions);
 	}
 }

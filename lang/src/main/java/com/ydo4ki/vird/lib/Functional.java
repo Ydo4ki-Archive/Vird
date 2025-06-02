@@ -13,10 +13,7 @@ import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 import lombok.NonNull;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.BiFunction;
 
 /**
  * @since 5/8/2025 11:40 PM
@@ -30,32 +27,7 @@ public final class Functional {
 	/* meta */
 	
 	
-	public static final Val define = new Val() {
-		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
-			Expr[] args = VirdUtil.args(f);
-			
-			if (args.length != 2)
-				throw new LangValidationException(f.getLocation(), "2 arguments expected");
-			
-			
-			// todo: computed names
-			if (!(args[0] instanceof Symbol))
-				throw new LangValidationException(args[0].getLocation(), "Symbol expected (" + args[0] + ")");
-			
-			String name = ((Symbol) args[0]).getValue();
-			ValidatedValCall value = FileInterpreter.evaluateValCall(caller, args[1]);
-			Scope scope = caller.getParent();
-			scope.predefine(f.getLocation(), name, value);
-			return new ValidatedValCall(value.getConstraint()) {
-				@Override
-				public Val invoke0() {
-					return scope.define(name);
-				}
-			};
-		}
-	};
+	public static final Val define = new Define();
 	
 	/* functional */
 	
@@ -183,49 +155,6 @@ public final class Functional {
 	
 	/* math / numeric operations */
 	
-	private static final class BigIntOpVal extends Val {
-		private final BiFunction<BigInteger, BigInteger, BigInteger> operation;
-		private final BigInteger initial;
-		
-		private BigIntOpVal(BiFunction<BigInteger, BigInteger, BigInteger> operation, BigInteger initial) {
-			this.operation = operation;
-			this.initial = initial;
-		}
-		
-		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
-			Expr[] args = VirdUtil.args(f);
-			
-			if (args.length < 2)
-				throw new LangValidationException(f.getLocation(), "2 or more args expected");
-			
-			BigInteger sumOfKnownValues = initial;
-			List<ValidatedValCall> leftToEvaluate = new ArrayList<>();
-			
-			for (int i = 0, Len = args.length; i < Len; i++) {
-				ValidatedValCall c = FileInterpreter.evaluateValCall(new Scope(caller), args[i]);
-				if (!c.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class)))
-					throw new LangValidationException(f.getLocation(), "Number expected (" + i + ")");
-				if (c.isPure()) {
-					sumOfKnownValues = operation.apply(sumOfKnownValues, ((Blob)c.invoke()).bigInteger());
-				} else {
-					leftToEvaluate.add(c);
-				}
-			}
-			final BigInteger sokv = sumOfKnownValues;
-			if (leftToEvaluate.isEmpty()) return ValidatedValCall.promiseVal(new Blob(sokv));
-			return new ValidatedValCall(InstanceOfConstraint.of(Blob.class)) {
-				@Override
-				public Val invoke0() {
-					BigInteger sum = sokv;
-					for (ValidatedValCall arg : leftToEvaluate) sum = operation.apply(sum, ((Blob) arg.invoke()).bigInteger());
-					return new Blob(sum.toByteArray());
-				}
-			};
-		}
-	}
-	
 	public static final Val sum = new BigIntOpVal(BigInteger::add, BigInteger.ZERO);
 	
 	public static final Val and = new BigIntOpVal(BigInteger::and, BigInteger.valueOf(-1L));
@@ -248,6 +177,7 @@ public final class Functional {
 			.push("do", _do)
 			.push(":", define)
 			.push("echo", echo);
-			;
+	
+	;
 			
 }

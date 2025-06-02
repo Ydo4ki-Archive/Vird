@@ -11,11 +11,18 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor(staticName = "of")
 @EqualsAndHashCode(callSuper = false)
 @Getter
-public final class InstanceOfConstraint extends Constraint {
+public class InstanceOfConstraint extends Constraint {
 	private final Class<? extends Val> targetClass;
+	
+	protected InstanceOfConstraint(Class<? extends Val> targetClass) {
+		this.targetClass = targetClass;
+	}
+	
+	public static InstanceOfConstraint of(Class<? extends Val> targetClass) {
+		return new InstanceOfConstraint(targetClass);
+	}
 	
 	@Override
 	public boolean test(Scope scope, Val value) {
@@ -32,6 +39,6 @@ public final class InstanceOfConstraint extends Constraint {
 	
 	@Override
 	public String toString() {
-		return "InstanceOf(" + targetClass.getSimpleName() + ")";
+		return this.getClass().getSimpleName().replace("Constraint", "") + "(" + targetClass.getSimpleName() + ")";
 	}
 }
