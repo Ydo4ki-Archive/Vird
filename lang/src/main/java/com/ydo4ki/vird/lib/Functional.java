@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lib;
 
-import com.ydo4ki.vird.Interpreter;
+import com.ydo4ki.vird.FileInterpreter;
+import com.ydo4ki.vird.VirdUtil;
 import com.ydo4ki.vird.base.*;
 import com.ydo4ki.vird.lang.Blob;
 import com.ydo4ki.vird.lang.LangValidationException;
@@ -33,7 +34,7 @@ public final class Functional {
 		@Override
 		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
 			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
-			Expr[] args = Interpreter.args(f);
+			Expr[] args = VirdUtil.args(f);
 			
 			if (args.length != 2)
 				throw new LangValidationException(f.getLocation(), "2 arguments expected");
@@ -44,7 +45,7 @@ public final class Functional {
 				throw new LangValidationException(args[0].getLocation(), "Symbol expected (" + args[0] + ")");
 			
 			String name = ((Symbol) args[0]).getValue();
-			ValidatedValCall value = Interpreter.evaluateValCall(caller, args[1]);
+			ValidatedValCall value = FileInterpreter.evaluateValCall(caller, args[1]);
 			Scope scope = caller.getParent();
 			scope.predefine(f.getLocation(), name, value);
 			return new ValidatedValCall(value.getConstraint()) {
@@ -78,7 +79,7 @@ public final class Functional {
 					};
 				}
 			}
-			ValidatedValCall call = Interpreter.evaluateValCall(caller, arg);
+			ValidatedValCall call = FileInterpreter.evaluateValCall(caller, arg);
 			return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
 				@Override
 				public @NonNull Val invoke0() {
@@ -98,12 +99,12 @@ public final class Functional {
 		@Override
 		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
 			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
-			Expr[] args = Interpreter.args(f);
+			Expr[] args = VirdUtil.args(f);
 			
 			if (args.length != 1)
 				throw new LangValidationException(f.getLocation(), "1 argument expected");
 			
-			ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), args[0]);
+			ValidatedValCall c = FileInterpreter.evaluateValCall(new Scope(caller), args[0]);
 			if (!c.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class)))
 				throw new LangValidationException(f.getLocation(), "Blob expected");
 			if (c.isPure()) {
@@ -136,13 +137,13 @@ public final class Functional {
 		@Override
 		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
 			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
-			Expr[] args = Interpreter.args(f);
+			Expr[] args = VirdUtil.args(f);
 			if (args.length != 3)
 				throw new LangValidationException(f.getLocation(), "3 arguments expected");
 			
-			ValidatedValCall argBlob = Interpreter.evaluateValCall(new Scope(caller), args[0]);
-			ValidatedValCall argStart = Interpreter.evaluateValCall(new Scope(caller), args[1]);
-			ValidatedValCall argEnd = Interpreter.evaluateValCall(new Scope(caller), args[2]);
+			ValidatedValCall argBlob = FileInterpreter.evaluateValCall(new Scope(caller), args[0]);
+			ValidatedValCall argStart = FileInterpreter.evaluateValCall(new Scope(caller), args[1]);
+			ValidatedValCall argEnd = FileInterpreter.evaluateValCall(new Scope(caller), args[2]);
 			if (!argBlob.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class))) {
 				throw new LangValidationException(args[0].getLocation(), "Blob expected");
 			}
@@ -194,7 +195,7 @@ public final class Functional {
 		@Override
 		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
 			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
-			Expr[] args = Interpreter.args(f);
+			Expr[] args = VirdUtil.args(f);
 			
 			if (args.length < 2)
 				throw new LangValidationException(f.getLocation(), "2 or more args expected");
@@ -203,7 +204,7 @@ public final class Functional {
 			List<ValidatedValCall> leftToEvaluate = new ArrayList<>();
 			
 			for (int i = 0, Len = args.length; i < Len; i++) {
-				ValidatedValCall c = Interpreter.evaluateValCall(new Scope(caller), args[i]);
+				ValidatedValCall c = FileInterpreter.evaluateValCall(new Scope(caller), args[i]);
 				if (!c.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class)))
 					throw new LangValidationException(f.getLocation(), "Number expected (" + i + ")");
 				if (c.isPure()) {
@@ -233,7 +234,7 @@ public final class Functional {
 	
 	public static final Val xor = new BigIntOpVal(BigInteger::xor, BigInteger.ZERO);
 	
-	
+	public static final Val _do = new Do();
 	
 	public static final Scope scope = new Scope(null)
 			.push("sum", sum)
@@ -244,6 +245,7 @@ public final class Functional {
 			.push("byteSize", byteSize)
 			.push("sub", sub)
 			
+			.push("do", _do)
 			.push(":", define)
 			.push("echo", echo);
 			;

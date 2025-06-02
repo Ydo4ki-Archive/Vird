@@ -60,7 +60,7 @@ public abstract class ValidatedValCall {
 		return new ValidatedValCall(cCall.getConstraint()) {
 			@Override
 			public @NonNull Val invoke0() {
-				ValidatedValCall.this.invoke(); // basically "apply side effects"
+				ValidatedValCall.this.invoke(); // basically "apply side effects" (why did I write it twice xd)
 				return cCall.invoke();
 			}
 		};
@@ -68,8 +68,6 @@ public abstract class ValidatedValCall {
 	
 	@Override
 	public String toString() {
-		return this.getClass().getTypeName() + "{" +
-				"constraint=" + constraint +
-				'}';
+		return this.getClass().getTypeName() + "{" + "constraint=" + constraint + '}';
 	}
 }

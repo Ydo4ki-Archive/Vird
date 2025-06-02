@@ -26,4 +26,9 @@ public final class Location {
 			return start;
 		return new Location(start.startPos,end.endPos,start.startLine,end.endLine, end.getSourceFile());
 	}
+	
+	public static final Location UNKNOWN = unknown(null);
+	public static Location unknown(File src) {
+		return new Location(0,0,0,0,src);
+	}
 }

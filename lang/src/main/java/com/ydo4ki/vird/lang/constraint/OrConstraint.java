@@ -1,6 +1,6 @@
 package com.ydo4ki.vird.lang.constraint;
 
-import com.ydo4ki.vird.Interpreter;
+import com.ydo4ki.vird.FileInterpreter;
 import com.ydo4ki.vird.base.ExprList;
 import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
@@ -54,7 +54,7 @@ public final class OrConstraint extends Constraint {
 		Constraint c = OrConstraint.of(new HashSet<>(constraints));
 		
 		// (get-random-echo)
-		ValidatedValCall actual = Interpreter.evaluateValCall(scope, f.get(0));
+		ValidatedValCall actual = FileInterpreter.evaluateValCall(scope, f.get(0));
 		if (actual.isPure()) {
 			ValidatedValCall result = actual.invoke().invocation(scope, f);
 			return new ValidatedValCall(c) {

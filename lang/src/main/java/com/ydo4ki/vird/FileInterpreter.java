@@ -5,6 +5,7 @@ import com.ydo4ki.vird.base.lexer.ExprOutput;
 import com.ydo4ki.vird.base.lexer.TokenOutput;
 import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
+import com.ydo4ki.vird.lib.Functional;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.List;
  * @author Sulphuris
  * @since 4/10/2025 4:04 PM
  */
-public class Interpreter {
+public class FileInterpreter {
 	
 	public static int run(File src, Scope scope, BracketsTypes bracketsTypes, boolean measure) throws IOException, LangException {
 		long start = 0;
@@ -29,10 +30,14 @@ public class Interpreter {
 		}
 		
 		
-		List<ValidatedValCall> calls = new ArrayList<>();
-		for (Expr expr : new ExprOutput(new TokenOutput(src, bracketsTypes))) {
-			calls.add(Interpreter.evaluateValCall(scope, expr));
+		ExprOutput expressions = new ExprOutput(new TokenOutput(src, bracketsTypes));
+		List<Expr> elements = new ArrayList<>();
+		elements.add(new Symbol(Location.unknown(src), "do"));
+		for (Expr expression : expressions) {
+			elements.add(expression);
 		}
+		ExprList _do = ExprList.of(Location.unknown(src), Functional.round, elements);
+		ValidatedValCall call = Functional._do.invocation(scope, _do);
 		
 		
 		if (measure) {
@@ -43,25 +48,13 @@ public class Interpreter {
 			start = System.currentTimeMillis();
 		}
 		
-		for (ValidatedValCall call : calls) {
-			call.invoke();
-		}
+		call.invoke();
 		if (measure) {
 			end = System.currentTimeMillis();
 			time = end - start;
 			System.out.println("\nFinished in " + time + "ms");
 		}
 		return 0;
-	}
-	
-	public static Expr[] args(ExprList f) {
-		final Expr[] args;
-		{
-			List<Expr> args0 = f.getElements();
-			args0.remove(0);
-			args = args0.toArray(new Expr[0]);
-		}
-		return args;
 	}
 	
 	// honestly at this point I don't really feel understanding how does this work

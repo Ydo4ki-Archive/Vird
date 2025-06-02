@@ -95,7 +95,7 @@ public class Main {
 						};
 					}
 				}
-				ValidatedValCall call = Interpreter.evaluateValCall(caller, arg);
+				ValidatedValCall call = FileInterpreter.evaluateValCall(caller, arg);
 				return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
 					@Override
 					public @NonNull Val invoke0() {
@@ -132,10 +132,10 @@ public class Main {
 		
 		scope.push("UNIT", Val.unit);
 		try {
-			System.exit(Interpreter.run(src, scope, bracketsTypes, true));
+			System.exit(FileInterpreter.run(src, scope, bracketsTypes, true));
 		} catch (LangException e) {
 			try {
-				throw Interpreter.handleLangException(e,
+				throw FileInterpreter.handleLangException(e,
 						String.join("\n", Files.readAllLines(e.getLocation().getSourceFile().toPath())),
 						e.getLocation().getSourceFile(), 1);
 			} catch (IOException ex) {

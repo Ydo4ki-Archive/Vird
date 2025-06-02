@@ -1,6 +1,6 @@
 package com.ydo4ki.vird.base;
 
-import com.ydo4ki.vird.Interpreter;
+import com.ydo4ki.vird.FileInterpreter;
 import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.lang.ValidatedValCall;
@@ -26,7 +26,7 @@ public abstract class Expr extends Val {
 	
 	@Override
 	public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-		ValidatedValCall function = Interpreter.evaluateValCall(caller, this);
+		ValidatedValCall function = FileInterpreter.evaluateValCall(caller, this);
 		
 		return function.getInvocationConstraint(new Scope(caller), f);
 	}

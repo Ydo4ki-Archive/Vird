@@ -33,3 +33,12 @@ Floors of abstraction (contingently, just notes for me)
 | Functional (.lib)  | -      | Raw invocation syntax, pre-defined extern functions                         |                                                                |
 | Syntactic          |        | More convenient syntax (fixes code ugliness from the pure functional floor) |                                                                |
 
+Function call:
+```
+(sum 3 5)
+  |
+  +-> Symbol(sum) -> resolve to extern function
+  +-> literals 3, 5 -> Symbol(3), Symbol(5)
+  |
+  +-> Constraint on result: EqualityConstraint(Blob(8))
+```
