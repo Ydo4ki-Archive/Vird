@@ -14,6 +14,7 @@ import java.util.Map;
  * @since 4/11/2025 12:16 PM
  */
 @Stability(Stability.DESIRE_REP)
+@Deprecated
 @RequiredArgsConstructor
 public final class Scope extends Val {
 	@Getter

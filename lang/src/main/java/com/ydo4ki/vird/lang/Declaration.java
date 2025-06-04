@@ -9,6 +9,7 @@ import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
  * @since 6/3/2025 12:11 AM
  * @author Sulphuris
  */
+@Deprecated
 public class Declaration extends Val {
 	private final Symbol name;
 	private final Val val;
