@@ -48,7 +48,11 @@ public class FileInterpreter {
 			start = System.currentTimeMillis();
 		}
 		
-		call.invoke();
+		try {
+			call.invoke();
+		} catch (RuntimeOperation e) {
+			throw new AssertionError(e);
+		}
 		if (measure) {
 			end = System.currentTimeMillis();
 			time = end - start;

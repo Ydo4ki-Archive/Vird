@@ -1,15 +1,9 @@
 package com.ydo4ki.vird.lang.constraint;
 
-import com.ydo4ki.vird.base.Expr;
-import com.ydo4ki.vird.base.ExprList;
-import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
-import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
-import com.ydo4ki.vird.lang.ValidatedValCall;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -35,6 +29,11 @@ public class InstanceOfConstraint extends Constraint {
 			return ((InstanceOfConstraint) other).targetClass.isAssignableFrom(this.targetClass);
 		
 		return false;
+	}
+	
+	@Override
+	protected <T extends Constraint> T extractImplication0(Class<T> type) {
+		return null;
 	}
 	
 	@Override

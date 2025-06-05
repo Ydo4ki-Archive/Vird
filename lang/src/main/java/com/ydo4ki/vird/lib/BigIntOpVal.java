@@ -5,10 +5,7 @@ import com.ydo4ki.vird.VirdUtil;
 import com.ydo4ki.vird.base.Expr;
 import com.ydo4ki.vird.base.ExprList;
 import com.ydo4ki.vird.base.Val;
-import com.ydo4ki.vird.lang.Blob;
-import com.ydo4ki.vird.lang.LangValidationException;
-import com.ydo4ki.vird.lang.Scope;
-import com.ydo4ki.vird.lang.ValidatedValCall;
+import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
 
 import java.math.BigInteger;
@@ -44,7 +41,7 @@ final class BigIntOpVal extends Val {
 			if (!c.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class)))
 				throw new LangValidationException(f.getLocation(), "Number expected (" + i + ")");
 			if (c.isPure()) {
-				sumOfKnownValues = operation.apply(sumOfKnownValues, ((Blob) c.invoke()).bigInteger());
+				sumOfKnownValues = operation.apply(sumOfKnownValues, ((Blob) ValidatedValCall.invokePure(f.getLocation(), c)).bigInteger());
 			} else {
 				leftToEvaluate.add(c);
 			}
@@ -53,7 +50,7 @@ final class BigIntOpVal extends Val {
 		if (leftToEvaluate.isEmpty()) return ValidatedValCall.promiseVal(new Blob(sokv));
 		return new ValidatedValCall(InstanceOfConstraint.of(Blob.class)) {
 			@Override
-			public Val invoke0() {
+			public Val invoke0() throws RuntimeOperation {
 				BigInteger sum = sokv;
 				for (ValidatedValCall arg : leftToEvaluate)
 					sum = operation.apply(sum, ((Blob) arg.invoke()).bigInteger());

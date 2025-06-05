@@ -13,9 +13,9 @@ import lombok.RequiredArgsConstructor;
  */
 @Stability(Stability.LOW)
 @Deprecated
-@RequiredArgsConstructor(staticName = "of")
+@RequiredArgsConstructor//(staticName = "of")
 @Getter
-public class BlobSizeConstraint extends Constraint {
+abstract class BlobSizeConstraint extends Constraint {
 	private final Constraint constraint;
 	
 	@Override

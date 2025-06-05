@@ -23,7 +23,12 @@ public final class FreeConstraint extends Constraint {
 	
 	@Override
 	public boolean implies(Scope scope, Constraint other) {
-		return true;
+		return other.equals(new InstanceOfConstraint(Val.class));
+	}
+	
+	@Override
+	protected <T extends Constraint> T extractImplication0(Class<T> type) {
+		return null;
 	}
 	
 	@Override

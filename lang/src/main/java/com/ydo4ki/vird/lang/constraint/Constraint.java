@@ -17,6 +17,19 @@ public abstract class Constraint {
 	// checks if the current constraint implies other (f.e., x > 0 => x >= 0)
 	public abstract boolean implies(Scope scope, Constraint other);
 	
+	@SuppressWarnings("unchecked")
+	public final <T extends Constraint> T extractImplication(Class<T> type) {
+		if (type.isInstance(this)) return (T)this;
+		if (type == FreeConstraint.class) return (T) FreeConstraint.INSTANCE;
+		
+		T ret = extractImplication0(type);
+		if (ret == null && type == InstanceOfConstraint.class)
+			return (T) InstanceOfConstraint.of(Val.class);
+		return ret;
+	}
+	
+	protected abstract <T extends Constraint> T extractImplication0(Class<T> type);
+	
 	// by the way
 	// if constraint A implies constraint B
 	// and constraint B doesn't imply constraint A

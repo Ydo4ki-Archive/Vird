@@ -1,7 +1,10 @@
 package com.ydo4ki.vird.lang.constraint;
 
+import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.lang.LangValidationException;
 import com.ydo4ki.vird.lang.Scope;
+import com.ydo4ki.vird.lang.ValidatedValCall;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -11,12 +14,31 @@ import java.util.Objects;
  * @since 6/4/2025 5:36 PM
  * @author alignie
  */
+@Getter
 public final class Struct extends Constraint {
 	private final Constraint[] fields;
 	
-	public Struct(Constraint[] fields) {
+	public Struct(Constraint... fields) {
 		this.fields = fields;
 	}
+	
+	public ValidatedValCall newVal(Scope scope, Location location, Val... vals) throws LangValidationException {
+		if (vals.length != fields.length)
+			throw new LangValidationException(location, "Invalid fields amount (" + vals.length + ", " + fields.length + " expected)");
+		
+		for (int i = 0; i < vals.length; i++) {
+			if (!fields[i].test(scope, vals[i]))
+				throw new LangValidationException(location, "Constraint violation: " + vals[i] + " does not satisfy " + fields[i]);
+		}
+		
+		return new ValidatedValCall(new EqualityConstraint(new StructVal(vals))) {
+			@Override
+			protected Val invoke0() {
+				return new StructVal(vals);
+			}
+		};
+	}
+	
 	
 	@Override
 	public boolean test(Scope scope, Val value) {
@@ -42,6 +64,21 @@ public final class Struct extends Constraint {
 			return true;
 		}
 		return false;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	protected <T extends Constraint> T extractImplication0(Class<T> type) {
+		if (type == EqualityConstraint.class) {
+			Val[] vals = new Val[fields.length];
+			for (int i = 0; i < fields.length; i++) {
+				EqualityConstraint eq = fields[i].extractImplication(EqualityConstraint.class);
+				if (eq == null) return null;
+				vals[i] = eq.getExpected();
+			}
+			return (T)new EqualityConstraint(new StructVal(vals));
+		}
+		return null;
 	}
 	
 	@Override
@@ -74,6 +111,18 @@ public final class Struct extends Constraint {
 				fields[i] = new EqualityConstraint(vals[i]);
 			}
 			return new Struct(fields);
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (o == null || getClass() != o.getClass()) return false;
+			StructVal structVal = (StructVal) o;
+			return Objects.deepEquals(vals, structVal.vals);
+		}
+		
+		@Override
+		public int hashCode() {
+			return Arrays.hashCode(vals);
 		}
 	}
 }

@@ -32,7 +32,7 @@ public final class Scope extends Val {
 		return dereferenced != null || parent == null ? dereferenced : parent.preresolve(name);
 	}
 	
-	public Val define(String name) {
+	public Val define(String name) throws RuntimeOperation {
 		ValidatedValCall call = preDefinedSymbols.get(name);
 		Val v = call.invoke();
 		definedSymbols.put(name, v);

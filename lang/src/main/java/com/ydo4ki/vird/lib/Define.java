@@ -6,8 +6,8 @@ import com.ydo4ki.vird.base.Expr;
 import com.ydo4ki.vird.base.ExprList;
 import com.ydo4ki.vird.base.Symbol;
 import com.ydo4ki.vird.base.Val;
-import com.ydo4ki.vird.lang.Declaration;
 import com.ydo4ki.vird.lang.LangValidationException;
+import com.ydo4ki.vird.lang.RuntimeOperation;
 import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.lang.ValidatedValCall;
 import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
@@ -35,11 +35,18 @@ class Define extends Val {
 		Scope scope = caller.getParent();
 		
 		scope.predefine(f.getLocation(), name, value);
-		return new ValidatedValCall(new Declaration.DeclarationConstraint(nameSym, value)) {
+		return new ValidatedValCall(value.getConstraint()) {
 			@Override
-			public Val invoke0() {
-				return new Declaration(nameSym, scope.define(name));
+			public Val invoke0() throws RuntimeOperation {
+				return scope.define(name);
 			}
 		};
+//		return Functional.declaration.newVal(caller, f.getLocation(),nameSym, value);
+//		return new ValidatedValCall(new Declaration.DeclarationConstraint(nameSym, value)) {
+//			@Override
+//			public Val invoke0() {
+//				return new Declaration(nameSym, scope.define(name));
+//			}
+//		};
 	}
 }

@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.base.ExprList;
+import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import javax.xml.bind.ValidationException;
 import java.util.Objects;
 
 /**
@@ -19,7 +21,7 @@ public abstract class ValidatedValCall {
 	@Getter
 	protected final Constraint constraint;
 	
-	public final Val invoke() {
+	public final Val invoke() throws RuntimeOperation {
 		try {
 			return Objects.requireNonNull(invoke0());
 		} catch (Throwable e) {
@@ -30,7 +32,7 @@ public abstract class ValidatedValCall {
 		}
 	}
 	
-	protected abstract Val invoke0();
+	protected abstract Val invoke0() throws RuntimeOperation;
 	
 	public static ValidatedValCall promiseVal(Val val) {
 		Objects.requireNonNull(val);
@@ -59,11 +61,22 @@ public abstract class ValidatedValCall {
 		// basically "apply side effects"
 		return new ValidatedValCall(cCall.getConstraint()) {
 			@Override
-			public @NonNull Val invoke0() {
+			public @NonNull Val invoke0() throws RuntimeOperation {
 				ValidatedValCall.this.invoke(); // basically "apply side effects" (why did I write it twice xd)
 				return cCall.invoke();
 			}
 		};
+	}
+	
+	// todo: pure calls should be basically calls with EqualityConstraint, so you should extract it instead
+	public static Val invokePure(Location location, ValidatedValCall call) throws LangValidationException {
+		if (call.isPure()) {
+			try {
+				return call.invoke();
+			} catch (RuntimeOperation e) {
+				throw new AssertionError(e);
+			}
+		} else throw new LangValidationException(location, "Attempt to call non-pure function during validation stage: " + call);
 	}
 	
 	@Override

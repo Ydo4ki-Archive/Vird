@@ -3,6 +3,7 @@ package com.ydo4ki.vird.lang.constraint;
 import com.ydo4ki.vird.FileInterpreter;
 import com.ydo4ki.vird.base.ExprList;
 import com.ydo4ki.vird.lang.LangValidationException;
+import com.ydo4ki.vird.lang.RuntimeOperation;
 import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.ValidatedValCall;
@@ -43,6 +44,11 @@ public final class OrConstraint extends Constraint {
 	}
 	
 	@Override
+	protected <T extends Constraint> T extractImplication0(Class<T> type) {
+		return null; // todo
+	}
+	
+	@Override
 	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException {
 		List<Constraint> constraints = new ArrayList<>();
 		for (Constraint c : this.constraints) {
@@ -56,17 +62,17 @@ public final class OrConstraint extends Constraint {
 		// (get-random-echo)
 		ValidatedValCall actual = FileInterpreter.evaluateValCall(scope, f.get(0));
 		if (actual.isPure()) {
-			ValidatedValCall result = actual.invoke().invocation(scope, f);
+			ValidatedValCall result = ValidatedValCall.invokePure(f.getLocation(), actual).invocation(scope, f);
 			return new ValidatedValCall(c) {
 				@Override
-				protected Val invoke0() {
+				protected Val invoke0() throws RuntimeOperation {
 					return result.invoke();
 				}
 			};
 		}
 		return new ValidatedValCall(c) {
 			@Override
-			protected Val invoke0() {
+			protected Val invoke0() throws RuntimeOperation {
 				try {
 						  // (get-random-echo) 				 // ((get-random-echo) "You're lucky!")
 					return actual.invoke().invocation(scope, f).invoke(); // I really don't like this, but I've got no idea how t avoid double-check here

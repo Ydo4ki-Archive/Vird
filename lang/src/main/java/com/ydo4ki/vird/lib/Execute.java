@@ -4,6 +4,7 @@ import com.ydo4ki.vird.FileInterpreter;
 import com.ydo4ki.vird.base.Expr;
 import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.LangValidationException;
+import com.ydo4ki.vird.lang.RuntimeOperation;
 import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.lang.ValidatedValCall;
 import com.ydo4ki.vird.lang.constraint.Constraint;
@@ -33,7 +34,7 @@ class Execute extends Val {
 		
 		return new ValidatedValCall(retc) {
 			@Override
-			protected Val invoke0() {
+			protected Val invoke0() throws RuntimeOperation {
 				Val ret = Val.unit;
 				for (ValidatedValCall call : calls) {
 					ret = call.invoke();

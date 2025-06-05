@@ -3,13 +3,8 @@ package com.ydo4ki.vird.lib;
 import com.ydo4ki.vird.FileInterpreter;
 import com.ydo4ki.vird.VirdUtil;
 import com.ydo4ki.vird.base.*;
-import com.ydo4ki.vird.lang.Blob;
-import com.ydo4ki.vird.lang.LangValidationException;
-import com.ydo4ki.vird.lang.Scope;
-import com.ydo4ki.vird.lang.ValidatedValCall;
-import com.ydo4ki.vird.lang.constraint.ComparisonConstraint;
-import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
-import com.ydo4ki.vird.lang.constraint.InstanceOfConstraint;
+import com.ydo4ki.vird.lang.*;
+import com.ydo4ki.vird.lang.constraint.*;
 import lombok.NonNull;
 
 import java.math.BigInteger;
@@ -54,7 +49,7 @@ public final class Functional {
 			ValidatedValCall call = FileInterpreter.evaluateValCall(caller, arg);
 			return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
 				@Override
-				public @NonNull Val invoke0() {
+				public @NonNull Val invoke0() throws RuntimeOperation {
 					System.out.println(call.invoke());
 					return Val.unit;
 				}
@@ -80,7 +75,7 @@ public final class Functional {
 			if (!c.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class)))
 				throw new LangValidationException(f.getLocation(), "Blob expected");
 			if (c.isPure()) {
-				Blob b = (Blob) c.invoke();
+				Blob b = (Blob) ValidatedValCall.invokePure(f.getLocation(), c);
 				Blob sizeOfB = new Blob(BigInteger.valueOf(b.getData().length));
 				return new ValidatedValCall(InstanceOfConstraint.of(Blob.class)) {
 					@Override
@@ -92,7 +87,7 @@ public final class Functional {
 			
 			return new ValidatedValCall(InstanceOfConstraint.of(Blob.class)) {
 				@Override
-				public Val invoke0() {
+				public Val invoke0() throws RuntimeOperation {
 					Blob b = (Blob) c.invoke();
 					return new Blob(BigInteger.valueOf(b.getData().length));
 				}
@@ -127,14 +122,14 @@ public final class Functional {
 			}
 			
 			if (argBlob.isPure()) {
-				Blob b = (Blob) argBlob.invoke();
+				Blob b = (Blob) ValidatedValCall.invokePure(f.getLocation(), argBlob);
 				int size = b.getData().length;
 				if (!argEnd.getConstraint().implies(caller,
 						ComparisonConstraint.of(Blob.ofInt(size + 1/*OR equal*/), ComparisonConstraint.Op.SMALLER)))
 					throw new LangValidationException(args[2].getLocation(), "_EndPos must be smaller or equal to blob size (" + size + ")");
 				return new ValidatedValCall(InstanceOfConstraint.of(Blob.class)) {
 					@Override
-					protected Val invoke0() {
+					protected Val invoke0() throws RuntimeOperation {
 						return new Blob(Arrays.copyOfRange(b.getData(), ((Blob)argStart.invoke()).toInt(), ((Blob)argEnd.invoke()).toInt()));
 					}
 				};
@@ -165,6 +160,11 @@ public final class Functional {
 	
 	public static final Val _do = new Do();
 	
+	public static final Struct declaration = new Struct(
+			InstanceOfConstraint.of(Symbol.class),
+			FreeConstraint.INSTANCE
+	);
+	
 	public static final Scope scope = new Scope(null)
 			.push("sum", sum)
 			.push("and", and)
@@ -178,6 +178,12 @@ public final class Functional {
 			.push(":", define)
 			.push("echo", echo);
 	
-	;
+	public static ValidatedValCall newDeclaration(Symbol sym, Val val) {
+		try {
+			return declaration.newVal(null, null, sym, val);
+		} catch (LangValidationException e) {
+			throw new AssertionError(e);
+		}
+	}
 			
 }
