@@ -26,13 +26,13 @@ public class Main {
 		printPrjInfo(System.out);
 		File src = new File("vird/file.vird");
 		
-		Scope scope = Functional.scope;
+		Env env = Functional.ENV;
 		
-		Val echo = scope.resolve("echo");
-		scope.push("get-echo", new Val() {
+		Val echo = env.resolve("echo");
+		env.push("get-echo", new Val() {
 			@Override
-			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-				if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
+			public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
+				if (!f.getBracketsType().equals(round)) return Val.super.invocation(caller, f);
 				
 				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
 				return new ValidatedValCall(new EqualityConstraint(echo)) {
@@ -51,11 +51,16 @@ public class Main {
 			public String toString() {
 				return "get-echo";
 			}
-		});
-		scope.push("get-echo-sym", new Val() {
+			
 			@Override
-			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-				if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
+			public Type getType() {
+				return Type.ROOT_FUNCTION;
+			}
+		});
+		env.push("get-echo-sym", new Val() {
+			@Override
+			public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
+				if (!f.getBracketsType().equals(round)) return Val.super.invocation(caller, f);
 				
 				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
 				Symbol echoSym = new Symbol(f.getLocation(), "echo");
@@ -73,11 +78,16 @@ public class Main {
 			public String toString() {
 				return "get-echo-sym";
 			}
+			
+			@Override
+			public Type getType() {
+				return Type.ROOT_FUNCTION;
+			}
 		});
 		Val fakeEcho = new Val() {
 			@Override
-			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-				if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
+			public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
+				if (!f.getBracketsType().equals(round)) return Val.super.invocation(caller, f);
 				
 				if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
 				Expr arg = f.get(1);
@@ -109,11 +119,16 @@ public class Main {
 			public String toString() {
 				return "fakeEcho";
 			}
-		};
-		scope.push("get-random-echo", new Val() {
+			
 			@Override
-			public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-				if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
+			public Type getType() {
+				return Type.ROOT_FUNCTION;
+			}
+		};
+		env.push("get-random-echo", new Val() {
+			@Override
+			public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
+				if (!f.getBracketsType().equals(round)) return Val.super.invocation(caller, f);
 				
 				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
 				return new ValidatedValCall(OrConstraint.of(new EqualityConstraint(echo), new EqualityConstraint(fakeEcho))) {
@@ -128,11 +143,16 @@ public class Main {
 			public String toString() {
 				return "get-random-echo";
 			}
+			
+			@Override
+			public Type getType() {
+				return Type.ROOT_FUNCTION;
+			}
 		});
 		
-		scope.push("UNIT", Val.unit);
+		env.push("UNIT", Val.unit);
 		try {
-			System.exit(FileInterpreter.run(src, scope, bracketsTypes, true));
+			System.exit(FileInterpreter.run(src, env, bracketsTypes, true));
 		} catch (LangException e) {
 			try {
 				throw FileInterpreter.handleLangException(e,

@@ -2,6 +2,7 @@ package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import com.ydo4ki.vird.project.Stability;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,10 @@ import java.util.Map;
  * @since 4/11/2025 12:16 PM
  */
 @Stability(Stability.DESIRE_REP)
-@Deprecated
 @RequiredArgsConstructor
-public final class Scope extends Val {
+public final class Env implements Val {
 	@Getter
-	private final Scope parent;
+	private final Env parent;
 	private final Map<String, Val> definedSymbols = new HashMap<>();
 	private final Map<String, ValidatedValCall> preDefinedSymbols = new HashMap<>();
 	
@@ -45,11 +45,18 @@ public final class Scope extends Val {
 	}
 	
 	
-	public Scope push(String name, Val value) {
+	public Env push(String name, Val value) {
 		if (definedSymbols.containsKey(name))
 			throw new IllegalArgumentException(name + " is already defined");
 		definedSymbols.put(name, value);
 		preDefinedSymbols.put(name, ValidatedValCall.promiseVal(value));
 		return this;
 	}
+	
+	@Override
+	public Type getType() {
+		return type;
+	}
+	
+	private static final Type type = new Type(FreeConstraint.INSTANCE);
 }

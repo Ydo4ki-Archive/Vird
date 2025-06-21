@@ -1,5 +1,8 @@
 package com.ydo4ki.vird.base;
 
+import com.ydo4ki.vird.lang.Type;
+import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
+import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import lombok.Getter;
 
 import java.util.*;
@@ -71,4 +74,11 @@ public final class ExprList extends Expr implements Iterable<Expr> {
 	public Iterator<Expr> iterator() {
 		return elements.iterator();
 	}
+	
+	@Override
+	public Type getType() {
+		return TYPE;
+	}
+	
+	public static final Type TYPE = new Type(FreeConstraint.INSTANCE);
 }

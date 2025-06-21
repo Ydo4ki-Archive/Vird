@@ -28,8 +28,8 @@ public final class Functional {
 	
 	public static final Val echo = new Val() {
 		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
+		public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
+			if (!f.getBracketsType().equals(round)) return Val.super.invocation(caller, f);
 			if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
 			Expr arg = f.get(1);
 			if (arg instanceof Symbol) {
@@ -60,18 +60,23 @@ public final class Functional {
 		public String toString() {
 			return "echo";
 		}
+		
+		@Override
+		public Type getType() {
+			return Type.ROOT_FUNCTION;
+		}
 	};
 	
 	public static final Val byteSize = new Val() {
 		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
+		public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
+			if (!f.getBracketsType().equals(round)) return Val.super.invocation(caller, f);
 			Expr[] args = VirdUtil.args(f);
 			
 			if (args.length != 1)
 				throw new LangValidationException(f.getLocation(), "1 argument expected");
 			
-			ValidatedValCall c = FileInterpreter.evaluateValCall(new Scope(caller), args[0]);
+			ValidatedValCall c = FileInterpreter.evaluateValCall(new Env(caller), args[0]);
 			if (!c.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class)))
 				throw new LangValidationException(f.getLocation(), "Blob expected");
 			if (c.isPure()) {
@@ -98,19 +103,24 @@ public final class Functional {
 		public String toString() {
 			return "byteSize";
 		}
+		
+		@Override
+		public Type getType() {
+			return Type.ROOT_FUNCTION;
+		}
 	};
 	
 	public static final Val sub = new Val() {
 		@Override
-		public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-			if (!f.getBracketsType().equals(round)) return super.invocation(caller, f);
+		public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
+			if (!f.getBracketsType().equals(round)) return Val.super.invocation(caller, f);
 			Expr[] args = VirdUtil.args(f);
 			if (args.length != 3)
 				throw new LangValidationException(f.getLocation(), "3 arguments expected");
 			
-			ValidatedValCall argBlob = FileInterpreter.evaluateValCall(new Scope(caller), args[0]);
-			ValidatedValCall argStart = FileInterpreter.evaluateValCall(new Scope(caller), args[1]);
-			ValidatedValCall argEnd = FileInterpreter.evaluateValCall(new Scope(caller), args[2]);
+			ValidatedValCall argBlob = FileInterpreter.evaluateValCall(new Env(caller), args[0]);
+			ValidatedValCall argStart = FileInterpreter.evaluateValCall(new Env(caller), args[1]);
+			ValidatedValCall argEnd = FileInterpreter.evaluateValCall(new Env(caller), args[2]);
 			if (!argBlob.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class))) {
 				throw new LangValidationException(args[0].getLocation(), "Blob expected");
 			}
@@ -143,6 +153,11 @@ public final class Functional {
 		public String toString() {
 			return "sub";
 		}
+		
+		@Override
+		public Type getType() {
+			return Type.ROOT_FUNCTION;
+		}
 	};
 	
 	
@@ -165,7 +180,7 @@ public final class Functional {
 			FreeConstraint.INSTANCE
 	);
 	
-	public static final Scope scope = new Scope(null)
+	public static final Env ENV = new Env(null)
 			.push("sum", sum)
 			.push("and", and)
 			.push("or", or)

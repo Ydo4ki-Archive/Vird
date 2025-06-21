@@ -1,8 +1,8 @@
 package com.ydo4ki.vird.base;
 
 import com.ydo4ki.vird.FileInterpreter;
+import com.ydo4ki.vird.lang.Env;
 import com.ydo4ki.vird.lang.LangValidationException;
-import com.ydo4ki.vird.lang.Scope;
 import com.ydo4ki.vird.lang.ValidatedValCall;
 
 import java.util.Collection;
@@ -11,7 +11,7 @@ import java.util.Collection;
  * @author Sulphuris
  * @since 4/11/2025 4:36 PM
  */
-public abstract class Expr extends Val {
+public abstract class Expr implements Val {
 	
 	private final Location location;
 	
@@ -25,10 +25,10 @@ public abstract class Expr extends Val {
 	}
 	
 	@Override
-	public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
+	public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
 		ValidatedValCall function = FileInterpreter.evaluateValCall(caller, this);
 		
-		return function.getInvocationConstraint(new Scope(caller), f);
+		return function.getInvocationConstraint(new Env(caller), f);
 	}
 	
 	public abstract Collection<? extends Expr> split(String... separateLines);

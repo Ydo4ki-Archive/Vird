@@ -2,7 +2,7 @@ package com.ydo4ki.vird.lang.constraint;
 
 import com.ydo4ki.vird.base.Val;
 import com.ydo4ki.vird.lang.Blob;
-import com.ydo4ki.vird.lang.Scope;
+import com.ydo4ki.vird.lang.Env;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,12 +12,12 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor(staticName = "of")
 @Getter
-public class ComparisonConstraint extends Constraint {
+public class ComparisonConstraint extends PrimitiveConstraint {
 	private final Blob than;
 	private final Op op;
 	
 	@Override
-	public boolean test(Scope scope, Val value) {
+	public boolean test(Env env, Val value) {
 		if (value instanceof Blob) {
 			return op == Op.GREATER
 					? ((Blob) value).compareTo(than) > 0
@@ -27,7 +27,7 @@ public class ComparisonConstraint extends Constraint {
 	}
 	
 	@Override
-	public boolean implies(Scope scope, Constraint other) {
+	public boolean implies(Env env, Constraint other) {
 		if (other instanceof ComparisonConstraint) return op == Op.GREATER
 				? ((ComparisonConstraint) other).getThan().compareTo(this.getThan()) <= 0
 				: ((ComparisonConstraint) other).getThan().compareTo(this.getThan()) >= 0;
@@ -36,7 +36,7 @@ public class ComparisonConstraint extends Constraint {
 	}
 	
 	@Override
-	protected <T extends Constraint> T extractImplication0(Class<T> type) {
+	protected <T extends PrimitiveConstraint> T extractImplication0(Class<T> type) {
 		return null;
 	}
 	

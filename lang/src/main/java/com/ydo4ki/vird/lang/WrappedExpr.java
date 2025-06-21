@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.base.*;
+import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import lombok.Getter;
 
 /**
@@ -8,7 +9,7 @@ import lombok.Getter;
  * @author Sulphuris
  */
 @Getter
-public final class WrappedExpr extends Val {
+public final class WrappedExpr implements Val {
 	
 	private final Expr expr;
 	
@@ -20,4 +21,11 @@ public final class WrappedExpr extends Val {
 	public String toString() {
 		return "<" + expr + ">";
 	}
+	
+	@Override
+	public Type getType() {
+		return TYPE;
+	}
+	
+	public static final Type TYPE = new Type(FreeConstraint.INSTANCE);
 }

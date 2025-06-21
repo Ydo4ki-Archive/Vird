@@ -1,18 +1,21 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.lang.constraint.Constraint;
+import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import com.ydo4ki.vird.project.Stability;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.math.BigInteger;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @Stability(Stability.PROB)
 @EqualsAndHashCode(callSuper = false)
 @Getter
-public final class Blob extends Val implements Comparable<Blob> {
+public final class Blob implements Val, Comparable<Blob> {
 	private final byte[] data;
 	// for optimization purposes due to frequent usage of blob as a number
 	private BigInteger bigInteger = null;
@@ -87,5 +90,39 @@ public final class Blob extends Val implements Comparable<Blob> {
 	@Override
 	public int compareTo(Blob o) {
 		return this.bigInteger().compareTo(o.bigInteger());
+	}
+	
+	@Override
+	public Type getType() {
+		return type(data.length);
+	}
+	
+	private static final Map<Integer, BlobType> types = new HashMap<>();
+	
+	public static Type type(int size) {
+		return types.computeIfAbsent(size, s -> new BlobType(FreeConstraint.INSTANCE, s));
+	}
+	
+	private static final class BlobType extends Type {
+		
+		private final int size;
+		
+		public BlobType(Constraint implications, int size) {
+			super(implications);
+			this.size = size;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (o == null || getClass() != o.getClass()) return false;
+			if (!super.equals(o)) return false;
+			BlobType blobType = (BlobType) o;
+			return size == blobType.size;
+		}
+		
+		@Override
+		public int hashCode() {
+			return Objects.hash(super.hashCode(), size);
+		}
 	}
 }

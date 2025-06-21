@@ -16,7 +16,7 @@ import java.util.function.BiFunction;
 /**
  * @since 6/3/2025 12:08 AM
  */
-final class BigIntOpVal extends Val {
+final class BigIntOpVal implements Val {
 	private final BiFunction<BigInteger, BigInteger, BigInteger> operation;
 	private final BigInteger initial;
 	
@@ -26,8 +26,8 @@ final class BigIntOpVal extends Val {
 	}
 	
 	@Override
-	public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-		if (!f.getBracketsType().equals(Functional.round)) return super.invocation(caller, f);
+	public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
+		if (!f.getBracketsType().equals(Functional.round)) return Val.super.invocation(caller, f);
 		Expr[] args = VirdUtil.args(f);
 		
 		if (args.length < 2)
@@ -37,7 +37,7 @@ final class BigIntOpVal extends Val {
 		List<ValidatedValCall> leftToEvaluate = new ArrayList<>();
 		
 		for (int i = 0, Len = args.length; i < Len; i++) {
-			ValidatedValCall c = FileInterpreter.evaluateValCall(new Scope(caller), args[i]);
+			ValidatedValCall c = FileInterpreter.evaluateValCall(new Env(caller), args[i]);
 			if (!c.getConstraint().implies(caller, InstanceOfConstraint.of(Blob.class)))
 				throw new LangValidationException(f.getLocation(), "Number expected (" + i + ")");
 			if (c.isPure()) {
@@ -57,5 +57,10 @@ final class BigIntOpVal extends Val {
 				return new Blob(sum.toByteArray());
 			}
 		};
+	}
+	
+	@Override
+	public Type getType() {
+		return Type.ROOT_FUNCTION;
 	}
 }

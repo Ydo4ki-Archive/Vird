@@ -2,8 +2,9 @@ package com.ydo4ki.vird.lang.constraint;
 
 import com.ydo4ki.vird.base.Location;
 import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.lang.Env;
 import com.ydo4ki.vird.lang.LangValidationException;
-import com.ydo4ki.vird.lang.Scope;
+import com.ydo4ki.vird.lang.Type;
 import com.ydo4ki.vird.lang.ValidatedValCall;
 import lombok.Getter;
 
@@ -15,19 +16,19 @@ import java.util.Objects;
  * @author alignie
  */
 @Getter
-public final class Struct extends Constraint {
+public final class Struct extends PrimitiveConstraint {
 	private final Constraint[] fields;
 	
 	public Struct(Constraint... fields) {
 		this.fields = fields;
 	}
 	
-	public ValidatedValCall newVal(Scope scope, Location location, Val... vals) throws LangValidationException {
+	public ValidatedValCall newVal(Env env, Location location, Val... vals) throws LangValidationException {
 		if (vals.length != fields.length)
 			throw new LangValidationException(location, "Invalid fields amount (" + vals.length + ", " + fields.length + " expected)");
 		
 		for (int i = 0; i < vals.length; i++) {
-			if (!fields[i].test(scope, vals[i]))
+			if (!fields[i].test(env, vals[i]))
 				throw new LangValidationException(location, "Constraint violation: " + vals[i] + " does not satisfy " + fields[i]);
 		}
 		
@@ -41,12 +42,12 @@ public final class Struct extends Constraint {
 	
 	
 	@Override
-	public boolean test(Scope scope, Val value) {
+	public boolean test(Env env, Val value) {
 		if (value instanceof StructVal) {
 			Val[] vals = ((StructVal) value).getVals();
 			if (vals.length != fields.length) return false;
 			for (int i = 0; i < vals.length; i++) {
-				if (!fields[i].test(scope, vals[i])) return false;
+				if (!fields[i].test(env, vals[i])) return false;
 			}
 			return true;
 		}
@@ -54,12 +55,12 @@ public final class Struct extends Constraint {
 	}
 	
 	@Override
-	public boolean implies(Scope scope, Constraint other) {
+	public boolean implies(Env env, Constraint other) {
 		if (other instanceof Struct) {
 			Constraint[] oFields = ((Struct) other).fields;
 			if (oFields.length != fields.length) return false;
 			for (int i = 0; i < oFields.length; i++) {
-				if (!fields[i].implies(scope, oFields[i])) return false;
+				if (!fields[i].implies(env, oFields[i])) return false;
 			}
 			return true;
 		}
@@ -68,7 +69,7 @@ public final class Struct extends Constraint {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	protected <T extends Constraint> T extractImplication0(Class<T> type) {
+	protected <T extends PrimitiveConstraint> T extractImplication0(Class<T> type) {
 		if (type == EqualityConstraint.class) {
 			Val[] vals = new Val[fields.length];
 			for (int i = 0; i < fields.length; i++) {
@@ -94,7 +95,7 @@ public final class Struct extends Constraint {
 	}
 	
 	@Getter
-	public static final class StructVal extends Val {
+	public static final class StructVal implements Val {
 		private final Val[] vals;
 		
 		public StructVal(Val[] vals) {
@@ -124,5 +125,12 @@ public final class Struct extends Constraint {
 		public int hashCode() {
 			return Arrays.hashCode(vals);
 		}
+		
+		@Override
+		public Type getType() {
+			return null;
+		}
+		
+		public static final Type TYPE = new Type(FreeConstraint.INSTANCE);
 	}
 }

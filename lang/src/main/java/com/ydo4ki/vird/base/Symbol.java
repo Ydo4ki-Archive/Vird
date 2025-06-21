@@ -1,5 +1,7 @@
 package com.ydo4ki.vird.base;
 
+import com.ydo4ki.vird.lang.Type;
+import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import lombok.Getter;
 
 import java.util.*;
@@ -100,4 +102,11 @@ public final class Symbol extends Expr {
 	public int hashCode() {
 		return Objects.hash(value);
 	}
+	
+	@Override
+	public Type getType() {
+		return TYPE;
+	}
+	
+	public static final Type TYPE = new Type(FreeConstraint.INSTANCE);
 }

@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class FileInterpreter {
 	
-	public static int run(File src, Scope scope, BracketsTypes bracketsTypes, boolean measure) throws IOException, LangException {
+	public static int run(File src, Env env, BracketsTypes bracketsTypes, boolean measure) throws IOException, LangException {
 		long start = 0;
 		long end;
 		long time;
@@ -37,7 +37,7 @@ public class FileInterpreter {
 			elements.add(expression);
 		}
 		ExprList _do = ExprList.of(Location.unknown(src), Functional.round, elements);
-		ValidatedValCall call = Functional._do.invocation(scope, _do);
+		ValidatedValCall call = Functional._do.invocation(env, _do);
 		
 		
 		if (measure) {
@@ -62,15 +62,15 @@ public class FileInterpreter {
 	}
 	
 	// honestly at this point I don't really feel understanding how does this work
-	public static ValidatedValCall evaluateValCall(Scope scope, Expr expr) throws LangValidationException {
+	public static ValidatedValCall evaluateValCall(Env env, Expr expr) throws LangValidationException {
 		if (expr instanceof ExprList) {
 			ExprList f = (ExprList) expr;
-			return f.get(0).invocation(scope, f);
+			return f.get(0).invocation(env, f);
 		}
 		if (expr instanceof Symbol) {
 			// todo: make it flexible
 			final String str = ((Symbol) expr).getValue();
-			ValidatedValCall call = scope.preresolve(str);
+			ValidatedValCall call = env.preresolve(str);
 			if (call == null) try {
 				Blob b;
 				if (str.startsWith("0x")) {
@@ -94,7 +94,7 @@ public class FileInterpreter {
 			return new ValidatedValCall(call.getConstraint()) {
 				@Override
 				public Val invoke0() {
-					return scope.resolve(str);
+					return env.resolve(str);
 				}
 			};
 		}

@@ -2,14 +2,8 @@ package com.ydo4ki.vird.lib;
 
 import com.ydo4ki.vird.FileInterpreter;
 import com.ydo4ki.vird.VirdUtil;
-import com.ydo4ki.vird.base.Expr;
-import com.ydo4ki.vird.base.ExprList;
-import com.ydo4ki.vird.base.Symbol;
-import com.ydo4ki.vird.base.Val;
-import com.ydo4ki.vird.lang.LangValidationException;
-import com.ydo4ki.vird.lang.RuntimeOperation;
-import com.ydo4ki.vird.lang.Scope;
-import com.ydo4ki.vird.lang.ValidatedValCall;
+import com.ydo4ki.vird.base.*;
+import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import com.ydo4ki.vird.lang.constraint.Struct;
@@ -23,10 +17,15 @@ import java.util.Map;
  * @since 6/2/2025 7:55 PM
  * @author alignie
  */
-class Do extends Val {
+class Do implements Val {
 	@Override
-	public ValidatedValCall invocation(Scope caller, ExprList f) throws LangValidationException {
-		if (f.getBracketsType().open != '(') return super.invocation(caller, f);
+	public Type getType() {
+		return Type.ROOT_FUNCTION;
+	}
+	
+	@Override
+	public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
+		if (f.getBracketsType().open != '(') return Val.super.invocation(caller, f);
 		Expr[] expressions = VirdUtil.args(f);
 		
 		List<ValidatedValCall> declarations = new ArrayList<>();

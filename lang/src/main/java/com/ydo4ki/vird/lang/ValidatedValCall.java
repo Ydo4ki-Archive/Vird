@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import javax.xml.bind.ValidationException;
 import java.util.Objects;
 
 /**
@@ -53,8 +52,8 @@ public abstract class ValidatedValCall {
 		return false;
 	}
 	
-	public ValidatedValCall getInvocationConstraint(Scope scope, ExprList f) throws LangValidationException {
-		ValidatedValCall cCall = constraint.getInvocationConstraint(scope, f);
+	public ValidatedValCall getInvocationConstraint(Env env, ExprList f) throws LangValidationException {
+		ValidatedValCall cCall = constraint.getInvocationConstraint(env, f);
 		if (cCall.isPure())
 			return cCall;
 		
