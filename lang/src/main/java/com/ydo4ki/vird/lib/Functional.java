@@ -25,9 +25,9 @@ public final class Functional {
 	
 	public static final Val echo = new Val() {
 		@Override
-		public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
-			if (!f.getBracketsType().equals(BracketsTypes.round)) return Val.super.invocation(caller, f);
-			if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
+		public ValidatedValCall invocation(Env env, ExprList f) throws LangValidationException {
+			if (!f.getBracketsType().equals(BracketsTypes.round)) return Val.super.invocation(env, f);
+			VirdUtil.assertArgsAmount(f, 1);
 			Expr arg = f.get(1);
 			if (arg instanceof Symbol) {
 				String v = ((Symbol) arg).getValue();
@@ -43,7 +43,7 @@ public final class Functional {
 					};
 				}
 			}
-			ValidatedValCall call = FileInterpreter.evaluateValCall(caller, arg);
+			ValidatedValCall call = FileInterpreter.evaluateValCall(env, arg);
 			return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
 				@Override
 				public @NonNull Val invoke0() throws RuntimeOperation {

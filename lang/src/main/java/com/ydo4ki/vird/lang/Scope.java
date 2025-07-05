@@ -2,6 +2,7 @@ package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.ast.Expr;
 import com.ydo4ki.vird.ast.Location;
+import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import com.ydo4ki.vird.project.Stability;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -53,10 +54,10 @@ public final class Scope implements Env {
 		return this;
 	}
 	
-//	@Override
-//	public Type getType() {
-//		return type;
-//	}
-//
-//	private static final Type type = new Type(FreeConstraint.INSTANCE);
+	@Override
+	public Type getType() {
+		return type;
+	}
+
+	private static final Type type = new Type(FreeConstraint.INSTANCE);
 }

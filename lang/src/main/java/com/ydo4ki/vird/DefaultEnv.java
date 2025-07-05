@@ -1,7 +1,10 @@
 package com.ydo4ki.vird;
 
+import com.ydo4ki.vird.ast.BracketsTypes;
 import com.ydo4ki.vird.ast.Expr;
+import com.ydo4ki.vird.ast.ExprList;
 import com.ydo4ki.vird.lang.*;
+import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import com.ydo4ki.vird.lib.Functional;
 
 import java.math.BigInteger;
@@ -17,6 +20,25 @@ public final class DefaultEnv implements Env {
 	
 	public DefaultEnv() {
 		push("echo", Functional.echo);
+		push("currentEnv", new Val() {
+			
+			@Override
+			public ValidatedValCall invocation(Env env, ExprList f) throws LangValidationException {
+				if (!f.getBracketsType().equals(BracketsTypes.round)) return Val.super.invocation(env, f);
+				VirdUtil.assertArgsAmount(f, 0);
+				return ValidatedValCall.promiseVal(env);
+			}
+			
+			@Override
+			public String toString() {
+				return "currentEnv";
+			}
+			
+			@Override
+			public Type getType() {
+				return Type.ROOT_FUNCTION;
+			}
+		});
 	}
 	
 	@Override
@@ -46,9 +68,15 @@ public final class DefaultEnv implements Env {
 		return symbols.get(name).invoke();
 	}
 	
-	
 	private DefaultEnv push(String name, Val value) {
 		symbols.put(name, ValidatedValCall.promiseVal(value));
 		return this;
 	}
+	
+	@Override
+	public Type getType() {
+		return type;
+	}
+	
+	private static final Type type = new Type(FreeConstraint.INSTANCE);
 }

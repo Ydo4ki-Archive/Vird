@@ -2,6 +2,7 @@ package com.ydo4ki.vird;
 
 import com.ydo4ki.vird.ast.Expr;
 import com.ydo4ki.vird.ast.ExprList;
+import com.ydo4ki.vird.lang.LangValidationException;
 
 import java.util.List;
 
@@ -17,5 +18,9 @@ public class VirdUtil {
 			args = args0.toArray(new Expr[0]);
 		}
 		return args;
+	}
+	
+	public static void assertArgsAmount(ExprList f, int amount) throws LangValidationException {
+		if (f.size() != amount+1) throw new LangValidationException(f.getLocation(), amount + " argument expected");
 	}
 }
