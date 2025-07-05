@@ -1,14 +1,10 @@
-package com.ydo4ki.vird.base.lexer;
+package com.ydo4ki.vird.ast.lexer;
 
-import com.ydo4ki.vird.base.*;
+import com.ydo4ki.vird.ast.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * @author Sulphuris

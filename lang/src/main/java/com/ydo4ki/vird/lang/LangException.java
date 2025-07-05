@@ -1,5 +1,6 @@
-package com.ydo4ki.vird.base;
+package com.ydo4ki.vird.lang;
 
+import com.ydo4ki.vird.ast.Location;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,12 +1,8 @@
 package com.ydo4ki.vird.lang.constraint;
 
 import com.ydo4ki.vird.FileInterpreter;
-import com.ydo4ki.vird.base.ExprList;
-import com.ydo4ki.vird.base.Val;
-import com.ydo4ki.vird.lang.Env;
-import com.ydo4ki.vird.lang.LangValidationException;
-import com.ydo4ki.vird.lang.RuntimeOperation;
-import com.ydo4ki.vird.lang.ValidatedValCall;
+import com.ydo4ki.vird.ast.ExprList;
+import com.ydo4ki.vird.lang.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +71,7 @@ public final class OrConstraint extends AbstractConstraint {
 			protected Val invoke0() throws RuntimeOperation {
 				try {
 						  // (get-random-echo) 				 // ((get-random-echo) "You're lucky!")
-					return actual.invoke().invocation(env, f).invoke(); // I really don't like this, but I've got no idea how t avoid double-check here
+					return actual.invoke().invocation(env, f).invoke(); // I really don't like this, but I've got no idea how to avoid double-check here
 				} catch (LangValidationException e) {
 					System.err.println("Incorrect constraints");
 					throw new RuntimeException(e);

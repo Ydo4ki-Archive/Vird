@@ -1,7 +1,7 @@
-package com.ydo4ki.vird.base.lexer;
+package com.ydo4ki.vird.ast.lexer;
 
-import com.ydo4ki.vird.base.BracketsType;
-import com.ydo4ki.vird.base.BracketsTypes;
+import com.ydo4ki.vird.ast.BracketsType;
+import com.ydo4ki.vird.ast.BracketsTypes;
 import lombok.Getter;
 
 import java.io.File;
@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class TokenOutput implements Iterable<Token> {
 	

@@ -1,9 +1,6 @@
-package com.ydo4ki.vird.base;
+package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.vird.lang.Env;
-import com.ydo4ki.vird.lang.LangValidationException;
-import com.ydo4ki.vird.lang.Type;
-import com.ydo4ki.vird.lang.ValidatedValCall;
+import com.ydo4ki.vird.ast.ExprList;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 
 /**
@@ -25,7 +22,7 @@ public interface Val {
 	Type unit_type = new Type(new EqualityConstraint(unit)); // singleton
 	
 	
-	default ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
+	default ValidatedValCall invocation(Env env, ExprList f) throws LangValidationException {
 		throw new LangValidationException(f.getLocation(),
 				"Not callable (" + this.getClass().getSimpleName() + " «" + this + "») with " + f.getBracketsType());
 	}

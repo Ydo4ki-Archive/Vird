@@ -1,8 +1,9 @@
 package com.ydo4ki.vird.lang.constraint;
 
-import com.ydo4ki.vird.base.Val;
-import com.ydo4ki.vird.lang.Blob;
 import com.ydo4ki.vird.lang.Env;
+import com.ydo4ki.vird.lang.Val;
+import com.ydo4ki.vird.lang.Blob;
+import com.ydo4ki.vird.lang.Scope;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

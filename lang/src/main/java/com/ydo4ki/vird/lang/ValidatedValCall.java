@@ -1,8 +1,7 @@
 package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.vird.base.ExprList;
-import com.ydo4ki.vird.base.Location;
-import com.ydo4ki.vird.base.Val;
+import com.ydo4ki.vird.ast.ExprList;
+import com.ydo4ki.vird.ast.Location;
 import com.ydo4ki.vird.lang.constraint.Constraint;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import lombok.Getter;

@@ -1,7 +1,10 @@
 package com.ydo4ki.vird;
 
 import com.github.freva.asciitable.AsciiTable;
-import com.ydo4ki.vird.base.*;
+import com.ydo4ki.vird.ast.BracketsTypes;
+import com.ydo4ki.vird.ast.Expr;
+import com.ydo4ki.vird.ast.ExprList;
+import com.ydo4ki.vird.ast.Symbol;
 import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import com.ydo4ki.vird.lang.constraint.OrConstraint;
@@ -12,27 +15,24 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.ydo4ki.vird.lib.Functional.*;
-
 public class Main {
 	
 	public static void main(String[] __args) throws IOException {
-		BracketsTypes bracketsTypes = new BracketsTypes();
-		bracketsTypes.add(round);
-		bracketsTypes.add(square);
-		bracketsTypes.add(braces);
+		BracketsTypes bracketsTypes = new BracketsTypes(
+				BracketsTypes.round, BracketsTypes.square, BracketsTypes.braces
+		);
 		
 		
 		printPrjInfo(System.out);
 		File src = new File("vird/file.vird");
 		
-		Env env = Functional.ENV;
+		Scope env = Functional.env;
 		
 		Val echo = env.resolve("echo");
 		env.push("get-echo", new Val() {
 			@Override
-			public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
-				if (!f.getBracketsType().equals(round)) return Val.super.invocation(caller, f);
+			public ValidatedValCall invocation(Env env, ExprList f) throws LangValidationException {
+				if (!f.getBracketsType().equals(BracketsTypes.round)) return Val.super.invocation(env, f);
 				
 				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
 				return new ValidatedValCall(new EqualityConstraint(echo)) {
@@ -60,14 +60,14 @@ public class Main {
 		env.push("get-echo-sym", new Val() {
 			@Override
 			public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
-				if (!f.getBracketsType().equals(round)) return Val.super.invocation(caller, f);
+				if (!f.getBracketsType().equals(BracketsTypes.round)) return Val.super.invocation(caller, f);
 				
 				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
-				Symbol echoSym = new Symbol(f.getLocation(), "echo");
+				WrappedExpr echoSym = new WrappedExpr(new Symbol(f.getLocation(), "echo"));
 				return new ValidatedValCall(new EqualityConstraint(echoSym)) {
 					@Override
 					public Val invoke0() {
-						System.out.println("# get-echo-sym is called!");
+						System.out.println("# get-echo-sym is physically called!");
 						
 						return echoSym;
 					}
@@ -86,8 +86,8 @@ public class Main {
 		});
 		Val fakeEcho = new Val() {
 			@Override
-			public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
-				if (!f.getBracketsType().equals(round)) return Val.super.invocation(caller, f);
+			public ValidatedValCall invocation(Env env, ExprList f) throws LangValidationException {
+				if (!f.getBracketsType().equals(BracketsTypes.round)) return Val.super.invocation(env, f);
 				
 				if (f.size() != 2) throw new LangValidationException(f.getLocation(), "1 argument expected");
 				Expr arg = f.get(1);
@@ -105,7 +105,7 @@ public class Main {
 						};
 					}
 				}
-				ValidatedValCall call = FileInterpreter.evaluateValCall(caller, arg);
+				ValidatedValCall call = FileInterpreter.evaluateValCall(env, arg);
 				return new ValidatedValCall(new EqualityConstraint(Val.unit)) {
 					@Override
 					public @NonNull Val invoke0() {
@@ -127,8 +127,8 @@ public class Main {
 		};
 		env.push("get-random-echo", new Val() {
 			@Override
-			public ValidatedValCall invocation(Env caller, ExprList f) throws LangValidationException {
-				if (!f.getBracketsType().equals(round)) return Val.super.invocation(caller, f);
+			public ValidatedValCall invocation(Env env, ExprList f) throws LangValidationException {
+				if (!f.getBracketsType().equals(BracketsTypes.round)) return Val.super.invocation(env, f);
 				
 				if (f.size() != 1) throw new LangValidationException(f.getLocation(), "0 arguments expected");
 				return new ValidatedValCall(OrConstraint.of(new EqualityConstraint(echo), new EqualityConstraint(fakeEcho))) {

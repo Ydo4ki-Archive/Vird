@@ -1,6 +1,8 @@
 package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.vird.base.*;
+import com.ydo4ki.vird.FileInterpreter;
+import com.ydo4ki.vird.ast.Expr;
+import com.ydo4ki.vird.ast.ExprList;
 import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import lombok.Getter;
 
@@ -15,6 +17,13 @@ public final class WrappedExpr implements Val {
 	
 	public WrappedExpr(Expr expr) {
 		this.expr = expr;
+	}
+	
+	@Override
+	public ValidatedValCall invocation(Env env, ExprList f) throws LangValidationException {
+		ValidatedValCall function = FileInterpreter.evaluateValCall(env, expr);
+		
+		return function.getInvocationConstraint(env, f);
 	}
 	
 	@Override

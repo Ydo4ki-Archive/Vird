@@ -1,6 +1,6 @@
-package com.ydo4ki.vird.base.lexer;
+package com.ydo4ki.vird.ast.lexer;
 
-import com.ydo4ki.vird.base.Location;
+import com.ydo4ki.vird.ast.Location;
 
 import java.io.File;
 

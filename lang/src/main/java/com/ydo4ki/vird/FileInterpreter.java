@@ -1,8 +1,8 @@
 package com.ydo4ki.vird;
 
-import com.ydo4ki.vird.base.*;
-import com.ydo4ki.vird.base.lexer.ExprOutput;
-import com.ydo4ki.vird.base.lexer.TokenOutput;
+import com.ydo4ki.vird.ast.*;
+import com.ydo4ki.vird.ast.lexer.ExprOutput;
+import com.ydo4ki.vird.ast.lexer.TokenOutput;
 import com.ydo4ki.vird.lang.*;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 import com.ydo4ki.vird.lib.Functional;
@@ -36,7 +36,7 @@ public class FileInterpreter {
 		for (Expr expression : expressions) {
 			elements.add(expression);
 		}
-		ExprList _do = ExprList.of(Location.unknown(src), Functional.round, elements);
+		ExprList _do = ExprList.of(Location.unknown(src), BracketsTypes.round, elements);
 		ValidatedValCall call = Functional._do.invocation(env, _do);
 		
 		
@@ -65,7 +65,7 @@ public class FileInterpreter {
 	public static ValidatedValCall evaluateValCall(Env env, Expr expr) throws LangValidationException {
 		if (expr instanceof ExprList) {
 			ExprList f = (ExprList) expr;
-			return f.get(0).invocation(env, f);
+			return new WrappedExpr(f.get(0)).invocation(env, f);
 		}
 		if (expr instanceof Symbol) {
 			// todo: make it flexible

@@ -1,6 +1,5 @@
-package com.ydo4ki.vird.base;
+package com.ydo4ki.vird.ast;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;

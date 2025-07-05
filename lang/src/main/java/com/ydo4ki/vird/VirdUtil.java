@@ -1,7 +1,7 @@
 package com.ydo4ki.vird;
 
-import com.ydo4ki.vird.base.Expr;
-import com.ydo4ki.vird.base.ExprList;
+import com.ydo4ki.vird.ast.Expr;
+import com.ydo4ki.vird.ast.ExprList;
 
 import java.util.List;
 

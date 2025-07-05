@@ -1,7 +1,6 @@
 package com.ydo4ki.vird.lang;
 
-import com.ydo4ki.vird.base.LangException;
-import com.ydo4ki.vird.base.Location;
+import com.ydo4ki.vird.ast.Location;
 
 /**
  * @since 5/7/2025 1:27 PM
