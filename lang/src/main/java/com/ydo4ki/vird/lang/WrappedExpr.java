@@ -36,5 +36,5 @@ public final class WrappedExpr implements Val {
 		return TYPE;
 	}
 	
-	public static final Type TYPE = new Type(FreeConstraint.INSTANCE);
+	public static final Type TYPE = new IdentityType(FreeConstraint.INSTANCE);
 }

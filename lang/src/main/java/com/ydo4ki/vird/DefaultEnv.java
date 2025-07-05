@@ -78,5 +78,5 @@ public final class DefaultEnv implements Env {
 		return type;
 	}
 	
-	private static final Type type = new Type(FreeConstraint.INSTANCE);
+	private static final Type type = new IdentityType(FreeConstraint.INSTANCE);
 }

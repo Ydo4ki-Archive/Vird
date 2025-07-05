@@ -7,6 +7,8 @@ import com.ydo4ki.vird.lang.LangValidationException;
  */
 public class Playground {
 	public static void main(String[] args) throws LangValidationException {
-		Vird.run("(echo 'Hello World') (echo (currentEnv))".replace('\'', '\"'));
+		
+		String vird = "(echo 'Hello World') (echo (currentEnv))".replace('\'', '\"');
+		Vird.run(vird);
 	}
 }

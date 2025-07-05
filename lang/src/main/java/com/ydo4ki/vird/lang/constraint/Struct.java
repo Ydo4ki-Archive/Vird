@@ -127,6 +127,6 @@ public final class Struct extends PrimitiveConstraint {
 			return null;
 		}
 		
-		public static final Type TYPE = new Type(FreeConstraint.INSTANCE);
+		public static final Type TYPE = new IdentityType(FreeConstraint.INSTANCE);
 	}
 }

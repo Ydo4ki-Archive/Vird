@@ -102,7 +102,7 @@ public final class Blob implements Val, Comparable<Blob> {
 		return types.computeIfAbsent(size, s -> new BlobType(FreeConstraint.INSTANCE, s));
 	}
 	
-	private static final class BlobType extends Type {
+	private static final class BlobType extends IdentityType {
 		
 		private final int size;
 		

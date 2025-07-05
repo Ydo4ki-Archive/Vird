@@ -19,7 +19,7 @@ public interface Val {
 		}
 	};
 	
-	Type unit_type = new Type(new EqualityConstraint(unit)); // singleton
+	Type unit_type = new IdentityType(new EqualityConstraint(unit)); // singleton
 	
 	
 	default ValidatedValCall invocation(Env env, ExprList f) throws LangValidationException {
