@@ -42,6 +42,6 @@ public final class Vird {
 			Thread.currentThread().setUncaughtExceptionHandler(new LangUncaughtExceptionHandler(h));
 		
 		ExprOutput expressions = new ExprOutput(new TokenOutput(vird, null, bracketsTypes));
-		return FileInterpreter.evaluateExpressions(new Scope(null), expressions, null, vird);
+		return FileInterpreter.evaluateExpressions(new DefaultEnv(), expressions, null, vird);
 	}
 }

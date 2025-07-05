@@ -1,5 +1,6 @@
 package com.ydo4ki.vird.lang;
 
+import com.ydo4ki.vird.ast.Expr;
 import com.ydo4ki.vird.ast.Location;
 import com.ydo4ki.vird.project.Stability;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class Scope implements Env {
 	@Getter
-	private final Scope parent;
+	private final Env parent;
 	private final Map<String, Val> definedSymbols = new HashMap<>();
 	private final Map<String, ValidatedValCall> preDefinedSymbols = new HashMap<>();
 	
@@ -33,12 +34,12 @@ public final class Scope implements Env {
 		return v;
 	}
 	@Override
-	public ValidatedValCall preresolve(String name) {
+	public ValidatedValCall preresolve(String name, Expr expr) throws LangValidationException {
 		ValidatedValCall dereferenced = preDefinedSymbols.get(name);
-		return dereferenced != null || parent == null ? dereferenced : parent.preresolve(name);
+		return dereferenced != null || parent == null ? dereferenced : parent.preresolve(name, expr);
 	}
 	@Override
-	public Val resolve(String name) {
+	public Val resolve(String name) throws RuntimeOperation {
 		Val dereferenced = definedSymbols.get(name);
 		return dereferenced != null || parent == null ? dereferenced : parent.resolve(name);
 	}

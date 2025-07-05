@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
 	
-	public static void main(String[] __args) throws IOException {
+	public static void main(String[] __args) throws IOException, RuntimeOperation {
 		BracketsTypes bracketsTypes = new BracketsTypes(
 				BracketsTypes.round, BracketsTypes.square, BracketsTypes.braces
 		);

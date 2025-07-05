@@ -74,32 +74,19 @@ public class FileInterpreter {
 			return new WrappedExpr(f.get(0)).invocation(env, f);
 		}
 		if (expr instanceof Symbol) {
-			// todo: make it flexible
 			final String str = ((Symbol) expr).getValue();
-			ValidatedValCall call = env.preresolve(str);
-			if (call == null) try {
-				Blob b;
-				if (str.startsWith("0x")) {
-					String num = str.substring(2);
-					if (num.length() % 2 == 1)
-						throw new LangValidationException(expr.getLocation(), "Amount of digits must be even: " + expr);
-					BigInteger integer = new BigInteger(num, 16);
-					int bytes = num.length() / 2;
-					b = new Blob(integer, bytes);
-				} else {
-					b = new Blob(new BigInteger(str));
-				}
-				return ValidatedValCall.promiseVal(b);
-			} catch (NumberFormatException e) {
+			
+			ValidatedValCall call = env.preresolve(str, expr);
+			if (call == null)
 				throw new LangValidationException(expr.getLocation(), "Undefined symbol: " + expr);
-			}
+			
 			
 			if (call.getConstraint() instanceof EqualityConstraint && call.isPure()) {
 				return call; // we already know the exact value
 			}
 			return new ValidatedValCall(call.getConstraint()) {
 				@Override
-				public Val invoke0() {
+				public Val invoke0() throws RuntimeOperation {
 					return env.resolve(str);
 				}
 			};
