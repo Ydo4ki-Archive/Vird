@@ -3,7 +3,7 @@ package com.ydo4ki.vird.lib;
 /**
  * The most basic primitive of interpretation that can be expressed in programming languages at all (с)
  * @since 6/2/2025 11:49 PM
- * @author alignie
+ * 
  * */
 //class Execute implements Val {
 //	public static ValidatedValCall execution(Env caller, Expr[] expressions, ExecutionHandler... handlers) throws LangValidationException {

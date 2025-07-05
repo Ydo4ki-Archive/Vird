@@ -19,7 +19,15 @@ import java.util.List;
  */
 public class FileInterpreter {
 	
-	public static int run(File src, Env env, BracketsTypes bracketsTypes, boolean measure) throws IOException, LangException {
+	private static final boolean measure = true;
+	
+	public static int run(File src, Env env, BracketsTypes bracketsTypes) throws IOException, LangException {
+		ExprOutput expressions = new ExprOutput(new TokenOutput(src, bracketsTypes));
+		evaluateExpressions(env, expressions, src, null);
+		return 0;
+	}
+	
+	static Val evaluateExpressions(Env env, Iterable<Expr> expressions, File src, String source) throws LangValidationException {
 		long start = 0;
 		long end;
 		long time;
@@ -28,15 +36,12 @@ public class FileInterpreter {
 			System.out.println("\nValidation...");
 			start = System.currentTimeMillis();
 		}
-		
-		
-		ExprOutput expressions = new ExprOutput(new TokenOutput(src, bracketsTypes));
 		List<Expr> elements = new ArrayList<>();
-		elements.add(new Symbol(Location.unknown(src), "do"));
+		elements.add(new Symbol(Location.unknown(src, source), "do"));
 		for (Expr expression : expressions) {
 			elements.add(expression);
 		}
-		ExprList _do = ExprList.of(Location.unknown(src), BracketsTypes.round, elements);
+		ExprList _do = ExprList.of(Location.unknown(src, source), BracketsTypes.round, elements);
 		ValidatedValCall call = Functional._do.invocation(env, _do);
 		
 		
@@ -48,8 +53,9 @@ public class FileInterpreter {
 			start = System.currentTimeMillis();
 		}
 		
+		Val ret;
 		try {
-			call.invoke();
+			ret = call.invoke();
 		} catch (RuntimeOperation e) {
 			throw new AssertionError(e);
 		}
@@ -58,7 +64,7 @@ public class FileInterpreter {
 			time = end - start;
 			System.out.println("\nFinished in " + time + "ms");
 		}
-		return 0;
+		return ret;
 	}
 	
 	// honestly at this point I don't really feel understanding how does this work
@@ -102,50 +108,9 @@ public class FileInterpreter {
 	}
 	
 	
-	public static Error handleLangException(LangException e, String source, File file, int code) {
-		String filename = file.getAbsolutePath();
-		filename = filename.substring(1).replaceAll("\\|/", ".");
-		System.err.println(getErrorDescription(e, filename, source));
-		if (e.getCause() != e && e.getCause() instanceof LangException) {
-			System.err.println("for:");
-			System.err.println(getErrorDescription((LangException) e.getCause(), filename, source));
-		}
-//		e.printStackTrace();
+	public static Error handleLangException(LangException e, int code) throws IOException {
+		e.handle(System.err);
 		System.exit(code);
 		return new Error();
-	}
-	
-	private static String getErrorDescription(LangException e, String filename, String source) {
-		StringBuilder msg = new StringBuilder(e.errName()).append(": ").append(e.getRawMessage()).append(" (")
-				.append(filename);
-		if (e.getLocation() != null) {
-			msg.append(':').append(e.getLocation().getStartLine());
-		}
-		msg.append(')').append("\n\n");
-		
-		if (e.getLocation() != null) {
-			String line;
-			try {
-				line = source.split("\n")[e.getLocation().getStartLine() - 1];
-			} catch (ArrayIndexOutOfBoundsException ee) {
-				line = " ";
-			}
-			
-			int linePos = source.substring(0, e.getLocation().getStartPos()).lastIndexOf('\n');
-			int errStart = e.getLocation().getStartPos() - linePos;
-			int errEnd = e.getLocation().getEndPos() - linePos;
-			
-			msg.append(line).append('\n');
-			
-			char[] underline = new char[line.length()];
-			for (int i = 0; i < underline.length; i++) {
-				if (i >= errStart - 1 && i < errEnd - 1) underline[i] = '~';
-				else if (line.charAt(i) == '\t') underline[i] = '\t';
-				else underline[i] = ' ';
-			}
-			return msg.append(underline).append('\n').toString();
-		}
-		
-		return msg.append('\n').toString();
 	}
 }

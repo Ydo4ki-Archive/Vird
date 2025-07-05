@@ -9,7 +9,7 @@ import java.util.Objects;
 
 /**
  * @since 6/4/2025 5:36 PM
- * @author alignie
+ * 
  */
 @Getter
 public final class Struct extends PrimitiveConstraint {

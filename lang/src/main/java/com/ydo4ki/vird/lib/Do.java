@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * @since 6/2/2025 7:55 PM
- * @author alignie
+ * 
  */
 class Do implements Val {
 	@Override

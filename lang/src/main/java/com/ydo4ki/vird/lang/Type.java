@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 /**
  * @since 6/5/2025 9:42 PM
- * @author alignie
+ * 
  */
 public class Type implements Val {
 	private final int depth;

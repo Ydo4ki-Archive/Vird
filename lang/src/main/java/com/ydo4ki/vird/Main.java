@@ -152,12 +152,10 @@ public class Main {
 		
 		env.push("UNIT", Val.unit);
 		try {
-			System.exit(FileInterpreter.run(src, env, bracketsTypes, true));
+			System.exit(FileInterpreter.run(src, env, bracketsTypes));
 		} catch (LangException e) {
 			try {
-				throw FileInterpreter.handleLangException(e,
-						String.join("\n", Files.readAllLines(e.getLocation().getSourceFile().toPath())),
-						e.getLocation().getSourceFile(), 1);
+				throw FileInterpreter.handleLangException(e, 1);
 			} catch (IOException ex) {
 				e.printStackTrace(System.err);
 				System.exit(1);
@@ -167,11 +165,12 @@ public class Main {
 	
 	
 	public static void printPrjInfo(PrintStream out) throws IOException {
-		File src = new File("lang/src/main/java");
+		File astSrc = new File("base/src/main/java");
+		File langSrc = new File("lang/src/main/java");
 		
 		String[][] data = {
-				{"Classes", String.valueOf(countClasses(src))},
-				{"Lines of code", String.valueOf(countLines(src))}
+				{"Classes", String.valueOf(countClasses(astSrc) + countClasses(langSrc))},
+				{"Lines of code", String.valueOf(countLines(astSrc) + countLines(langSrc))}
 		};
 		
 		out.println(AsciiTable.getTable(AsciiTable.BASIC_ASCII, new String[0], new String[0], data));

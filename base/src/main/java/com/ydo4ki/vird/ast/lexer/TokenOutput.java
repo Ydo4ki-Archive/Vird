@@ -65,7 +65,7 @@ public class TokenOutput implements Iterable<Token> {
 			}
 			
 			if (ch == '\0')
-				return new Token(TokenType.EOF, pos - 1, pos, line, file);
+				return new Token(TokenType.EOF, pos - 1, pos, line, file, source);
 			
 			
 			// brackets
@@ -76,7 +76,7 @@ public class TokenOutput implements Iterable<Token> {
 					bracketsType = bracketsTypes.byClose(ch);
 					type = TokenType.CLOSE;
 				} else type = TokenType.OPEN;
-				if (bracketsType != null) return new Token(type, String.valueOf(ch), pos - 1, pos, line, file);
+				if (bracketsType != null) return new Token(type, String.valueOf(ch), pos - 1, pos, line, file, source);
 			}
 			
 			// comments
@@ -96,7 +96,7 @@ public class TokenOutput implements Iterable<Token> {
 			}
 			
 			exception = new Exception("I have no idea what this is: " + ch);
-			return new Token(TokenType.ERROR, String.valueOf(ch), pos - 1, pos, line, file);
+			return new Token(TokenType.ERROR, String.valueOf(ch), pos - 1, pos, line, file, source);
 		}
 
 		private Token readComment(char ch) {
@@ -117,7 +117,7 @@ public class TokenOutput implements Iterable<Token> {
 				pos++;
 			}
 			
-			return new Token(TokenType.COMMENT, builder.toString(), startpos, pos, line, file);
+			return new Token(TokenType.COMMENT, builder.toString(), startpos, pos, line, file, source);
 		}
 		
 		private void readUntil(char end, StringBuilder builder) {
@@ -157,7 +157,7 @@ public class TokenOutput implements Iterable<Token> {
 				builder.append(ch);
 			}
 			builder.append(separator);
-			return new Token(TokenType.STRING, builder.toString(), startpos, pos, line, file);
+			return new Token(TokenType.STRING, builder.toString(), startpos, pos, line, file, source);
 		}
 		
 		private Token readIdentifier(char ch) {
@@ -167,7 +167,7 @@ public class TokenOutput implements Iterable<Token> {
 				builder.append(ch);
 			}
 			pos--;
-			return new Token(TokenType.IDENTIFIER, builder.toString(), startpos, pos, line, file);
+			return new Token(TokenType.IDENTIFIER, builder.toString(), startpos, pos, line, file, source);
 		}
 		
 		private char nextChar() {
