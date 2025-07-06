@@ -19,9 +19,7 @@ public final class DefaultEnv implements Env {
 	private final Map<String, ValidatedValCall> symbols = new HashMap<>();
 	
 	public DefaultEnv() {
-		push("echo", Functional.echo);
 		push("currentEnv", new Val() {
-			
 			@Override
 			public ValidatedValCall invocation(Env env, ExprList f) throws LangValidationException {
 				if (!f.getBracketsType().equals(BracketsTypes.round)) return Val.super.invocation(env, f);
