@@ -76,7 +76,7 @@ public class FileInterpreter {
 		if (expr instanceof Symbol) {
 			final String str = ((Symbol) expr).getValue();
 			
-			ValidatedValCall call = env.preresolve(str, expr);
+			ValidatedValCall call = env.preresolve(env, str, expr);
 			if (call == null)
 				throw new LangValidationException(expr.getLocation(), "Undefined symbol: " + expr);
 			
@@ -87,7 +87,7 @@ public class FileInterpreter {
 			return new ValidatedValCall(call.getConstraint()) {
 				@Override
 				public Val invoke0() throws RuntimeOperation {
-					return env.resolve(str);
+					return env.resolve(env, str);
 				}
 			};
 		}

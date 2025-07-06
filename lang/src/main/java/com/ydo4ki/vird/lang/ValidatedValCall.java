@@ -66,6 +66,21 @@ public abstract class ValidatedValCall {
 		};
 	}
 	
+	public ValidatedValCall getPropertyGetterConstraint(Env env, String property, Location l) throws LangValidationException {
+		ValidatedValCall cCall = constraint.getPropertyGetterConstraint(env, property, l);
+		if (cCall.isPure())
+			return cCall;
+		
+		// basically "apply side effects"
+		return new ValidatedValCall(cCall.getConstraint()) {
+			@Override
+			public @NonNull Val invoke0() throws RuntimeOperation {
+				ValidatedValCall.this.invoke(); // basically "apply side effects" (why did I write it twice xd)
+				return cCall.invoke();
+			}
+		};
+	}
+	
 	// todo: pure calls should be basically calls with EqualityConstraint, so you should extract it instead
 	public static Val invokePure(Location location, ValidatedValCall call) throws LangValidationException {
 		if (call.isPure()) {

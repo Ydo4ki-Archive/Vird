@@ -1,7 +1,6 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.lang.constraint.Constraint;
-import com.ydo4ki.vird.lang.constraint.FreeConstraint;
 import lombok.Getter;
 
 /**
@@ -39,6 +38,4 @@ public class IdentityType implements Type {
 		return hash;
 	}
 	
-	// todo: separate for actual signatures
-	public static final Type TYPE = new IdentityType(FreeConstraint.INSTANCE);
 }

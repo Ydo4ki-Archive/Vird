@@ -35,14 +35,14 @@ public final class Scope implements Env {
 		return v;
 	}
 	@Override
-	public ValidatedValCall preresolve(String name, Expr expr) throws LangValidationException {
+	public ValidatedValCall preresolve(Env callerEnv, String name, Expr expr) throws LangValidationException {
 		ValidatedValCall dereferenced = preDefinedSymbols.get(name);
-		return dereferenced != null || parent == null ? dereferenced : parent.preresolve(name, expr);
+		return dereferenced != null || parent == null ? dereferenced : parent.preresolve(callerEnv, name, expr);
 	}
 	@Override
-	public Val resolve(String name) throws RuntimeOperation {
+	public Val resolve(Env callerEnv, String name) throws RuntimeOperation {
 		Val dereferenced = definedSymbols.get(name);
-		return dereferenced != null || parent == null ? dereferenced : parent.resolve(name);
+		return dereferenced != null || parent == null ? dereferenced : parent.resolve(callerEnv, name);
 	}
 	
 	

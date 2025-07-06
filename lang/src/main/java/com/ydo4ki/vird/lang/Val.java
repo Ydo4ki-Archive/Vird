@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lang;
 
 import com.ydo4ki.vird.ast.ExprList;
+import com.ydo4ki.vird.ast.Location;
 import com.ydo4ki.vird.lang.constraint.EqualityConstraint;
 
 /**
@@ -25,6 +26,11 @@ public interface Val {
 	default ValidatedValCall invocation(Env env, ExprList f) throws LangValidationException {
 		throw new LangValidationException(f.getLocation(),
 				"Not callable (" + this.getClass().getSimpleName() + " «" + this + "») with " + f.getBracketsType());
+	}
+	
+	default ValidatedValCall propertyGetter(Env env, String property, Location l) throws LangValidationException {
+		throw new LangValidationException(l,
+				"Not such property: " + property + " (" + this.getClass().getSimpleName() + " «" + this + "»)");
 	}
 	
 	Type getType();

@@ -1,1 +1,1 @@
-(currentEnv)
+(typeOf currentEnv)

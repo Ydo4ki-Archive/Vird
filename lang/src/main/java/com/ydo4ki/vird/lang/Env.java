@@ -7,7 +7,7 @@ import com.ydo4ki.vird.ast.Expr;
  
  */
 public interface Env extends Val {
-	ValidatedValCall preresolve(String name, Expr expr) throws LangValidationException;
+	ValidatedValCall preresolve(Env callerEnv, String name, Expr expr) throws LangValidationException;
 	
-	Val resolve(String name) throws RuntimeOperation;
+	Val resolve(Env callerEnv, String name) throws RuntimeOperation;
 }

@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lang.constraint;
 
 import com.ydo4ki.vird.ast.ExprList;
+import com.ydo4ki.vird.ast.Location;
 import com.ydo4ki.vird.lang.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -41,6 +42,11 @@ public final class EqualityConstraint extends PrimitiveConstraint {
 	@Override
 	public ValidatedValCall getInvocationConstraint(Env env, ExprList f) throws LangValidationException {
 		return expected.invocation(env, f);
+	}
+	
+	@Override
+	public ValidatedValCall getPropertyGetterConstraint(Env env, String property, Location l) throws LangValidationException {
+		return expected.propertyGetter(env, property, l);
 	}
 	
 	@Override

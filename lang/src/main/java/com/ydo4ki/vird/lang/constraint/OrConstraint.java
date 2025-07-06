@@ -2,6 +2,7 @@ package com.ydo4ki.vird.lang.constraint;
 
 import com.ydo4ki.vird.FileInterpreter;
 import com.ydo4ki.vird.ast.ExprList;
+import com.ydo4ki.vird.ast.Location;
 import com.ydo4ki.vird.lang.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -78,6 +79,21 @@ public final class OrConstraint extends AbstractConstraint {
 				}
 			}
 		};
+	}
+	
+	@Override
+	public ValidatedValCall getPropertyGetterConstraint(Env env, String property, Location l) throws LangValidationException {
+		List<Constraint> constraints = new ArrayList<>();
+		for (Constraint c : this.constraints) {
+			// if even one value is not callable, so the whole thing is. Validation error passed
+			ValidatedValCall cCall = c.getPropertyGetterConstraint(env, property, l);
+			
+			constraints.add(cCall.getConstraint());
+		}
+		Constraint c = OrConstraint.of(new HashSet<>(constraints));
+		
+		// todo: I have no idea how to do this
+		return super.getPropertyGetterConstraint(env, property, l);
 	}
 	
 	@Override

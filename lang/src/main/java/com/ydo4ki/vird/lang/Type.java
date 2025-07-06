@@ -8,7 +8,9 @@ import com.ydo4ki.vird.lang.constraint.FreeConstraint;
  * @author Sulphuris
  */
 public interface Type extends Val {
+	
 	Constraint getImplications();
 	
-	public static final Type ROOT_FUNCTION = new IdentityType(FreeConstraint.INSTANCE);
+	Type ROOT_FUNCTION = new IdentityType(FreeConstraint.INSTANCE);
+	Type TYPE = new IdentityType(FreeConstraint.INSTANCE);
 }

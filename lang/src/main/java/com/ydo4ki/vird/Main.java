@@ -28,7 +28,7 @@ public class Main {
 		
 		Scope env = Functional.env;
 		
-		Val echo = env.resolve("echo");
+		Val echo = env.resolve(env, "echo");
 		env.push("get-echo", new Val() {
 			@Override
 			public ValidatedValCall invocation(Env env, ExprList f) throws LangValidationException {

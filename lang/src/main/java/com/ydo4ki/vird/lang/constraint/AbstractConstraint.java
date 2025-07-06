@@ -1,6 +1,7 @@
 package com.ydo4ki.vird.lang.constraint;
 
 import com.ydo4ki.vird.ast.ExprList;
+import com.ydo4ki.vird.ast.Location;
 import com.ydo4ki.vird.lang.*;
 
 /**
@@ -37,6 +38,11 @@ public abstract class AbstractConstraint implements Constraint {
 	 (or throws LangValidationException if function is not a function or following arguments are inappropriate) */
 	public ValidatedValCall getInvocationConstraint(Env env, ExprList f) throws LangValidationException {
 		throw new LangValidationException(f.getLocation(), "Not callable");
+	}
+	
+	@Override
+	public ValidatedValCall getPropertyGetterConstraint(Env env, String property, Location l) throws LangValidationException {
+		throw new LangValidationException(l, "No such property '" + property + "'");
 	}
 	
 	public static boolean areEqual(Env env, Constraint a, Constraint b) {
