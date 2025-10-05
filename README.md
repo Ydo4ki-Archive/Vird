@@ -1,3 +1,5 @@
+This project currently has too many changes so it lives in multiple private repositories, but the development is still active (10/5/2025).
+
 [//]: # ([![SVG Banners]&#40;https://svg-banners.vercel.app/api?type=luminance&text1=&#40;Vird&#41;&#41;]&#40;https://github.com/Akshay090/svg-banners&#41;)
 
 # Vird Programming Language
@@ -9,7 +11,7 @@
 
 Research project, programming language aimed at
 finding maximum flexibility (both syntactically and semantically)
-with the simplest possible language model
+with the simplest possible language model<br>
 So its development basically is
 "do multiple complex things, then spend weeks simplifying them until
 it starts to seem obvious ~~what took you so long~~"
